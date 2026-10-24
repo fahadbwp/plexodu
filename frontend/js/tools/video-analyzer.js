@@ -164,7 +164,7 @@ function renderVideoResults(data) {
   if (copyTagsBtn) copyTagsBtn.disabled = currentVideoTags.length === 0;
   if (videoViralityVal) videoViralityVal.textContent = `${data.virality_score || 0}/100`;
   if (videoViewsVal) videoViewsVal.textContent = Number(data.views || data.view_count || 0).toLocaleString();
-  if (videoEngagementVal) videoEngagementVal.textContent = `${data.engagement_rate || 0}%`;
+  if (videoEngagementVal) videoEngagementVal.textContent = data.engagement_rate != null ? `${data.engagement_rate}%` : "Unavailable";
 
   const s = data.sentiment || {};
   if (sentimentStats) sentimentStats.textContent = `Positive: ${s.positive_score || 0}% • Neutral: ${s.neutral_score || 0}% • Negative: ${s.negative_score || 0}%`;

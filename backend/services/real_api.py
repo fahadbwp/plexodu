@@ -9,6 +9,7 @@ import os
 import math
 import time
 import re
+import threading
 import urllib.parse
 import requests
 from datetime import datetime, timedelta, timezone
@@ -24,21 +25,171 @@ CHANNELS_URL = "https://www.googleapis.com/youtube/v3/channels"
 COMMENTS_URL = "https://www.googleapis.com/youtube/v3/commentThreads"
 PLAYLIST_URL = "https://www.googleapis.com/youtube/v3/playlistItems"
 
-# Thread-safe in-memory TTL caching to prevent quota exhaustion
-_YT_CACHE = {}
+class YouTubeQuotaTracker:
+    """
+    Process-local tracker for attempted YouTube Data API v3 calls, estimated quota units,
+    cache hits, and quota errors within the current runtime process.
+
+    According to official YouTube Data API v3 quota documentation:
+      - search.list: 100 units/call
+      - videos.list: 1 unit/call
+      - commentThreads.list: 1 unit/call
+      - channels.list: 1 unit/call
+      - playlistItems.list: 1 unit/call
+    Default project daily quota budget is 10,000 units.
+    search.list has a configured allowance of 100 calls/day (100 * 100 = 10,000 units).
+
+    SERVERLESS PROCESS-LOCAL LIMITATION NOTE:
+    Under Vercel serverless (AWS Lambda), this tracker is strictly PROCESS-LOCAL to the
+    active warm container instance. Counters reset on container cold starts and do NOT
+    synchronize across concurrent instances. It provides warm-container guardrails and
+    telemetry, but does NOT provide global hard quota enforcement across distributed instances.
+    Global hard enforcement requires an external shared store (e.g. Upstash Redis).
+    """
+    def __init__(self):
+        self._lock = threading.Lock()
+        self.search_daily_limit = int(os.environ.get("YOUTUBE_SEARCH_DAILY_LIMIT", 100))
+        self.daily_quota_limit = int(os.environ.get("YOUTUBE_DAILY_QUOTA_LIMIT", 10000))
+        self.current_date = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+        self.calls = {
+            "search.list": 0,
+            "videos.list": 0,
+            "commentThreads.list": 0,
+            "channels.list": 0,
+            "playlistItems.list": 0,
+        }
+        self.units_used = 0
+        self.cache_hits = 0
+        self.quota_errors = 0
+
+    def _rollover_if_needed(self):
+        today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+        if today != self.current_date:
+            self.current_date = today
+            for k in self.calls:
+                self.calls[k] = 0
+            self.units_used = 0
+            self.cache_hits = 0
+            self.quota_errors = 0
+
+    def can_call_search(self) -> bool:
+        with self._lock:
+            self._rollover_if_needed()
+            if self.calls["search.list"] >= self.search_daily_limit:
+                return False
+            if self.units_used + 100 > self.daily_quota_limit:
+                return False
+            return True
+
+    def record_call(self, endpoint: str, units: int = 1):
+        with self._lock:
+            self._rollover_if_needed()
+            self.calls[endpoint] = self.calls.get(endpoint, 0) + 1
+            self.units_used += units
+
+    def record_cache_hit(self):
+        with self._lock:
+            self._rollover_if_needed()
+            self.cache_hits += 1
+
+    def record_quota_error(self):
+        with self._lock:
+            self._rollover_if_needed()
+            self.quota_errors += 1
+
+    def get_metrics(self) -> dict:
+        with self._lock:
+            self._rollover_if_needed()
+            return {
+                "date": self.current_date,
+                "calls": dict(self.calls),
+                "search_calls": self.calls["search.list"],
+                "search_daily_limit": self.search_daily_limit,
+                "units_used": self.units_used,
+                "daily_quota_limit": self.daily_quota_limit,
+                "cache_hits": self.cache_hits,
+                "quota_errors": self.quota_errors,
+            }
+
+    def reset(self):
+        with self._lock:
+            for k in self.calls:
+                self.calls[k] = 0
+            self.units_used = 0
+            self.cache_hits = 0
+            self.quota_errors = 0
+
+
+quota_tracker = YouTubeQuotaTracker()
+
+def get_quota_metrics() -> dict:
+    return quota_tracker.get_metrics()
+
+
+# Thread-safe in-memory bounded TTL cache to prevent memory leaks and quota exhaustion
 _CACHE_TTL_SECONDS = 900  # 15 minutes
+_CACHE_MAX_ENTRIES = 500  # Bounded retention for serverless environments
+
+
+class BoundedTTLCache(dict):
+    """
+    Process-local, thread-safe, bounded in-memory cache with TTL expiration.
+    Protects against serverless memory leaks with bounded retention and FIFO/LRU eviction.
+    Supports standard dict interface for backwards compatibility with tests.
+
+    SERVERLESS PROCESS-LOCAL LIMITATION NOTE:
+    Under Vercel serverless, this cache is strictly PROCESS-LOCAL to the active container.
+    Cached items are not shared across separate concurrent serverless instances and will not
+    persist across cold starts. Global cache deduplication across serverless lambdas requires
+    a distributed cache (e.g., Redis).
+    """
+    def __init__(self, maxsize: int = 500, ttl_seconds: int = 900):
+        super().__init__()
+        self.maxsize = maxsize
+        self.ttl_seconds = ttl_seconds
+        self._lock = threading.RLock()
+
+    def get(self, key, default=None):
+        with self._lock:
+            if key in self:
+                timestamp, val = super().__getitem__(key)
+                if time.time() - timestamp < self.ttl_seconds:
+                    return (timestamp, val)
+                super().__delitem__(key)
+            return default
+
+    def __setitem__(self, key, val):
+        with self._lock:
+            now = time.time()
+            if isinstance(val, tuple) and len(val) == 2 and isinstance(val[0], (int, float)):
+                entry = val
+            else:
+                entry = (now, val)
+            if len(self) >= self.maxsize:
+                # Prune expired entries first
+                expired = [k for k, (t, _) in self.items() if now - t >= self.ttl_seconds]
+                for k in expired:
+                    super().__delitem__(k)
+                # If still at capacity, evict oldest entry
+                if len(self) >= self.maxsize:
+                    oldest_key = min(self.keys(), key=lambda k: super(BoundedTTLCache, self).__getitem__(k)[0])
+                    super().__delitem__(oldest_key)
+            super().__setitem__(key, entry)
+
+    def clear(self):
+        with self._lock:
+            super().clear()
+
+
+_YT_CACHE = BoundedTTLCache(maxsize=_CACHE_MAX_ENTRIES, ttl_seconds=_CACHE_TTL_SECONDS)
 
 
 def _get_from_cache(cache_key: str):
     cached = _YT_CACHE.get(cache_key)
     if cached:
         timestamp, data = cached
-        if time.time() - timestamp < _CACHE_TTL_SECONDS:
-            return data
-        try:
-            del _YT_CACHE[cache_key]
-        except KeyError:
-            pass
+        quota_tracker.record_cache_hit()
+        return data
     return None
 
 
@@ -54,24 +205,27 @@ def _is_quota_error(res) -> bool:
             errors = body.get("error", {}).get("errors", [])
             for err in errors:
                 if err.get("reason") in ["quotaExceeded", "dailyLimitExceeded", "rateLimitExceeded"]:
+                    quota_tracker.record_quota_error()
                     return True
             if "quota" in str(body).lower():
+                quota_tracker.record_quota_error()
                 return True
     except Exception:
         pass
     return False
 
 
-def _build_authentic_snapshot(total_views: int, total_likes: int, total_comments: int, upload_date_str: str = None) -> list:
+def _build_authentic_snapshot(total_views: int, total_likes: int | None, total_comments: int, upload_date_str: str = None) -> list:
     """
     Returns authentic recorded snapshot for today.
     Never fabricates synthetic historical decay curves or imaginary past daily points.
+    Preserves None for hidden/unavailable likes instead of forcing zero.
     """
     today_str = datetime.now(timezone.utc).strftime("%Y-%m-%d")
     return [{
         "date": today_str,
         "views": int(total_views or 0),
-        "likes": int(total_likes or 0),
+        "likes": int(total_likes) if total_likes is not None else None,
         "shares": 0,
         "comments_count": int(total_comments or 0),
     }]
@@ -158,6 +312,10 @@ REGION_MAP = {
     "India": "IN",
     "Pakistan": "PK",
     "United Kingdom": "GB",
+    "PK": "PK",
+    "US": "US",
+    "IN": "IN",
+    "GB": "GB",
 }
 
 DEFAULT_CATEGORIES = [
@@ -173,7 +331,7 @@ DEFAULT_CATEGORIES = [
 
 
 # ─── Keyword Trend Fetch ─────────────────────────────────────────────────────
-def fetch_youtube_data(keyword: str, region: str = "Global", category: str = "All", timeframe: str = "7d"):
+def fetch_youtube_data(keyword: str, region: str = "Pakistan", category: str = "All", timeframe: str = "7d"):
     api_key = get_yt_api_key()
     if not api_key:
         raise YouTubeAPIError("YOUTUBE_API_KEY is not set. Add it to your .env file.")
@@ -182,7 +340,8 @@ def fetch_youtube_data(keyword: str, region: str = "Global", category: str = "Al
     is_trending_mode = not raw_kw or raw_kw.lower() in ["trending", "all", "pulsecheck"]
     search_keyword = category if (is_trending_mode and category != "All") else raw_kw
 
-    region_code = REGION_MAP.get(region, "US")
+    # Regional trending defaults to PK (Pakistan)
+    region_code = REGION_MAP.get(region, "PK")
     yt_cat_id = CATEGORY_TO_YT_ID.get(category) if category != "All" else None
 
     cache_key = f"yt_pulse_{search_keyword.lower()}_{region}_{category}_{timeframe}"
@@ -191,8 +350,8 @@ def fetch_youtube_data(keyword: str, region: str = "Global", category: str = "Al
         return cached
 
     items = []
-    # Legacy unfiltered chart mode; dated requests use search.list publishedAfter.
-    if is_trending_mode and category == "All" and not timeframe:
+    # Official videos.list?chart=mostPopular for default regional trending (1 quota unit)
+    if is_trending_mode:
         try:
             params = {
                 "part": "snippet,statistics",
@@ -201,6 +360,9 @@ def fetch_youtube_data(keyword: str, region: str = "Global", category: str = "Al
                 "maxResults": 18,
                 "key": api_key,
             }
+            if yt_cat_id:
+                params["videoCategoryId"] = yt_cat_id
+            quota_tracker.record_call("videos.list", 1)
             res = requests.get(VIDEOS_URL, params=params, timeout=8)
             if _is_quota_error(res):
                 return {"status": 429, "platform": "YouTube", "error": "YouTube API daily quota reached. Trend analytics are temporarily paused. Please try again later.", "quota_exceeded": True}
@@ -227,7 +389,16 @@ def fetch_youtube_data(keyword: str, region: str = "Global", category: str = "Al
         if yt_cat_id:
             search_params["videoCategoryId"] = yt_cat_id
 
+        if not quota_tracker.can_call_search():
+            return {
+                "status": 429,
+                "platform": "YouTube",
+                "error": "YouTube search daily allowance limit reached (100 calls/day). You can still browse trending topics or try again tomorrow.",
+                "quota_exceeded": True
+            }
+
         try:
+            quota_tracker.record_call("search.list", 100)
             search_res = requests.get(SEARCH_URL, params=search_params, timeout=8)
         except requests.Timeout:
             return {"status": 504, "platform": "YouTube", "error": "YouTube API request timed out. Please try again."}
@@ -252,6 +423,7 @@ def fetch_youtube_data(keyword: str, region: str = "Global", category: str = "Al
 
         if video_ids:
             try:
+                quota_tracker.record_call("videos.list", 1)
                 stats_res = requests.get(VIDEOS_URL, params={
                     "part": "snippet,statistics",
                     "id": ",".join(video_ids[:18]),
@@ -272,7 +444,7 @@ def fetch_youtube_data(keyword: str, region: str = "Global", category: str = "Al
         return {"status": 404, "platform": "YouTube", "error": f'No videos found for "{search_keyword}".'}
 
     # Build parsed top_videos list
-    top_videos = []
+    raw_videos = []
     now_utc = datetime.now(timezone.utc)
     for i, it in enumerate(items):
         v_id = it.get("id") if isinstance(it.get("id"), str) else it.get("id", {}).get("videoId", f"yt-{i}")
@@ -291,7 +463,8 @@ def fetch_youtube_data(keyword: str, region: str = "Global", category: str = "Al
             cat_hue = cat_info[1] if cat_info else "#38BDF8"
 
         v_views = int(stat.get("viewCount", 0))
-        v_likes = int(stat.get("likeCount", 0))
+        has_likes = "likeCount" in stat and stat["likeCount"] is not None
+        v_likes = int(stat["likeCount"]) if has_likes else None
         v_comments = int(stat.get("commentCount", 0))
 
         v_published = snip.get("publishedAt", "")
@@ -301,19 +474,13 @@ def fetch_youtube_data(keyword: str, region: str = "Global", category: str = "Al
         except Exception:
             hours_ago = 24
 
-        v_eng = round(((v_likes + v_comments) / max(1, v_views)) * 100, 1)
-        velocity = v_views / max(1, hours_ago)
-        # Single-snapshot estimate: current view velocity relative to a fixed
-        # baseline (1500 views/hr), NOT growth measured between two points in
-        # time. Do not rename this back to "growth" without adding real
-        # snapshot-over-time tracking first.
-        momentum_score = round((velocity / 1500 - 1) * 100)
-        momentum_score = max(-95, min(950, momentum_score))
-        trend_score = round(velocity / 100 + momentum_score * 8)
+        # When creator hides likes, do not pretend engagement is 0.0%
+        v_eng = round(((v_likes + v_comments) / max(1, v_views)) * 100, 1) if has_likes else None
+        # Distinguish estimated lifetime-average views/hour from observed multi-point velocity
+        estimated_views_per_hour = round(v_views / max(1, hours_ago), 1)
 
-        top_videos.append({
+        raw_videos.append({
             "id": v_id,
-            "rank": i + 1,
             "title": v_title,
             "channel": v_channel,
             "category": cat_name,
@@ -322,12 +489,35 @@ def fetch_youtube_data(keyword: str, region: str = "Global", category: str = "Al
             "hoursAgo": hours_ago,
             "views": v_views,
             "likes": v_likes,
+            "likes_available": has_likes,
             "comments": v_comments,
             "engagement": v_eng,
-            "momentumScore": momentum_score,
-            "trendScore": trend_score,
+            "estimated_views_per_hour": estimated_views_per_hour,
+            "velocity": estimated_views_per_hour,
             "published_at": v_published[:10] if v_published else "—",
         })
+
+    # Deterministic relative midpoint percentile rank across cohort (no artificial +950 cap)
+    cohort_n = len(raw_videos)
+    top_videos = []
+    for i, rv in enumerate(raw_videos):
+        evph = rv["estimated_views_per_hour"]
+        if cohort_n > 0:
+            less = sum(1 for o in raw_videos if o["estimated_views_per_hour"] < evph)
+            equal = sum(1 for o in raw_videos if o["estimated_views_per_hour"] == evph)
+            percentile = round(((less + 0.5 * equal) / cohort_n) * 100, 1)
+        else:
+            percentile = 50.0
+
+        momentum_score = int(round(percentile))
+        trend_score = round(evph / 100 + percentile * 8)
+
+        v_entry = dict(rv)
+        v_entry["rank"] = i + 1
+        v_entry["momentumScore"] = momentum_score
+        v_entry["momentum_percentile"] = percentile
+        v_entry["trendScore"] = trend_score
+        top_videos.append(v_entry)
 
     # Sort videos by trend score
     top_videos.sort(key=lambda x: x["trendScore"], reverse=True)
@@ -336,7 +526,10 @@ def fetch_youtube_data(keyword: str, region: str = "Global", category: str = "Al
 
     # Aggregate KPIs & Category Breakdown
     total_views_sum = sum(v["views"] for v in top_videos) if top_videos else int(items[0].get("statistics", {}).get("viewCount", 0))
-    avg_eng = round(sum(v["engagement"] for v in top_videos) / max(1, len(top_videos)), 1)
+    vids_with_eng = [v for v in top_videos if v.get("engagement") is not None]
+    avg_eng = round(sum(v["engagement"] for v in vids_with_eng) / max(1, len(vids_with_eng)), 1) if vids_with_eng else None
+    vids_with_likes = [v for v in top_videos if v.get("likes") is not None]
+    total_likes = sum(v["likes"] for v in vids_with_likes) if vids_with_likes else None
     rising_count = len([v for v in top_videos if v["momentumScore"] > 40])
 
     cat_breakdown = []
@@ -373,6 +566,8 @@ def fetch_youtube_data(keyword: str, region: str = "Global", category: str = "Al
         "risingCount": rising_count,
         "topCategoryViews": cat_breakdown[0]["value"] if cat_breakdown else 0,
         "totalTracked": len(top_videos),
+        "totalLikes": total_likes,
+        "likesAvailable": len(vids_with_likes) > 0,
     }
 
     # Backward compatibility anchor from top video
@@ -381,11 +576,12 @@ def fetch_youtube_data(keyword: str, region: str = "Global", category: str = "Al
     snippet0 = items[0].get("snippet", {}) if items else {}
     upload_date = v0.get("published_at") or snippet0.get("publishedAt", "")
     total_views = sum(v["views"] for v in top_videos)
-    total_likes = sum(v["likes"] for v in top_videos)
+    total_likes = sum(v["likes"] for v in top_videos if v.get("likes") is not None) if any(v.get("likes") is not None for v in top_videos) else None
     total_comments = sum(v["comments"] for v in top_videos)
 
     comments = []
     try:
+        quota_tracker.record_call("commentThreads.list", 1)
         comments_res = requests.get(COMMENTS_URL, params={
             "part": "snippet", "videoId": video_id,
             "maxResults": 50, "order": "relevance", "key": api_key,
@@ -505,7 +701,8 @@ def analyze_youtube_video(url: str):
     )
 
     view_count    = int(stats.get("viewCount", 0))
-    like_count    = int(stats.get("likeCount", 0))
+    has_likes     = "likeCount" in stats and stats["likeCount"] is not None
+    like_count    = int(stats["likeCount"]) if has_likes else None
     comment_count = int(stats.get("commentCount", 0))
     duration_sec  = _parse_duration(content.get("duration", "PT0S"))
 
@@ -520,8 +717,8 @@ def analyze_youtube_video(url: str):
 
     is_short = duration_sec <= 60
 
-    # Engagement rate
-    engagement_rate = round(((like_count + comment_count) / max(1, view_count)) * 100, 2)
+    # Engagement rate (None if likes are hidden)
+    engagement_rate = round(((like_count + comment_count) / max(1, view_count)) * 100, 2) if has_likes else None
 
     # Fetch comments
     comments_raw = []
