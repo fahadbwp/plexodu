@@ -118,3 +118,46 @@ def test_pdf_keyword_is_literal_text_not_reportlab_markup():
         None, 20, 'BASELINE', 'Anonymous User')
     assert content.read(4) == b'%PDF'
     assert '<' not in filename
+
+
+def test_momentum_percentile_scoring_and_no_saturation():
+    """Verify Task 1.1: relative percentile scoring across cohort and no +950 cap."""
+    now = datetime.now(timezone.utc)
+    def mock_get(url, **kwargs):
+        if url == real_api.SEARCH_URL:
+            return Mock(status_code=200, json=lambda: {'items': [{'id': {'videoId': f'vid-{i}'}} for i in range(4)]})
+        if url == real_api.VIDEOS_URL:
+            # vid-0: 100k views in 1 hour (extreme velocity)
+            # vid-1: 10k views in 2 hours (5k/hr)
+            # vid-2: 2k views in 2 hours (1k/hr)
+            # vid-3: 100 views in 10 hours (10/hr)
+            items = [
+                {'id': 'vid-0', 'snippet': {'title': 'Viral', 'publishedAt': (now - timedelta(hours=1)).isoformat(), 'categoryId': '20'},
+                 'statistics': {'viewCount': '100000', 'likeCount': '5000', 'commentCount': '500'}},
+                {'id': 'vid-1', 'snippet': {'title': 'Fast', 'publishedAt': (now - timedelta(hours=2)).isoformat(), 'categoryId': '20'},
+                 'statistics': {'viewCount': '10000', 'likeCount': '500', 'commentCount': '50'}},
+                {'id': 'vid-2', 'snippet': {'title': 'Medium', 'publishedAt': (now - timedelta(hours=2)).isoformat(), 'categoryId': '20'},
+                 'statistics': {'viewCount': '2000', 'likeCount': '100', 'commentCount': '10'}},
+                {'id': 'vid-3', 'snippet': {'title': 'Slow', 'publishedAt': (now - timedelta(hours=10)).isoformat(), 'categoryId': '20'},
+                 'statistics': {'viewCount': '100', 'likeCount': '5', 'commentCount': '1'}},
+            ]
+            return Mock(status_code=200, json=lambda: {'items': items})
+        return Mock(status_code=200, json=lambda: {'items': []})
+
+    real_api._YT_CACHE.clear()
+    with patch.object(real_api, 'get_yt_api_key', return_value='mock'), \
+         patch.object(real_api.requests, 'get', side_effect=mock_get), \
+         patch.object(real_api, '_fetch_related_keywords', return_value=[]):
+        res = real_api.fetch_youtube_data('viral-test', region='Global', timeframe='24h')
+
+    assert res['status'] == 200
+    videos = res['top_videos']
+    assert len(videos) == 4
+    # The top video with 100k views/hr should be rank 1 and have high percentile
+    top_v = videos[0]
+    assert top_v['id'] == 'vid-0'
+    assert top_v['estimated_views_per_hour'] == 100000.0
+    assert top_v['momentumScore'] == 88  # (3 + 0.5)/4 * 100 = 87.5 -> 88
+    assert top_v['momentum_percentile'] == 87.5
+    assert top_v['momentumScore'] != 950  # Saturation cap removed!
+    assert top_v['trendScore'] > 1000  # Not artificially suppressed by cap

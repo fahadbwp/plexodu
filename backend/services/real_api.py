@@ -272,7 +272,7 @@ def fetch_youtube_data(keyword: str, region: str = "Global", category: str = "Al
         return {"status": 404, "platform": "YouTube", "error": f'No videos found for "{search_keyword}".'}
 
     # Build parsed top_videos list
-    top_videos = []
+    raw_videos = []
     now_utc = datetime.now(timezone.utc)
     for i, it in enumerate(items):
         v_id = it.get("id") if isinstance(it.get("id"), str) else it.get("id", {}).get("videoId", f"yt-{i}")
@@ -302,18 +302,11 @@ def fetch_youtube_data(keyword: str, region: str = "Global", category: str = "Al
             hours_ago = 24
 
         v_eng = round(((v_likes + v_comments) / max(1, v_views)) * 100, 1)
-        velocity = v_views / max(1, hours_ago)
-        # Single-snapshot estimate: current view velocity relative to a fixed
-        # baseline (1500 views/hr), NOT growth measured between two points in
-        # time. Do not rename this back to "growth" without adding real
-        # snapshot-over-time tracking first.
-        momentum_score = round((velocity / 1500 - 1) * 100)
-        momentum_score = max(-95, min(950, momentum_score))
-        trend_score = round(velocity / 100 + momentum_score * 8)
+        # Distinguish estimated lifetime-average views/hour from observed multi-point velocity
+        estimated_views_per_hour = round(v_views / max(1, hours_ago), 1)
 
-        top_videos.append({
+        raw_videos.append({
             "id": v_id,
-            "rank": i + 1,
             "title": v_title,
             "channel": v_channel,
             "category": cat_name,
@@ -324,10 +317,32 @@ def fetch_youtube_data(keyword: str, region: str = "Global", category: str = "Al
             "likes": v_likes,
             "comments": v_comments,
             "engagement": v_eng,
-            "momentumScore": momentum_score,
-            "trendScore": trend_score,
+            "estimated_views_per_hour": estimated_views_per_hour,
+            "velocity": estimated_views_per_hour,
             "published_at": v_published[:10] if v_published else "—",
         })
+
+    # Deterministic relative midpoint percentile rank across cohort (no artificial +950 cap)
+    cohort_n = len(raw_videos)
+    top_videos = []
+    for i, rv in enumerate(raw_videos):
+        evph = rv["estimated_views_per_hour"]
+        if cohort_n > 0:
+            less = sum(1 for o in raw_videos if o["estimated_views_per_hour"] < evph)
+            equal = sum(1 for o in raw_videos if o["estimated_views_per_hour"] == evph)
+            percentile = round(((less + 0.5 * equal) / cohort_n) * 100, 1)
+        else:
+            percentile = 50.0
+
+        momentum_score = int(round(percentile))
+        trend_score = round(evph / 100 + percentile * 8)
+
+        v_entry = dict(rv)
+        v_entry["rank"] = i + 1
+        v_entry["momentumScore"] = momentum_score
+        v_entry["momentum_percentile"] = percentile
+        v_entry["trendScore"] = trend_score
+        top_videos.append(v_entry)
 
     # Sort videos by trend score
     top_videos.sort(key=lambda x: x["trendScore"], reverse=True)
