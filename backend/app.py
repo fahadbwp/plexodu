@@ -25,6 +25,7 @@ from dotenv import load_dotenv
 
 sys.path.append(os.path.dirname(__file__))
 from app.core.config import settings
+from app.core.database import database_engine_options, postgres_ssl_args
 
 from models import db, User, Trend, Metric, Sentiment, Report, AuditLog
 from services.real_api import fetch_youtube_data, audit_youtube_channel, analyze_youtube_video  # LIVE YouTube Data API v3
@@ -88,18 +89,9 @@ app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1)
 database_uri = settings.DATABASE_URL if settings.DATABASE_URL else f"sqlite:///{DB_PATH}"
 app.config["SQLALCHEMY_DATABASE_URI"] = database_uri
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-if database_uri.startswith("postgresql"):
-    app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
-        "pool_size": 10,
-        "max_overflow": 20,
-        "pool_timeout": 30,
-        "pool_recycle": 1800,
-        "pool_pre_ping": True,
-    }
-else:
-    app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
-        "pool_pre_ping": True,
-    }
+app.config["SQLALCHEMY_ENGINE_OPTIONS"] = database_engine_options(
+    database_uri, production=settings.IS_PRODUCTION or bool(os.environ.get("VERCEL"))
+)
 
 app.config["MAX_CONTENT_LENGTH"] = MAX_UPLOAD_SIZE
 app.secret_key = settings.SECRET_KEY
@@ -135,6 +127,8 @@ def _health_database_status():
         url = db.engine.url
         if url.get_backend_name() == "postgresql":
             connect_args = {"connect_timeout": 2, "options": "-c statement_timeout=2000"}
+            if IS_PRODUCTION:
+                connect_args.update(postgres_ssl_args(url))
         elif url.get_backend_name() == "sqlite":
             connect_args = {"timeout": 2}
         else:
@@ -997,6 +991,10 @@ def video_analysis():
 # App bootstrap
 # --------------------------------------------------------------------------
 def create_tables():
+    # Production schemas are initialized only through a separately reviewed,
+    # explicitly authorized procedure. Never migrate during a cold start.
+    if settings.IS_PRODUCTION or os.environ.get("VERCEL"):
+        return
     with app.app_context():
         db.create_all()
         try:
