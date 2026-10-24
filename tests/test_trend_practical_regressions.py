@@ -203,3 +203,35 @@ def test_hidden_likes_treated_as_unavailable_not_zero():
     # Cohort avgEngagement must only average videos with available likes
     assert res['kpis']['avgEngagement'] == 25.0
     assert res['kpis']['totalLikes'] == 200
+
+
+def test_regional_trending_uses_most_popular_and_defaults_to_pk():
+    """Verify Task 1.3: default trending uses videos.list?chart=mostPopular with PK region."""
+    now = datetime.now(timezone.utc)
+    captured = []
+    def mock_get(url, **kwargs):
+        params = kwargs.get('params', {})
+        captured.append((url, params))
+        if url == real_api.VIDEOS_URL and params.get('chart') == 'mostPopular':
+            items = [
+                {'id': 'pop-1', 'snippet': {'title': 'PK Trend 1', 'publishedAt': (now - timedelta(hours=3)).isoformat(), 'categoryId': '20'},
+                 'statistics': {'viewCount': '5000', 'likeCount': '200', 'commentCount': '50'}},
+            ]
+            return Mock(status_code=200, json=lambda: {'items': items})
+        return Mock(status_code=200, json=lambda: {'items': []})
+
+    real_api._YT_CACHE.clear()
+    with patch.object(real_api, 'get_yt_api_key', return_value='mock'), \
+         patch.object(real_api.requests, 'get', side_effect=mock_get), \
+         patch.object(real_api, '_fetch_related_keywords', return_value=[]):
+        # Default trending call (no keyword)
+        res = real_api.fetch_youtube_data('')
+
+    assert res['status'] == 200
+    assert len(res['top_videos']) == 1
+    assert res['top_videos'][0]['id'] == 'pop-1'
+
+    # Check captured params for mostPopular call
+    pop_call = next(params for url, params in captured if url == real_api.VIDEOS_URL and params.get('chart') == 'mostPopular')
+    assert pop_call['chart'] == 'mostPopular'
+    assert pop_call['regionCode'] == 'PK'

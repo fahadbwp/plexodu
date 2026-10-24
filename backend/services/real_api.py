@@ -159,6 +159,10 @@ REGION_MAP = {
     "India": "IN",
     "Pakistan": "PK",
     "United Kingdom": "GB",
+    "PK": "PK",
+    "US": "US",
+    "IN": "IN",
+    "GB": "GB",
 }
 
 DEFAULT_CATEGORIES = [
@@ -174,7 +178,7 @@ DEFAULT_CATEGORIES = [
 
 
 # ─── Keyword Trend Fetch ─────────────────────────────────────────────────────
-def fetch_youtube_data(keyword: str, region: str = "Global", category: str = "All", timeframe: str = "7d"):
+def fetch_youtube_data(keyword: str, region: str = "Pakistan", category: str = "All", timeframe: str = "7d"):
     api_key = get_yt_api_key()
     if not api_key:
         raise YouTubeAPIError("YOUTUBE_API_KEY is not set. Add it to your .env file.")
@@ -183,7 +187,8 @@ def fetch_youtube_data(keyword: str, region: str = "Global", category: str = "Al
     is_trending_mode = not raw_kw or raw_kw.lower() in ["trending", "all", "pulsecheck"]
     search_keyword = category if (is_trending_mode and category != "All") else raw_kw
 
-    region_code = REGION_MAP.get(region, "US")
+    # Regional trending defaults to PK (Pakistan)
+    region_code = REGION_MAP.get(region, "PK")
     yt_cat_id = CATEGORY_TO_YT_ID.get(category) if category != "All" else None
 
     cache_key = f"yt_pulse_{search_keyword.lower()}_{region}_{category}_{timeframe}"
@@ -192,8 +197,8 @@ def fetch_youtube_data(keyword: str, region: str = "Global", category: str = "Al
         return cached
 
     items = []
-    # Legacy unfiltered chart mode; dated requests use search.list publishedAfter.
-    if is_trending_mode and category == "All" and not timeframe:
+    # Official videos.list?chart=mostPopular for default regional trending (1 quota unit)
+    if is_trending_mode:
         try:
             params = {
                 "part": "snippet,statistics",
@@ -202,6 +207,8 @@ def fetch_youtube_data(keyword: str, region: str = "Global", category: str = "Al
                 "maxResults": 18,
                 "key": api_key,
             }
+            if yt_cat_id:
+                params["videoCategoryId"] = yt_cat_id
             res = requests.get(VIDEOS_URL, params=params, timeout=8)
             if _is_quota_error(res):
                 return {"status": 429, "platform": "YouTube", "error": "YouTube API daily quota reached. Trend analytics are temporarily paused. Please try again later.", "quota_exceeded": True}

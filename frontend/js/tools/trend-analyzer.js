@@ -5,7 +5,7 @@
  */
 
 // Global State
-let activeRegion = "United States";
+let activeRegion = "Pakistan";
 let activeTimeframe = "7d";
 let activeCategory = "All";
 let activeQuery = "";
@@ -141,8 +141,22 @@ function initTimeframePills() {
 function initRegionSelect() {
   const sel = document.getElementById("pulseRegionSelect");
   if (sel) {
+    try {
+      const saved = localStorage.getItem("plexudo_region");
+      if (saved) {
+        activeRegion = saved;
+        sel.value = saved;
+      } else {
+        activeRegion = "Pakistan";
+        sel.value = "Pakistan";
+      }
+    } catch (_) {
+      activeRegion = "Pakistan";
+      sel.value = "Pakistan";
+    }
     sel.addEventListener("change", (e) => {
       activeRegion = e.target.value;
+      try { localStorage.setItem("plexudo_region", activeRegion); } catch (_) {}
       fetchTrendingFeed();
     });
   }

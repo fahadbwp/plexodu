@@ -334,7 +334,7 @@ def search_trend():
 
     validate_trend_filters(data)
     raw_kw = data.get("keyword")
-    region = data.get("region", "Global")
+    region = data.get("region") or "Pakistan"
     category = data.get("category", "All")
     timeframe = data.get("timeframe", "7d")
 
