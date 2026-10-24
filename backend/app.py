@@ -16,6 +16,8 @@ import hashlib
 from datetime import datetime, date, timedelta, timezone
 
 from flask import Flask, request, jsonify, send_from_directory, send_file, Response, redirect
+from sqlalchemy import create_engine, text
+from sqlalchemy.pool import NullPool
 from flask_cors import CORS
 from werkzeug.middleware.proxy_fix import ProxyFix
 from werkzeug.utils import secure_filename
@@ -124,6 +126,45 @@ def add_security_and_robots_headers(response):
         response.headers["X-Robots-Tag"] = "noindex, nofollow, noarchive"
     return response
 
+def _health_database_status():
+    """Probe with a separate bounded connection; never expose driver errors."""
+    if IS_PRODUCTION and not settings.DATABASE_URL:
+        return "error"
+    engine = None
+    try:
+        url = db.engine.url
+        if url.get_backend_name() == "postgresql":
+            connect_args = {"connect_timeout": 2, "options": "-c statement_timeout=2000"}
+        elif url.get_backend_name() == "sqlite":
+            connect_args = {"timeout": 2}
+        else:
+            return "error"
+        # NullPool avoids waiting on the application's connection pool.
+        engine = create_engine(url, poolclass=NullPool, connect_args=connect_args)
+        with engine.connect() as connection:
+            connection.execute(text("SELECT 1"))
+        return "ok"
+    except Exception:
+        return "error"
+    finally:
+        if engine is not None:
+            engine.dispose()
+
+
+@app.get("/api/health")
+def health():
+    # Independent of the YouTube and Groq rate-limit buckets and upstream APIs.
+    db_status = _health_database_status()
+    response = jsonify({
+        "status": "ok" if db_status == "ok" else "degraded",
+        "db": db_status,
+        "version": os.environ.get("VERCEL_GIT_COMMIT_SHA", "")[:7] or "dev",
+        "time": datetime.now(timezone.utc).isoformat(),
+    })
+    response.headers["Cache-Control"] = "no-store"
+    return response
+
+
 MAX_LOGIN_ATTEMPTS = 5
 YOUTUBE_API_KEY = os.environ.get("YOUTUBE_API_KEY", "").strip()
 
@@ -184,7 +225,10 @@ def handle_generic_exception(e):
 def apply_cache_control(response):
     # Dynamic API responses should not be cached in ways that leak or cross-contaminate
     if request.path.startswith("/api/"):
-        response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate"
+        response.headers["Cache-Control"] = (
+            "no-store" if request.path == "/api/health"
+            else "no-store, no-cache, must-revalidate"
+        )
         response.headers["Pragma"]        = "no-cache"
         response.headers["Expires"]       = "0"
     return response

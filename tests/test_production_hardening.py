@@ -37,5 +37,8 @@ def test_shared_fetch_handles_non_json_server_responses():
 
 def test_pytest_and_postgres_driver_are_declared_for_ci_and_vercel():
     requirements = (ROOT / "requirements.txt").read_text(encoding="utf-8")
-    assert re.search(r"^pytest==", requirements, re.MULTILINE)
+    development = (ROOT / "requirements-dev.txt").read_text(encoding="utf-8")
+    assert not re.search(r"^pytest==", requirements, re.MULTILINE)
+    assert "-r requirements.txt" in development.splitlines()
+    assert re.search(r"^pytest==", development, re.MULTILINE)
     assert re.search(r"^psycopg2-binary==", requirements, re.MULTILINE)

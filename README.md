@@ -82,7 +82,7 @@ Never commit `.env` or real credentials.
 ### 3. Install and run
 
 ```bash
-pip install -r requirements.txt
+pip install -r requirements-dev.txt
 python backend/app.py
 ```
 
@@ -98,7 +98,9 @@ Plexudo is configured for Vercel. Set these environment variables in the Vercel 
 - `GROQ_API_KEY` — Groq API key, if AI Strategist is enabled.
 - `CORS_ALLOWED_ORIGINS` — comma-separated trusted browser origins.
 
-Do not place secrets in `vercel.json`, `render.yaml`, source code or frontend JavaScript.
+Do not place secrets in deployment configuration, source code or frontend JavaScript.
+
+See [Environment configuration](docs/ENVIRONMENT.md) for variable formats, local fallback behavior and safe verification. Vercel installs runtime dependencies from `requirements.txt`; local test/lint tools use `requirements-dev.txt`.
 
 ## Security
 
@@ -109,8 +111,10 @@ The project includes:
 - IP-based API rate limiting.
 - Secure error responses without stack traces to clients.
 - Security headers and API no-index directives.
-- Secret scanning through GitHub Actions/Gitleaks.
-- Dependency vulnerability scanning with `pip-audit`.
+- Blocking secret scanning through GitHub Actions/Gitleaks.
+- Blocking Ruff syntax/undefined-name checks and `pip-audit` of runtime dependencies.
+- Blocking high-severity Bandit scan; medium findings are reported for review.
+- A final release-gate job requiring every existing CI job to succeed.
 - XSS-safe DOM rendering in standalone tool interfaces.
 - No authentication or private user-data requirement for public tools.
 
@@ -118,10 +122,18 @@ For production, distributed rate limiting and a persistent PostgreSQL database a
 
 ## Testing
 
-Run the complete test suite with:
+Install `requirements-dev.txt`, then run tests with mock credentials (no live API keys):
 
 ```bash
-python -m pytest tests/ -v
+FLASK_ENV=development SECRET_KEY=ci-test-secret-key-minimum-32-characters-long \
+DATABASE_URL="" GROQ_API_KEY=mock-groq-key-for-ci YOUTUBE_API_KEY=mock-youtube-key-for-ci \
+CORS_ALLOWED_ORIGINS="http://localhost:5000,http://127.0.0.1:5000" \
+python -m pytest tests/ -q
+node tests/trend-rendering.cjs
+node tests/analytics-hook.cjs
+ruff check backend --select E9,F63,F7,F82
+bandit -r backend --severity-level high --confidence-level medium
+pip-audit -r requirements.txt
 ```
 
 The GitHub Actions workflow runs static checks, secret scanning, dependency auditing, the complete test suite, production startup checks and SEO validation.
@@ -133,3 +145,5 @@ Plexudo does not fabricate YouTube analytics. Current YouTube API totals are sto
 ## Advertising / disclosure
 
 `ads.txt`, privacy and terms pages are included for the public website. Plexudo is an independent platform and is not officially affiliated with or endorsed by YouTube or Google LLC.
+
+See [Phase 0 verification](docs/PHASE0_REPORT.md) for local evidence and retained cleanup candidates, and [Technical debt](docs/TECH_DEBT.md) for deferred work. No local test result implies a completed GitHub Actions run or production deployment.
