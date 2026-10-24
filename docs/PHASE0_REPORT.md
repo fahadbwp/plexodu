@@ -96,3 +96,19 @@ Special checks: test_phase3_security.py contains only mock API key literals; tes
 ## Credentials discovery
 Current tracked files and last 50 commits: credential patterns found only README.md:76, a confirmed generic local Postgres example. No real values reproduced.
 GEMINI.md and .agents contain design instructions; retained. Public AdSense publisher identifier retained.
+
+## 0.2 requirements and compatibility
+Fresh CPython 3.12.15 environment installed requirements-dev.txt; 226 tests pass. The pre-existing dependency-contract test now checks pytest in requirements-dev.txt and psycopg2-binary in runtime requirements. Production smoke job still installs runtime only. Vercel @vercel/python uses root requirements.txt; no deployment build override was added.
+
+## 0.3 secrets review
+Pattern and high-entropy scans covered 50 main commits / 268 unique blobs, including tooling files. Zero high-entropy candidates. Only credential-pattern candidate was the generic README.md:76 local database example. No credentials or personal details found in GEMINI.md or .agents. This local discovery is not a claim of a completed GitHub Gitleaks run.
+
+## 0.4 scanner discovery
+Bandit: B108 at backend/app.py:59 (Vercel ephemeral DATA_DIR default), B104 at backend/app.py:975 (development server interface). Both medium, retained/report-only; no nosec suppression. High-severity gate passes with no exclusions. Full scan metrics also include low findings.
+
+Runtime advisory remediation (all dependency changes verified with 226 Python tests, Node regressions and entrypoint import):
+- flask 3.0.3 -> 3.1.3: PYSEC-2026-2151.
+- flask-cors 4.0.1 -> 6.0.0: PYSEC-2024-71, PYSEC-2026-1383, PYSEC-2026-1384, PYSEC-2026-1385.
+- werkzeug 3.0.3 -> 3.1.9: PYSEC-2026-1860, PYSEC-2026-2044, PYSEC-2026-2045, PYSEC-2026-2046, PYSEC-2026-2320, PYSEC-2026-3417, PYSEC-2026-4312.
+- requests 2.32.3 -> 2.33.0: PYSEC-2026-1872, PYSEC-2026-2275.
+- python-dotenv 1.0.1 -> 1.2.2: PYSEC-2026-2270.
