@@ -27,3 +27,5 @@ Health monitoring: `GET /api/health` returns HTTP 200 and status `ok` or `degrad
 Startup still initializes the existing database before serving requests. Health monitoring does not change that pre-existing bootstrap behavior. DATA_DIR is for existing temporary exports and local storage; it is not durable production database storage.
 
 SMTP/EMAIL settings are excluded from the public deployment template. The retained legacy email module still reads them if explicitly imported; the application does not import it. No OAuth variables are required for the anonymous product.
+
+Analytics remains disabled: `frontend/js/analytics.js` contains only a placeholder. No deployment variable is interpolated into static JavaScript. Before activation, review applicable consent requirements and add a consent mechanism that sets `window.plexudoAnalyticsConsent = true` and dispatches `plexudo:analytics-consent` only after opt-in. Also replace the placeholder measurement ID. Global Privacy Control and Do Not Track disable loading. No consent UI or live measurement ID was introduced in Phase 0.
