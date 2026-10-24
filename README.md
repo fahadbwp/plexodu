@@ -82,7 +82,7 @@ Never commit `.env` or real credentials.
 ### 3. Install and run
 
 ```bash
-pip install -r requirements.txt
+pip install -r requirements-dev.txt
 python backend/app.py
 ```
 
