@@ -332,3 +332,41 @@ def test_rate_limiter_concurrency_and_bounded_pruning():
     # Prune drops stale entries
     limiter._prune_if_needed(time.time() + 100, window_seconds=60)
     assert len(limiter.requests) <= 10
+
+
+def test_multilingual_sentiment_urdu_and_hindi_tokens():
+    """Verify Task 1.6: Urdu Arabic-script, Roman Urdu, and Hindi token classification."""
+    from services.nlp_engine import classify_comment, analyze_sentiment
+
+    # 1. Urdu Arabic script
+    lbl_ur_pos, pol_ur_pos = classify_comment("یہ بہت اچھا اور شاندار کام ہے")
+    assert lbl_ur_pos == "positive"
+    assert pol_ur_pos > 0
+
+    lbl_ur_neg, pol_ur_neg = classify_comment("یہ بالکل فضول اور بکواس ویڈیو ہے")
+    assert lbl_ur_neg == "negative"
+    assert pol_ur_neg < 0
+
+    # 2. Roman Urdu & Hindi
+    lbl_ro_pos, pol_ro_pos = classify_comment("zabardast video bhai kamaal kar diya")
+    assert lbl_ro_pos == "positive"
+    assert pol_ro_pos > 0
+
+    lbl_ro_neg, pol_ro_neg = classify_comment("bohot ghatiya aur bakwas content")
+    assert lbl_ro_neg == "negative"
+    assert pol_ro_neg < 0
+
+    # 3. Ambiguous conflicting comment
+    lbl_amb, _ = classify_comment("zabardast bakwas")
+    assert lbl_amb == "unclassified"
+
+    # 4. Mixed cohort analysis
+    mixed_comments = [
+        "بہت خوب زبردست",
+        "superb video loved it",
+        "ghatiya video waste of time",
+    ]
+    res = analyze_sentiment(mixed_comments)
+    assert res['positive_score'] > 50.0
+    assert res['negative_score'] > 20.0
+    assert res['dominant_sentiment'] == 'positive'
