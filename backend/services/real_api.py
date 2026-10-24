@@ -9,6 +9,7 @@ import os
 import math
 import time
 import re
+import threading
 import urllib.parse
 import requests
 from datetime import datetime, timedelta, timezone
@@ -24,6 +25,98 @@ CHANNELS_URL = "https://www.googleapis.com/youtube/v3/channels"
 COMMENTS_URL = "https://www.googleapis.com/youtube/v3/commentThreads"
 PLAYLIST_URL = "https://www.googleapis.com/youtube/v3/playlistItems"
 
+class YouTubeQuotaTracker:
+    """
+    Tracks attempted YouTube Data API v3 calls, estimated quota units, cache hits, and quota errors.
+    According to official YouTube Data API v3 quota documentation:
+      - search.list: 100 units/call
+      - videos.list: 1 unit/call
+      - commentThreads.list: 1 unit/call
+      - channels.list: 1 unit/call
+      - playlistItems.list: 1 unit/call
+    Default free tier daily budget is 10,000 units.
+    search.list has a separate default allowance of 100 calls/day (100 * 100 = 10,000 units).
+    """
+    def __init__(self):
+        self._lock = threading.Lock()
+        self.search_daily_limit = int(os.environ.get("YOUTUBE_SEARCH_DAILY_LIMIT", 100))
+        self.daily_quota_limit = int(os.environ.get("YOUTUBE_DAILY_QUOTA_LIMIT", 10000))
+        self.current_date = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+        self.calls = {
+            "search.list": 0,
+            "videos.list": 0,
+            "commentThreads.list": 0,
+            "channels.list": 0,
+            "playlistItems.list": 0,
+        }
+        self.units_used = 0
+        self.cache_hits = 0
+        self.quota_errors = 0
+
+    def _rollover_if_needed(self):
+        today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+        if today != self.current_date:
+            self.current_date = today
+            for k in self.calls:
+                self.calls[k] = 0
+            self.units_used = 0
+            self.cache_hits = 0
+            self.quota_errors = 0
+
+    def can_call_search(self) -> bool:
+        with self._lock:
+            self._rollover_if_needed()
+            if self.calls["search.list"] >= self.search_daily_limit:
+                return False
+            if self.units_used + 100 > self.daily_quota_limit:
+                return False
+            return True
+
+    def record_call(self, endpoint: str, units: int = 1):
+        with self._lock:
+            self._rollover_if_needed()
+            self.calls[endpoint] = self.calls.get(endpoint, 0) + 1
+            self.units_used += units
+
+    def record_cache_hit(self):
+        with self._lock:
+            self._rollover_if_needed()
+            self.cache_hits += 1
+
+    def record_quota_error(self):
+        with self._lock:
+            self._rollover_if_needed()
+            self.quota_errors += 1
+
+    def get_metrics(self) -> dict:
+        with self._lock:
+            self._rollover_if_needed()
+            return {
+                "date": self.current_date,
+                "calls": dict(self.calls),
+                "search_calls": self.calls["search.list"],
+                "search_daily_limit": self.search_daily_limit,
+                "units_used": self.units_used,
+                "daily_quota_limit": self.daily_quota_limit,
+                "cache_hits": self.cache_hits,
+                "quota_errors": self.quota_errors,
+            }
+
+    def reset(self):
+        with self._lock:
+            for k in self.calls:
+                self.calls[k] = 0
+            self.units_used = 0
+            self.cache_hits = 0
+            self.quota_errors = 0
+
+
+quota_tracker = YouTubeQuotaTracker()
+
+def get_quota_metrics() -> dict:
+    return quota_tracker.get_metrics()
+
+
 # Thread-safe in-memory TTL caching to prevent quota exhaustion
 _YT_CACHE = {}
 _CACHE_TTL_SECONDS = 900  # 15 minutes
@@ -34,6 +127,7 @@ def _get_from_cache(cache_key: str):
     if cached:
         timestamp, data = cached
         if time.time() - timestamp < _CACHE_TTL_SECONDS:
+            quota_tracker.record_cache_hit()
             return data
         try:
             del _YT_CACHE[cache_key]
@@ -54,8 +148,10 @@ def _is_quota_error(res) -> bool:
             errors = body.get("error", {}).get("errors", [])
             for err in errors:
                 if err.get("reason") in ["quotaExceeded", "dailyLimitExceeded", "rateLimitExceeded"]:
+                    quota_tracker.record_quota_error()
                     return True
             if "quota" in str(body).lower():
+                quota_tracker.record_quota_error()
                 return True
     except Exception:
         pass
@@ -209,6 +305,7 @@ def fetch_youtube_data(keyword: str, region: str = "Pakistan", category: str = "
             }
             if yt_cat_id:
                 params["videoCategoryId"] = yt_cat_id
+            quota_tracker.record_call("videos.list", 1)
             res = requests.get(VIDEOS_URL, params=params, timeout=8)
             if _is_quota_error(res):
                 return {"status": 429, "platform": "YouTube", "error": "YouTube API daily quota reached. Trend analytics are temporarily paused. Please try again later.", "quota_exceeded": True}
@@ -235,7 +332,16 @@ def fetch_youtube_data(keyword: str, region: str = "Pakistan", category: str = "
         if yt_cat_id:
             search_params["videoCategoryId"] = yt_cat_id
 
+        if not quota_tracker.can_call_search():
+            return {
+                "status": 429,
+                "platform": "YouTube",
+                "error": "YouTube search daily allowance limit reached (100 calls/day). You can still browse trending topics or try again tomorrow.",
+                "quota_exceeded": True
+            }
+
         try:
+            quota_tracker.record_call("search.list", 100)
             search_res = requests.get(SEARCH_URL, params=search_params, timeout=8)
         except requests.Timeout:
             return {"status": 504, "platform": "YouTube", "error": "YouTube API request timed out. Please try again."}
@@ -260,6 +366,7 @@ def fetch_youtube_data(keyword: str, region: str = "Pakistan", category: str = "
 
         if video_ids:
             try:
+                quota_tracker.record_call("videos.list", 1)
                 stats_res = requests.get(VIDEOS_URL, params={
                     "part": "snippet,statistics",
                     "id": ",".join(video_ids[:18]),
@@ -417,6 +524,7 @@ def fetch_youtube_data(keyword: str, region: str = "Pakistan", category: str = "
 
     comments = []
     try:
+        quota_tracker.record_call("commentThreads.list", 1)
         comments_res = requests.get(COMMENTS_URL, params={
             "part": "snippet", "videoId": video_id,
             "maxResults": 50, "order": "relevance", "key": api_key,

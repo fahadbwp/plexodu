@@ -235,3 +235,50 @@ def test_regional_trending_uses_most_popular_and_defaults_to_pk():
     pop_call = next(params for url, params in captured if url == real_api.VIDEOS_URL and params.get('chart') == 'mostPopular')
     assert pop_call['chart'] == 'mostPopular'
     assert pop_call['regionCode'] == 'PK'
+
+
+def test_youtube_quota_tracking_and_configurable_limits():
+    """Verify Task 1.4: fine-grained quota tracking, call counting, and 100 search limit."""
+    real_api.quota_tracker.reset()
+    metrics_initial = real_api.get_quota_metrics()
+    assert metrics_initial['search_calls'] == 0
+    assert metrics_initial['search_daily_limit'] == 100
+    assert metrics_initial['units_used'] == 0
+
+    now = datetime.now(timezone.utc)
+    def mock_get(url, **kwargs):
+        if url == real_api.SEARCH_URL:
+            return Mock(status_code=200, json=lambda: {'items': [{'id': {'videoId': 'quota-vid-1'}}]})
+        if url == real_api.VIDEOS_URL:
+            items = [{'id': 'quota-vid-1', 'snippet': {'title': 'Q Vid', 'publishedAt': (now - timedelta(hours=1)).isoformat(), 'categoryId': '20'},
+                      'statistics': {'viewCount': '100', 'likeCount': '10', 'commentCount': '2'}}]
+            return Mock(status_code=200, json=lambda: {'items': items})
+        return Mock(status_code=200, json=lambda: {'items': []})
+
+    real_api._YT_CACHE.clear()
+    with patch.object(real_api, 'get_yt_api_key', return_value='mock'), \
+         patch.object(real_api.requests, 'get', side_effect=mock_get), \
+         patch.object(real_api, '_fetch_related_keywords', return_value=[]):
+        # 1. First call causes a search miss and fetches stats
+        res = real_api.fetch_youtube_data('keyword-quota-1', region='Global')
+        assert res['status'] == 200
+
+        m = real_api.get_quota_metrics()
+        assert m['calls']['search.list'] == 1
+        assert m['calls']['videos.list'] >= 1
+        assert m['units_used'] >= 101  # 100 for search + 1 for videos
+
+        # 2. Second identical call hits cache
+        res_cached = real_api.fetch_youtube_data('keyword-quota-1', region='Global')
+        assert res_cached['status'] == 200
+        assert real_api.get_quota_metrics()['cache_hits'] >= 1
+
+        # 3. Simulate hitting the 100 search allowance limit
+        real_api.quota_tracker.calls['search.list'] = 100
+        res_limited = real_api.fetch_youtube_data('keyword-quota-new', region='Global')
+        assert res_limited['status'] == 429
+        assert res_limited['quota_exceeded'] is True
+        assert 'allowance' in res_limited['error'].lower()
+
+    # Reset tracker clean
+    real_api.quota_tracker.reset()
