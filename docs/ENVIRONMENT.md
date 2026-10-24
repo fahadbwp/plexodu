@@ -24,7 +24,11 @@ For Supabase on Vercel, use the pooled PostgreSQL connection string from your Su
 
 Health monitoring: `GET /api/health` returns HTTP 200 and status `ok` or `degraded`, database `ok` or `error`, a short deployment commit (or `dev`) and UTC timestamp. Monitor the body as well as HTTP status. A missing production DATABASE_URL is degraded; an unconfigured local database probes the SQLite fallback. The probe opens an independent connection with a two-second driver timeout (and a two-second PostgreSQL statement timeout), returns no errors or connection details, and consumes no YouTube/Groq quota. PostgreSQL connectivity is mocked in local tests; no live production database was accessed.
 
-Startup still initializes the existing database before serving requests. Health monitoring does not change that pre-existing bootstrap behavior. DATA_DIR is for existing temporary exports and local storage; it is not durable production database storage.
+Local development still initializes the existing database before serving requests. Production or Vercel startup skips table creation and migrations, including direct calls to the application bootstrap helper. DATA_DIR is for existing temporary exports and local storage; it is not durable production database storage.
+
+PostgreSQL URLs using the postgres or postgresql scheme are normalized to the explicitly installed psycopg2 driver without changing credentials or query parameters. Production/Vercel uses NullPool and a five-second connection timeout. Production connections require at least SSL encryption; verify-ca and verify-full settings are preserved. Certificate files and a valid hostname are needed when certificate verification is configured. No port number is treated as evidence of a trusted deployment. Local PostgreSQL keeps the existing QueuePool configuration.
+
+The generated `database/schema_postgres.sql` is a proposal for a separately authorized initialization of an empty application schema. It is not applied by the app or deploy process. Check it offline with `python database/generate_postgres_schema.py --check`; do not run the legacy migration script against production as an initialization shortcut. See [Database recovery report](PHASE1_DB_RECOVERY_REPORT.md) for verification, limitations and the proposed approval-dependent procedure.
 
 SMTP/EMAIL settings are excluded from the public deployment template. The retained legacy email module still reads them if explicitly imported; the application does not import it. No OAuth variables are required for the anonymous product.
 
