@@ -991,6 +991,10 @@ def video_analysis():
 # App bootstrap
 # --------------------------------------------------------------------------
 def create_tables():
+    # Production schemas are initialized only through a separately reviewed,
+    # explicitly authorized procedure. Never migrate during a cold start.
+    if settings.IS_PRODUCTION or os.environ.get("VERCEL"):
+        return
     with app.app_context():
         db.create_all()
         try:
