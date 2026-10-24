@@ -543,7 +543,7 @@ function renderTrendingList(videos, query) {
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M7 10v12"/><path d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2h0a3.13 3.13 0 0 1 3 3.88Z"/>
           </svg>
-          <span>${Number.isFinite(Number(v.engagement)) ? Number(v.engagement).toFixed(1) : "0.0"}%</span>
+          <span>${v.engagement != null && Number.isFinite(Number(v.engagement)) ? Number(v.engagement).toFixed(1) + "%" : "Unavailable"}</span>
         </div>
 
         <div class="pulsecheck-growth ${isPos ? "pos" : "neg"}" title="Heuristic momentum index relative to 1,500 lifetime-average views/hour; not observed growth">
@@ -605,7 +605,7 @@ function renderDeepIntelligence(ytData) {
 
   const summaryEngagement = document.getElementById("summaryEngagement");
   if (summaryEngagement) {
-    summaryEngagement.textContent = `${ytData.engagement_rate != null ? Number(ytData.engagement_rate).toFixed(1) : 0}%`;
+    summaryEngagement.textContent = ytData.engagement_rate != null ? `${Number(ytData.engagement_rate).toFixed(1)}%` : "Unavailable";
   }
 
   const summaryVirality = document.getElementById("summaryVirality");

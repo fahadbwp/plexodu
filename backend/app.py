@@ -755,7 +755,8 @@ def export_csv(trend_id):
     writer.writerow(["Daily Metrics"])
     writer.writerow(["Date", "Views", "Likes", "Shares", "Comments"])
     for m in metrics:
-        writer.writerow([m.recorded_date, m.views, m.likes, m.shares, m.comments_count])
+        likes_val = m.likes if m.likes is not None else "Unavailable"
+        writer.writerow([m.recorded_date, m.views, likes_val, m.shares, m.comments_count])
 
     csv_data = output.getvalue()
     output.close()

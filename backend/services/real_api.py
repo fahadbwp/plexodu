@@ -62,16 +62,17 @@ def _is_quota_error(res) -> bool:
     return False
 
 
-def _build_authentic_snapshot(total_views: int, total_likes: int, total_comments: int, upload_date_str: str = None) -> list:
+def _build_authentic_snapshot(total_views: int, total_likes: int | None, total_comments: int, upload_date_str: str = None) -> list:
     """
     Returns authentic recorded snapshot for today.
     Never fabricates synthetic historical decay curves or imaginary past daily points.
+    Preserves None for hidden/unavailable likes instead of forcing zero.
     """
     today_str = datetime.now(timezone.utc).strftime("%Y-%m-%d")
     return [{
         "date": today_str,
         "views": int(total_views or 0),
-        "likes": int(total_likes or 0),
+        "likes": int(total_likes) if total_likes is not None else None,
         "shares": 0,
         "comments_count": int(total_comments or 0),
     }]
@@ -291,7 +292,8 @@ def fetch_youtube_data(keyword: str, region: str = "Global", category: str = "Al
             cat_hue = cat_info[1] if cat_info else "#38BDF8"
 
         v_views = int(stat.get("viewCount", 0))
-        v_likes = int(stat.get("likeCount", 0))
+        has_likes = "likeCount" in stat and stat["likeCount"] is not None
+        v_likes = int(stat["likeCount"]) if has_likes else None
         v_comments = int(stat.get("commentCount", 0))
 
         v_published = snip.get("publishedAt", "")
@@ -301,7 +303,8 @@ def fetch_youtube_data(keyword: str, region: str = "Global", category: str = "Al
         except Exception:
             hours_ago = 24
 
-        v_eng = round(((v_likes + v_comments) / max(1, v_views)) * 100, 1)
+        # When creator hides likes, do not pretend engagement is 0.0%
+        v_eng = round(((v_likes + v_comments) / max(1, v_views)) * 100, 1) if has_likes else None
         # Distinguish estimated lifetime-average views/hour from observed multi-point velocity
         estimated_views_per_hour = round(v_views / max(1, hours_ago), 1)
 
@@ -315,6 +318,7 @@ def fetch_youtube_data(keyword: str, region: str = "Global", category: str = "Al
             "hoursAgo": hours_ago,
             "views": v_views,
             "likes": v_likes,
+            "likes_available": has_likes,
             "comments": v_comments,
             "engagement": v_eng,
             "estimated_views_per_hour": estimated_views_per_hour,
@@ -351,7 +355,10 @@ def fetch_youtube_data(keyword: str, region: str = "Global", category: str = "Al
 
     # Aggregate KPIs & Category Breakdown
     total_views_sum = sum(v["views"] for v in top_videos) if top_videos else int(items[0].get("statistics", {}).get("viewCount", 0))
-    avg_eng = round(sum(v["engagement"] for v in top_videos) / max(1, len(top_videos)), 1)
+    vids_with_eng = [v for v in top_videos if v.get("engagement") is not None]
+    avg_eng = round(sum(v["engagement"] for v in vids_with_eng) / max(1, len(vids_with_eng)), 1) if vids_with_eng else None
+    vids_with_likes = [v for v in top_videos if v.get("likes") is not None]
+    total_likes = sum(v["likes"] for v in vids_with_likes) if vids_with_likes else None
     rising_count = len([v for v in top_videos if v["momentumScore"] > 40])
 
     cat_breakdown = []
@@ -388,6 +395,8 @@ def fetch_youtube_data(keyword: str, region: str = "Global", category: str = "Al
         "risingCount": rising_count,
         "topCategoryViews": cat_breakdown[0]["value"] if cat_breakdown else 0,
         "totalTracked": len(top_videos),
+        "totalLikes": total_likes,
+        "likesAvailable": len(vids_with_likes) > 0,
     }
 
     # Backward compatibility anchor from top video
@@ -396,7 +405,7 @@ def fetch_youtube_data(keyword: str, region: str = "Global", category: str = "Al
     snippet0 = items[0].get("snippet", {}) if items else {}
     upload_date = v0.get("published_at") or snippet0.get("publishedAt", "")
     total_views = sum(v["views"] for v in top_videos)
-    total_likes = sum(v["likes"] for v in top_videos)
+    total_likes = sum(v["likes"] for v in top_videos if v.get("likes") is not None) if any(v.get("likes") is not None for v in top_videos) else None
     total_comments = sum(v["comments"] for v in top_videos)
 
     comments = []
@@ -520,7 +529,8 @@ def analyze_youtube_video(url: str):
     )
 
     view_count    = int(stats.get("viewCount", 0))
-    like_count    = int(stats.get("likeCount", 0))
+    has_likes     = "likeCount" in stats and stats["likeCount"] is not None
+    like_count    = int(stats["likeCount"]) if has_likes else None
     comment_count = int(stats.get("commentCount", 0))
     duration_sec  = _parse_duration(content.get("duration", "PT0S"))
 
@@ -535,8 +545,8 @@ def analyze_youtube_video(url: str):
 
     is_short = duration_sec <= 60
 
-    # Engagement rate
-    engagement_rate = round(((like_count + comment_count) / max(1, view_count)) * 100, 2)
+    # Engagement rate (None if likes are hidden)
+    engagement_rate = round(((like_count + comment_count) / max(1, view_count)) * 100, 2) if has_likes else None
 
     # Fetch comments
     comments_raw = []

@@ -161,3 +161,45 @@ def test_momentum_percentile_scoring_and_no_saturation():
     assert top_v['momentum_percentile'] == 87.5
     assert top_v['momentumScore'] != 950  # Saturation cap removed!
     assert top_v['trendScore'] > 1000  # Not artificially suppressed by cap
+
+
+def test_hidden_likes_treated_as_unavailable_not_zero():
+    """Verify Task 1.2: missing likeCount is represented as None/unavailable, not 0."""
+    now = datetime.now(timezone.utc)
+    def mock_get(url, **kwargs):
+        if url == real_api.SEARCH_URL:
+            return Mock(status_code=200, json=lambda: {'items': [{'id': {'videoId': 'vid-hidden'}}, {'id': {'videoId': 'vid-normal'}}]})
+        if url == real_api.VIDEOS_URL:
+            items = [
+                # vid-hidden has likes disabled / missing from statistics
+                {'id': 'vid-hidden', 'snippet': {'title': 'Hidden Likes', 'publishedAt': (now - timedelta(hours=2)).isoformat(), 'categoryId': '20'},
+                 'statistics': {'viewCount': '1000', 'commentCount': '50'}},
+                # vid-normal has normal likes
+                {'id': 'vid-normal', 'snippet': {'title': 'Normal Likes', 'publishedAt': (now - timedelta(hours=2)).isoformat(), 'categoryId': '20'},
+                 'statistics': {'viewCount': '1000', 'likeCount': '200', 'commentCount': '50'}},
+            ]
+            return Mock(status_code=200, json=lambda: {'items': items})
+        return Mock(status_code=200, json=lambda: {'items': []})
+
+    real_api._YT_CACHE.clear()
+    with patch.object(real_api, 'get_yt_api_key', return_value='mock'), \
+         patch.object(real_api.requests, 'get', side_effect=mock_get), \
+         patch.object(real_api, '_fetch_related_keywords', return_value=[]):
+        res = real_api.fetch_youtube_data('hidden-test', region='Global', timeframe='24h')
+
+    assert res['status'] == 200
+    videos = {v['id']: v for v in res['top_videos']}
+    hidden_v = videos['vid-hidden']
+    normal_v = videos['vid-normal']
+
+    assert hidden_v['likes'] is None
+    assert hidden_v['likes_available'] is False
+    assert hidden_v['engagement'] is None
+
+    assert normal_v['likes'] == 200
+    assert normal_v['likes_available'] is True
+    assert normal_v['engagement'] == 25.0  # (200 + 50) / 1000 * 100
+
+    # Cohort avgEngagement must only average videos with available likes
+    assert res['kpis']['avgEngagement'] == 25.0
+    assert res['kpis']['totalLikes'] == 200
