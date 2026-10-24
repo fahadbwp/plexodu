@@ -102,7 +102,13 @@ def validate_user_role(role: str) -> str:
 class SlidingWindowRateLimiter:
     """
     Thread-safe sliding-window rate limiter with exponential backoff and bounded memory retention.
-    Automatically prunes stale entries to prevent memory leaks in long-running or serverless processes.
+    Automatically prunes stale entries to prevent memory leaks in long-running or warm serverless processes.
+
+    SERVERLESS PROCESS-LOCAL LIMITATION NOTE:
+    Under Vercel serverless, rate limiting state is PROCESS-LOCAL to each ephemeral container instance.
+    It protects individual warm lambdas against rapid-fire request flooding, but does not enforce
+    a globally coordinated rate limit across multiple concurrent serverless instances.
+    Global rate limiting requires an edge proxy (e.g. Vercel WAF) or distributed store (e.g. Upstash Redis).
     """
     def __init__(self, max_keys: int = 5000):
         self._lock = threading.RLock()

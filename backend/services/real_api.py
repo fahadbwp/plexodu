@@ -27,15 +27,24 @@ PLAYLIST_URL = "https://www.googleapis.com/youtube/v3/playlistItems"
 
 class YouTubeQuotaTracker:
     """
-    Tracks attempted YouTube Data API v3 calls, estimated quota units, cache hits, and quota errors.
+    Process-local tracker for attempted YouTube Data API v3 calls, estimated quota units,
+    cache hits, and quota errors within the current runtime process.
+
     According to official YouTube Data API v3 quota documentation:
       - search.list: 100 units/call
       - videos.list: 1 unit/call
       - commentThreads.list: 1 unit/call
       - channels.list: 1 unit/call
       - playlistItems.list: 1 unit/call
-    Default free tier daily budget is 10,000 units.
-    search.list has a separate default allowance of 100 calls/day (100 * 100 = 10,000 units).
+    Default project daily quota budget is 10,000 units.
+    search.list has a configured allowance of 100 calls/day (100 * 100 = 10,000 units).
+
+    SERVERLESS PROCESS-LOCAL LIMITATION NOTE:
+    Under Vercel serverless (AWS Lambda), this tracker is strictly PROCESS-LOCAL to the
+    active warm container instance. Counters reset on container cold starts and do NOT
+    synchronize across concurrent instances. It provides warm-container guardrails and
+    telemetry, but does NOT provide global hard quota enforcement across distributed instances.
+    Global hard enforcement requires an external shared store (e.g. Upstash Redis).
     """
     def __init__(self):
         self._lock = threading.Lock()
@@ -124,9 +133,15 @@ _CACHE_MAX_ENTRIES = 500  # Bounded retention for serverless environments
 
 class BoundedTTLCache(dict):
     """
-    Thread-safe, bounded in-memory cache with TTL expiration.
+    Process-local, thread-safe, bounded in-memory cache with TTL expiration.
     Protects against serverless memory leaks with bounded retention and FIFO/LRU eviction.
     Supports standard dict interface for backwards compatibility with tests.
+
+    SERVERLESS PROCESS-LOCAL LIMITATION NOTE:
+    Under Vercel serverless, this cache is strictly PROCESS-LOCAL to the active container.
+    Cached items are not shared across separate concurrent serverless instances and will not
+    persist across cold starts. Global cache deduplication across serverless lambdas requires
+    a distributed cache (e.g., Redis).
     """
     def __init__(self, maxsize: int = 500, ttl_seconds: int = 900):
         super().__init__()

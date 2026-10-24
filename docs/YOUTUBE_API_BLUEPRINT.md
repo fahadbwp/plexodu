@@ -57,11 +57,13 @@ YouTube Data API v3 enforces a default project quota of 10,000 units per calenda
 
 ---
 
-## 4. In-Memory Caching & Serverless Safety
+## 4. Process-Local Caching & Serverless Operational Constraints
 
 - **BoundedTTLCache:** Replaces unbounded dictionary caching with a thread-safe, bounded LRU/FIFO eviction cache (`_CACHE_MAX_ENTRIES = 500`, TTL = 900 seconds / 15 minutes).
-- **Concurrency Protection:** Cache reads, writes, and prunes are protected by reentrant locks (`threading.RLock`) to prevent race conditions during high-concurrency bursts.
+- **Serverless Boundary:** Under Vercel serverless (AWS Lambda), memory state is strictly **process-local** to each ephemeral container instance. In-memory cache items, rate limits, and quota tracker counts reset on cold-starts and do NOT synchronize across concurrent lambdas.
+- **Concurrency Protection:** Cache reads, writes, and prunes are protected by reentrant locks (`threading.RLock`) to prevent race conditions during high-concurrency bursts within a container.
 - **Rate Limiting:** `SlidingWindowRateLimiter` enforces per-IP and per-endpoint boundaries with automatic key pruning to prevent serverless heap exhaustion.
+- **Distributed Store Plan:** Cross-instance global cache deduplication, global token-bucket rate limiting, and atomic global quota enforcement are deferred to Phase 2 (Upstash Redis integration).
 
 ---
 
