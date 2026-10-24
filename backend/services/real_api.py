@@ -117,22 +117,64 @@ def get_quota_metrics() -> dict:
     return quota_tracker.get_metrics()
 
 
-# Thread-safe in-memory TTL caching to prevent quota exhaustion
-_YT_CACHE = {}
+# Thread-safe in-memory bounded TTL cache to prevent memory leaks and quota exhaustion
 _CACHE_TTL_SECONDS = 900  # 15 minutes
+_CACHE_MAX_ENTRIES = 500  # Bounded retention for serverless environments
+
+
+class BoundedTTLCache(dict):
+    """
+    Thread-safe, bounded in-memory cache with TTL expiration.
+    Protects against serverless memory leaks with bounded retention and FIFO/LRU eviction.
+    Supports standard dict interface for backwards compatibility with tests.
+    """
+    def __init__(self, maxsize: int = 500, ttl_seconds: int = 900):
+        super().__init__()
+        self.maxsize = maxsize
+        self.ttl_seconds = ttl_seconds
+        self._lock = threading.RLock()
+
+    def get(self, key, default=None):
+        with self._lock:
+            if key in self:
+                timestamp, val = super().__getitem__(key)
+                if time.time() - timestamp < self.ttl_seconds:
+                    return (timestamp, val)
+                super().__delitem__(key)
+            return default
+
+    def __setitem__(self, key, val):
+        with self._lock:
+            now = time.time()
+            if isinstance(val, tuple) and len(val) == 2 and isinstance(val[0], (int, float)):
+                entry = val
+            else:
+                entry = (now, val)
+            if len(self) >= self.maxsize:
+                # Prune expired entries first
+                expired = [k for k, (t, _) in self.items() if now - t >= self.ttl_seconds]
+                for k in expired:
+                    super().__delitem__(k)
+                # If still at capacity, evict oldest entry
+                if len(self) >= self.maxsize:
+                    oldest_key = min(self.keys(), key=lambda k: super(BoundedTTLCache, self).__getitem__(k)[0])
+                    super().__delitem__(oldest_key)
+            super().__setitem__(key, entry)
+
+    def clear(self):
+        with self._lock:
+            super().clear()
+
+
+_YT_CACHE = BoundedTTLCache(maxsize=_CACHE_MAX_ENTRIES, ttl_seconds=_CACHE_TTL_SECONDS)
 
 
 def _get_from_cache(cache_key: str):
     cached = _YT_CACHE.get(cache_key)
     if cached:
         timestamp, data = cached
-        if time.time() - timestamp < _CACHE_TTL_SECONDS:
-            quota_tracker.record_cache_hit()
-            return data
-        try:
-            del _YT_CACHE[cache_key]
-        except KeyError:
-            pass
+        quota_tracker.record_cache_hit()
+        return data
     return None
 
 

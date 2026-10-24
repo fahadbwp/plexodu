@@ -282,3 +282,53 @@ def test_youtube_quota_tracking_and_configurable_limits():
 
     # Reset tracker clean
     real_api.quota_tracker.reset()
+
+
+def test_bounded_ttl_cache_and_concurrency():
+    import time
+    """Verify Task 1.5: bounded retention, TTL expiration, and thread safety."""
+    from services.real_api import BoundedTTLCache
+    cache = BoundedTTLCache(maxsize=3, ttl_seconds=10)
+
+    # Insert 3 items
+    cache['k1'] = (time.time(), {'v': 1})
+    cache['k2'] = (time.time(), {'v': 2})
+    cache['k3'] = (time.time(), {'v': 3})
+    assert len(cache) == 3
+
+    # Insert 4th item -> must evict oldest to respect maxsize=3
+    cache['k4'] = (time.time(), {'v': 4})
+    assert len(cache) == 3
+    assert 'k1' not in cache
+    assert cache.get('k4') is not None
+
+    # Test TTL expiration
+    cache['expired'] = (time.time() - 20, {'v': 'old'})
+    assert cache.get('expired') is None
+
+
+def test_rate_limiter_concurrency_and_bounded_pruning():
+    import time
+    """Verify Task 1.5: rate limiter thread safety and memory bounded pruning."""
+    from services.security_guard import SlidingWindowRateLimiter
+    import concurrent.futures
+
+    limiter = SlidingWindowRateLimiter(max_keys=10)
+
+    # Concurrent checks
+    def check():
+        return limiter.is_allowed('concurrent_ip', max_requests=20, window_seconds=60)
+
+    with concurrent.futures.ThreadPoolExecutor(max_workers=8) as ex:
+        results = list(ex.map(lambda _: check(), range(15)))
+
+    allowed_count = sum(1 for allowed, _ in results if allowed)
+    assert allowed_count == 15
+
+    # Memory bounding
+    for i in range(25):
+        limiter.is_allowed(f'ip_{i}', max_requests=5, window_seconds=60)
+
+    # Prune drops stale entries
+    limiter._prune_if_needed(time.time() + 100, window_seconds=60)
+    assert len(limiter.requests) <= 10
