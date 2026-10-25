@@ -40,12 +40,12 @@ function clearChat() {
   conversationHistory = [];
   if (chatMessages) {
     chatMessages.innerHTML = `
-      <div class="chat-message ai">
-        <div class="chat-avatar">
+      <div class="chat-message ai stitch-chat-row">
+        <div class="chat-avatar stitch-chat-avatar">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/><path d="M5 3v4M3 5h4M19 17v4M17 19h4"/></svg>
         </div>
-        <div>
-          <div class="chat-bubble">
+        <div class="stitch-chat-bubble-wrap">
+          <div class="chat-bubble stitch-chat-bubble">
             👋 Conversation cleared! What YouTube niche or video topic would you like to plan next? (Roman Urdu mein bhi pooch saktay hain 🚀)
           </div>
           <div class="chat-timestamp">Just now</div>
@@ -144,7 +144,7 @@ function appendBubble(role, content) {
   const now = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 
   const bubbleDiv = document.createElement("div");
-  bubbleDiv.className = `chat-message ${isAi ? "ai" : "user"}`;
+  bubbleDiv.className = `chat-message stitch-chat-row ${isAi ? "ai" : "user"}`;
 
   const formattedContent = isAi ? formatMarkdown(content) : escapeHtml(content).replace(/\n/g, "<br>");
 
@@ -153,21 +153,21 @@ function appendBubble(role, content) {
   if (isAi) {
     actionButtonsHtml = `
       <div class="chat-bubble-action-wrap">
-        <button class="chat-action-btn" onclick="copyToClipboard('${escapeAttr(content)}', this)">📋 Copy Advice</button>
-        <button class="chat-action-btn" onclick="sendChipPrompt('Idea #1 ka 60-second viral YouTube Shorts script bana kar dain.')">📱 Shorts Script</button>
-        <button class="chat-action-btn" onclick="sendChipPrompt('In ideas ke liye high-CTR YouTube Tags aur SEO Description dain.')">🏷️ Tags &amp; SEO</button>
+        <button class="chat-action-btn" data-chat-action="copy">📋 Copy Advice</button>
+        <button class="chat-action-btn" data-chat-action="shorts">📱 Shorts Script</button>
+        <button class="chat-action-btn" data-chat-action="tags">🏷️ Tags &amp; SEO</button>
       </div>
     `;
   }
 
   bubbleDiv.innerHTML = `
     ${isAi ? `
-      <div class="chat-avatar">
+      <div class="chat-avatar stitch-chat-avatar">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/><path d="M5 3v4M3 5h4M19 17v4M17 19h4"/></svg>
       </div>
     ` : ""}
-    <div>
-      <div class="chat-bubble">
+    <div class="stitch-chat-bubble-wrap">
+      <div class="chat-bubble stitch-chat-bubble">
         ${formattedContent}
         ${actionButtonsHtml}
       </div>
@@ -175,6 +175,11 @@ function appendBubble(role, content) {
     </div>
   `;
 
+  if (isAi) {
+    bubbleDiv.querySelector('[data-chat-action="copy"]').addEventListener("click", (event) => copyToClipboard(content, event.currentTarget));
+    bubbleDiv.querySelector('[data-chat-action="shorts"]').addEventListener("click", () => sendChipPrompt("Write a 60-second YouTube Shorts script for these ideas."));
+    bubbleDiv.querySelector('[data-chat-action="tags"]').addEventListener("click", () => sendChipPrompt("Suggest YouTube tags and an SEO description for these ideas."));
+  }
   chatMessages.appendChild(bubbleDiv);
   chatMessages.scrollTop = chatMessages.scrollHeight;
 }
@@ -186,7 +191,7 @@ function appendTypingBubble() {
   typingDiv.id = id;
   typingDiv.className = "chat-message ai";
   typingDiv.innerHTML = `
-    <div class="chat-avatar">
+    <div class="chat-avatar stitch-chat-avatar">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/><path d="M5 3v4M3 5h4M19 17v4M17 19h4"/></svg>
     </div>
     <div class="chat-bubble chat-thinking-bubble">

@@ -94,7 +94,7 @@ function renderAuditResults(data) {
           <td style="padding:12px; font-weight:700; color:#0f172a; max-width:320px;">${escapeHtml(v.title)}</td>
           <td style="padding:12px; color:#475569;">${Number(v.views || 0).toLocaleString()}</td>
           <td style="padding:12px; color:#475569;">${v.likes != null ? Number(v.likes).toLocaleString() : "Unavailable"}</td>
-          <td style="padding:12px; color:#94a3b8;">${(v.published_at || v.upload_date || '—').slice(0, 10)}</td>
+          <td class="audit-published">${(v.published_at || v.upload_date || '—').slice(0, 10)}</td>
         </tr>
       `).join("");
     }

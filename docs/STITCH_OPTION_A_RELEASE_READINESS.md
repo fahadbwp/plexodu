@@ -120,10 +120,11 @@ All screenshot artifacts are stored in:
 
 ```
 Command: python -m pytest tests/ -q
-Result: 317 passed, 0 failed in 24.46s
+Result: 324 passed, 0 failed in 21.98s
 Status: 100% PASS
 ```
 
+- **`tests/test_stitch_dual_chart_contracts.py`:** **7 passed, 0 failed** (Dual-chart separation, upload age bucket tooltips, .sr-only accessible table fallbacks, baseline single-point integrity, multi-point trajectory delta, zero synthetic curves).
 - **`tests/test_stitch_option_a_critical_fixes.py`:** **10 passed, 0 failed** (Zero duplicate classes, Planned Feature non-interactive preview, 320px mobile layout safety, explicit UI state machine, safe 500 error handling, 429 quota handling, AI chat bubble safety, accessible drawer focus, cache-busting consistency).
 - **`tests/test_standalone_tools_architecture.py`:** **6 passed, 0 failed** (All routes return 200, clean homepage, GEMINI.md responsive layout rules, purged auth endpoints).
 - **`tests/test_tool_contracts.py`:** **19 passed, 0 failed** (Normalized API keys, UTF-8 `🎬` emoji, `.video-description-box`, `.tool-grid-4col` with `Video Count`, CSV export branding, mobile search bar layout).
@@ -151,9 +152,41 @@ Status: 100% PASS
 
 ---
 
-## 8. Final Release Recommendation
+## 8. Dual-Chart Data Integrity & UI Verification
 
-**RECOMMENDATION: GO (STABILIZED)**  
-The Option A Creator Analytics Dashboard design system has resolved all identified root causes, eliminated mobile clipping down to 320px, added an explicit UI state machine for error/empty handling, and passed all 317 automated tests.
+The Trend Analyzer dashboard maintains **TWO DISTINCT, STRICTLY SEPARATED analytics features** to preserve data integrity and eliminate any misleading conflation:
+
+### 8.1 Distinct Dual-Chart Architectural Matrix
+
+| Dimension | Chart A (Top 8-Col Panel) | Chart B (Deep Intelligence Panel) |
+|---|---|---|
+| **Feature Title** | **Lifetime views by upload age** | **📈 Time-Series View Trajectory** |
+| **DOM Element** | `<canvas id="pulseViewsChart">` | `<canvas id="viewsChart">` |
+| **Data Source** | `data.timeSeries` (from `services.real_api.py`) | `data.results.YouTube.trend_intelligence.timeline` |
+| **Observation Model** | **Cross-sectional snapshot** of current sampled cohort | **Longitudinal multi-scan trajectory** across real timestamps |
+| **Unit / Metric** | Accumulated lifetime views grouped by video publication age (`0–2h old`, `2–4h old` ... `2–7d old`) | Audited views across repeated observations (spaced $\ge$ 24h) |
+| **Forbidden Semantics** | **NEVER** labeled as velocity, views/hr, growth rate, or surge | No fake category decay curves or imaginary past points |
+| **Tooltips** | Strictly `"Upload Age: {label}"`<br>`"Accumulated views: {val} ({raw} total)"` | Exact timestamp, observed views, and delta vs previous observation |
+| **Accessibility Fallback** | Dynamic HTML `<table>` in `#viewsChartA11y` (`.sr-only`) | Dynamic HTML `<table>` in `#viewsTrajectoryA11y` (`.sr-only`) |
+| **State Machine** | Renders buckets or empty placeholder | 5 explicit states: Empty, Baseline, Multi-point, Noncomparable, Quota limited |
+
+### 8.2 Baseline & Multi-Scan Trajectory States (Chart B)
+- **State A (Zero observations):** `#viewsChartEmpty` displays `"Historical data unavailable. Run an initial scan to establish a baseline."`
+- **State B (1 observation / Baseline):** Single observation point rendered at authentic scan timestamp with `showLine: false`. No imaginary 7-day flat lines or invented past points. Summary displays `Stage: Baseline Established`, `Velocity: Pending (Requires 2+ scans)`.
+- **State C ($\ge$ 2 comparable observations):** Multi-point curve with true observed delta ($\Delta V = V_{t2} - V_{t1}$) and smoothed trajectory.
+- **State D (Noncomparable snapshots):** Clear notification that keyword scope changed and a new baseline is being recorded.
+- **State E (API or Quota limited):** Honest error status and non-misleading placeholders (`—`), never defaulting to `0` or `0.0%`.
+
+### 8.3 Screen Reader Accessibility Compliance
+- Standard `.sr-only` utility added to `frontend/css/style.css` (`position: absolute; width: 1px; height: 1px; clip: rect(0, 0, 0, 0); overflow: hidden;`).
+- Dynamically rendered `<table>` fallbacks inside `#viewsChartA11y` and `#viewsTrajectoryA11y` announce accessible tabular data with proper `<caption>`, `<th scope="col">`, and `<th scope="row">` tags for assistive technology users.
+
+---
+
+## 9. Final Release Recommendation
+
+**RECOMMENDATION: GO (STABILIZED & VERIFIED)**  
+Both Option A Creator Analytics Dashboard design system and Dual-Chart Data Integrity contracts are fully stabilized, responsive down to 320px, accessible, and verified by 324 automated tests.
 
 Execution is stopped here as instructed. Ready for repository owner review and commit.
+

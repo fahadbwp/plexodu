@@ -104,8 +104,8 @@ function setActiveCategory(catName) {
         chip.classList.add("active");
         const found = CATEGORIES.find((c) => c.name === catName);
         if (found) {
-          chip.style.backgroundColor = found.hue;
-          chip.style.borderColor = found.hue;
+          chip.style.backgroundColor = "var(--stitch-primary)";
+          chip.style.borderColor = "var(--stitch-primary)";
           chip.style.color = "#ffffff";
         } else {
           chip.style.backgroundColor = "#4f46e5";
@@ -220,11 +220,11 @@ function updateKpiBadges(state, isCached = false) {
       totalViewsDeltaText.textContent = "Cached Snapshot";
     } else {
       totalViewsBadge.className = "stitch-kpi-badge mint";
-      totalViewsDeltaText.textContent = "Live YouTube RSS";
+      totalViewsDeltaText.textContent = "API snapshot · freshness unavailable";
     }
     if (avgEngBadge && avgEngDeltaText) {
       avgEngBadge.className = "stitch-kpi-badge mint";
-      avgEngDeltaText.textContent = "Ratio";
+      avgEngDeltaText.textContent = "Sample ratio";
     }
     if (topCatBadge) topCatBadge.className = "stitch-kpi-badge violet";
     if (risingCountBadge) risingCountBadge.className = "stitch-kpi-badge mint";
@@ -244,7 +244,7 @@ function updateKpiBadges(state, isCached = false) {
     }
   } else {
     totalViewsBadge.className = "stitch-kpi-badge amber";
-    totalViewsDeltaText.textContent = "Unavailable";
+    totalViewsDeltaText.textContent = state === "LOADING" ? "Loading snapshot" : "Unavailable";
     if (avgEngBadge && avgEngDeltaText) {
       avgEngBadge.className = "stitch-kpi-badge amber";
       avgEngDeltaText.textContent = "Unavailable";
@@ -256,6 +256,10 @@ function updateKpiBadges(state, isCached = false) {
 let feedRequestId = 0;
 async function fetchTrendingFeed(shouldScroll = false) {
   const requestId = ++feedRequestId;
+  updateKpiBadges("LOADING");
+  renderKpis(null, false);
+  const previousResults = document.getElementById("resultsArea");
+  if (previousResults) previousResults.style.display = "none";
   hideStatusBar(document.getElementById("statusLine"));
   const loadingEl = document.getElementById("pulseLoading");
   if (loadingEl) loadingEl.style.display = "flex";
@@ -273,6 +277,9 @@ async function fetchTrendingFeed(shouldScroll = false) {
     if (requestId !== feedRequestId) return;
 
     if (res.status === 429) {
+      currentVideos = [];
+      const previousResults = document.getElementById("resultsArea");
+      if (previousResults) previousResults.style.display = "none";
       updateKpiBadges("QUOTA_LIMITED");
       renderKpis(null, false);
       renderViewsChart([], activeCategory);
@@ -293,6 +300,8 @@ async function fetchTrendingFeed(shouldScroll = false) {
     const isCached = Boolean(data.cached || data.is_stale || data.from_cache);
 
     if (currentVideos.length === 0) {
+      const previousResults = document.getElementById("resultsArea");
+      if (previousResults) previousResults.style.display = "none";
       updateKpiBadges("EMPTY");
       renderKpis(null, false);
       renderViewsChart([], activeCategory);
@@ -305,6 +314,8 @@ async function fetchTrendingFeed(shouldScroll = false) {
     }
 
     updateKpiBadges("SUCCESS", isCached);
+    const sourceLabel = document.getElementById("kpiTotalViewsDeltaText");
+    if (sourceLabel && data.is_stale) sourceLabel.textContent = "Cached Snapshot · stale";
     renderKpis(data.kpis || {}, true);
     renderViewsChart(data.timeSeries || [], activeCategory);
     renderCategoryChart(data.catBreakdown || []);
@@ -349,6 +360,10 @@ async function fetchTrendingFeed(shouldScroll = false) {
 }
 
 // ── Render KPIs (Explicit Non-Misleading Placeholders on Error/Empty) ─────────
+function metricAvailable(value) {
+  return value !== null && value !== undefined && value !== "" && typeof value !== "boolean" && Number.isFinite(Number(value)) && Number(value) >= 0;
+}
+
 function renderKpis(kpis, isValid = true) {
   const totalViewsVal = document.getElementById("kpiTotalViewsVal");
   const avgEngVal = document.getElementById("kpiAvgEngVal");
@@ -368,43 +383,39 @@ function renderKpis(kpis, isValid = true) {
   }
 
   if (totalViewsVal) {
-    totalViewsVal.textContent = formatCompact(kpis.totalViews || 0);
+    totalViewsVal.textContent = metricAvailable(kpis.totalViews) ? formatCompact(kpis.totalViews) : "—";
   }
+  for (const [id, available] of [
+    ["kpiAvgEngDelta", metricAvailable(kpis.avgEngagement)],
+    ["kpiTopCatDelta", Boolean(kpis.fastestCategory || kpis.topCategory)],
+    ["kpiRisingCountDelta", metricAvailable(kpis.risingCount)],
+  ]) {
+    const badge = document.getElementById(id);
+    if (badge) badge.className = available ? "stitch-kpi-badge mint" : "stitch-kpi-badge amber";
+  }
+  const engagementLabel = document.getElementById("kpiAvgEngDeltaText");
+  if (engagementLabel) engagementLabel.textContent = metricAvailable(kpis.avgEngagement) ? "Sample ratio" : "Unavailable";
+
 
   if (avgEngVal) {
-    const eng = Number(kpis.avgEngagement || 0);
-    avgEngVal.textContent = `${eng.toFixed(1)}%`;
+    avgEngVal.textContent = metricAvailable(kpis.avgEngagement) ? `${Number(kpis.avgEngagement).toFixed(1)}%` : "—";
   }
 
   if (topCatVal) {
-    topCatVal.textContent = kpis.fastestCategory || "—";
+    topCatVal.textContent = kpis.fastestCategory || kpis.topCategory || "—";
   }
   if (topCatDeltaText) {
-    const catViews = kpis.topCategoryViews ? formatCompact(kpis.topCategoryViews) : "—";
+    const catViews = metricAvailable(kpis.topCategoryViews) ? formatCompact(kpis.topCategoryViews) : "—";
     topCatDeltaText.textContent = `${catViews} views`;
   }
 
   if (risingCountVal) {
-    risingCountVal.textContent = String(kpis.risingCount || 0);
+    risingCountVal.textContent = metricAvailable(kpis.risingCount) ? String(kpis.risingCount) : "—";
   }
   if (risingCountDeltaText) {
-    const tracked = kpis.trackedCount || currentVideos.length || 18;
-    risingCountDeltaText.textContent = `of ${tracked} tracked`;
+    const tracked = kpis.totalTracked ?? kpis.trackedCount ?? currentVideos.length;
+    risingCountDeltaText.textContent = metricAvailable(kpis.risingCount) && tracked > 0 ? `of ${tracked} returned` : "Unavailable";
   }
-}
-
-// ── Build spread X-axis labels when all API labels are identical (Issue #5) ──
-function buildSpreadLabels(count, timeframe) {
-  const hoursMap = { "24h": 24, "7d": 7 * 24, "30d": 30 * 24, "90d": 90 * 24 };
-  const totalHours = hoursMap[timeframe] || 168;
-  const step = totalHours / Math.max(count - 1, 1);
-  return Array.from({ length: count }, (_, i) => {
-    const hoursAgo = Math.round(totalHours - i * step);
-    if (hoursAgo >= 24) {
-      return `${Math.round(hoursAgo / 24)}d ago`;
-    }
-    return hoursAgo === 0 ? "now" : `${hoursAgo}h ago`;
-  });
 }
 
 // ── Render Views Trajectory Chart ────────────────────────────────────────────
@@ -420,13 +431,23 @@ function renderViewsChart(timeSeries, categoryName) {
   const labels = timeSeries.map((p) => p.label);
   const dataPoints = timeSeries.map((p) => p.views);
 
-  // Issue #5 fix: if all labels are identical the axis is meaningless.
-  // Synthesize evenly-spaced human-readable time labels spanning the active window.
-  const allSame = labels.length > 1 && labels.every((l) => l === labels[0]);
-  const displayLabels = allSame ? buildSpreadLabels(labels.length, activeTimeframe) : labels;
-
   if (viewsChart) {
     viewsChart.destroy();
+  }
+
+  const a11yEl = document.getElementById("viewsChartA11y");
+  if (a11yEl) {
+    if (!timeSeries || timeSeries.length === 0) {
+      a11yEl.innerHTML = "<p>No upload-age bucket data available for the current sample.</p>";
+    } else {
+      const rows = timeSeries
+        .map(
+          (p) =>
+            `<tr><th scope="row">${p.label || "Unknown"}</th><td>${formatCompact(p.views || 0)} (${Number(p.views || 0).toLocaleString()} views)</td></tr>`
+        )
+        .join("");
+      a11yEl.innerHTML = `<table><caption>Lifetime views by upload age in current sample cohort</caption><thead><tr><th scope="col">Upload Age Bucket</th><th scope="col">Accumulated Views</th></tr></thead><tbody>${rows}</tbody></table>`;
+    }
   }
 
   const ctx = canvas.getContext("2d");
@@ -439,18 +460,18 @@ function renderViewsChart(timeSeries, categoryName) {
   const isFirstScan = timeSeries.length <= 1;
 
   viewsChart = new Chart(ctx, {
-    type: "line",
+    type: "bar",
     data: {
-      labels: displayLabels,
+      labels: labels,
       datasets: [
         {
-          label: "Volume",
+          label: "Lifetime views by upload age",
           data: dataPoints,
           borderColor: "#4F46E5",
           borderWidth: 2.5,
           backgroundColor: gradient,
-          fill: true,
-          tension: 0.35,
+          fill: false,
+          tension: 0,
           pointRadius: isFirstScan ? 4 : 0,
           pointHoverRadius: 5,
           pointHoverBackgroundColor: "#4F46E5",
@@ -478,7 +499,8 @@ function renderViewsChart(timeSeries, categoryName) {
           titleFont: { size: 11, family: "Plus Jakarta Sans, Inter, sans-serif" },
           bodyFont: { size: 13, weight: "700", family: "Plus Jakarta Sans, Inter, sans-serif" },
           callbacks: {
-            label: (context) => `${formatCompact(context.parsed.y)} views`,
+            title: (items) => `Upload Age: ${items[0]?.label || ""}`,
+            label: (context) => `Accumulated views: ${formatCompact(context.parsed.y)} (${Number(context.raw || 0).toLocaleString()} total)`,
           },
         },
       },
@@ -599,10 +621,7 @@ function renderTrendingList(videos, query) {
   listEl.innerHTML = videos
     .map((v) => {
       const momentum = Number(v.momentumScore);
-      const hasMomentum = v.momentumScore != null && Number.isFinite(momentum);
-      const isPos = hasMomentum && momentum >= 0;
-      const absGrowth = hasMomentum ? Math.abs(momentum) : null;
-      const deltaColor = isPos ? "#16A34A" : "#DC2626";
+      const hasMomentum = v.momentumScore != null && Number.isFinite(momentum) && momentum >= 0 && momentum <= 100;
       const hue = v.hue || "#4F46E5";
 
       return `
@@ -650,13 +669,8 @@ function renderTrendingList(videos, query) {
           <span>${v.engagement != null && Number.isFinite(Number(v.engagement)) ? Number(v.engagement).toFixed(1) + "%" : "Unavailable"}</span>
         </div>
 
-        <div class="pulsecheck-growth ${isPos ? "pos" : "neg"}" title="Relative momentum percentile across current cohort (0–100 idx); not multi-point growth">
-          ${
-            isPos
-              ? `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="${deltaColor}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>`
-              : `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="${deltaColor}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/><polyline points="17 18 23 18 23 12"/></svg>`
-          }
-          <span>${hasMomentum ? (isPos ? "+" : "-") + absGrowth + " idx" : "Pending"}</span>
+        <div class="pulsecheck-growth ${hasMomentum ? "score" : "pending"}" title="Relative momentum percentile across current cohort (0–100 idx); not observed growth or acceleration">
+          <span>${hasMomentum ? momentum + " / 100 idx" : "Pending"}</span>
         </div>
       </div>
     `;
@@ -949,24 +963,49 @@ function renderLowerChart(dataPoints, range = "all") {
   if (!dataPoints || dataPoints.length === 0) {
     canvas.style.display = "none";
     if (emptyEl) {
-      const firstDate = currentTimelineRaw[0]?.date ? currentTimelineRaw[0].date.split(" ")[0] : "a previous date";
-      emptyEl.innerHTML = `
-        <div class="text-center p-16">
-          <div style="font-size: 26px; margin-bottom: 8px;">⏳</div>
-          <strong style="color: var(--text); font-size: 0.95rem;">No scans recorded within the ${range.toUpperCase()} window</strong>
-          <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 6px; max-width: 380px;">
-            The baseline observation for this trend was recorded on <strong>${firstDate}</strong>. Select <strong>All</strong> or a wider window to view the trajectory curve.
-          </p>
-        </div>
-      `;
+      if (!currentTimelineRaw || currentTimelineRaw.length === 0) {
+        emptyEl.innerHTML = `
+          <div class="text-center p-16">
+            <div style="font-size: 26px; margin-bottom: 8px;">⏳</div>
+            <strong style="color: var(--text); font-size: 0.95rem;">Historical data unavailable</strong>
+            <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 6px; max-width: 380px;">
+              An initial baseline observation is required. Track this keyword to begin longitudinal monitoring.
+            </p>
+          </div>
+        `;
+      } else {
+        const firstDate = currentTimelineRaw[0]?.date ? currentTimelineRaw[0].date.split(" ")[0] : "a previous date";
+        emptyEl.innerHTML = `
+          <div class="text-center p-16">
+            <div style="font-size: 26px; margin-bottom: 8px;">⏳</div>
+            <strong style="color: var(--text); font-size: 0.95rem;">No scans recorded within the ${range.toUpperCase()} window</strong>
+            <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 6px; max-width: 380px;">
+              The baseline observation for this trend was recorded on <strong>${firstDate}</strong>. Select <strong>All</strong> or a wider window to view the trajectory curve.
+            </p>
+          </div>
+        `;
+      }
       emptyEl.style.display = "flex";
     }
+    const trajA11y = document.getElementById("viewsTrajectoryA11y");
+    if (trajA11y) trajA11y.innerHTML = "<p>Historical trajectory data unavailable.</p>";
     if (chartBaselineNote) chartBaselineNote.style.display = "none";
     return;
   }
 
   canvas.style.display = "block";
   if (emptyEl) emptyEl.style.display = "none";
+
+  const trajA11y = document.getElementById("viewsTrajectoryA11y");
+  if (trajA11y) {
+    const rows = dataPoints
+      .map(
+        (d) =>
+          `<tr><th scope="row">${d.date || "Unknown"}</th><td>${formatCompact(d.views || 0)} (${Number(d.views || 0).toLocaleString()} views)</td></tr>`
+      )
+      .join("");
+    trajA11y.innerHTML = `<table><caption>Audited view trajectory over time</caption><thead><tr><th scope="col">Observation Timestamp</th><th scope="col">Observed Views</th></tr></thead><tbody>${rows}</tbody></table>`;
+  }
 
   // Baseline observation / First Scan tracking status
   const isBaseline = dataPoints.length <= 1;

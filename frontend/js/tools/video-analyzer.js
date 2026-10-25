@@ -121,7 +121,8 @@ function decodeHtmlEntities(str) {
 }
 
 function createVideoTag(tag) {
-  const el = document.createElement("span");
+  const el = document.createElement("button");
+  el.type = "button";
   el.className = "panel-badge";
   el.style.cssText = "background:#f1f5f9; color:#0f172a; padding:6px 12px; border-radius:8px; font-size:13px; cursor:pointer;";
   el.title = "Click to copy";

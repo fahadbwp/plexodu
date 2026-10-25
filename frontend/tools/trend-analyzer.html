@@ -13,12 +13,12 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
-<link rel="stylesheet" href="/css/style.css?v=28.1">
+<link rel="stylesheet" href="/css/style.css?v=28.2">
 <link rel="stylesheet" href="/css/trend-analyzer.css?v=28.0">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
 <script defer src="/js/analytics.js"></script>
 </head>
-<body class="trend-ui">
+<body class="trend-ui stitch-tools">
 
 <div class="stitch-app-shell">
   <!-- Desktop Fixed Sidebar -->
@@ -27,7 +27,7 @@
       <div class="stitch-sidebar-brand">
         <a href="/" class="stitch-brand-link">
           <div class="stitch-brand-logo-icon">
-            <span class="material-symbols-outlined" style="font-size:22px;">play_shapes</span>
+            <span class="material-symbols-outlined" style="font-size:22px;" aria-hidden="true">play_shapes</span>
           </div>
           <div>
             <div class="stitch-brand-title">PLEXUDO</div>
@@ -37,7 +37,7 @@
       </div>
 
       <div class="stitch-public-badge">
-        <span class="material-symbols-outlined stitch-public-badge-icon" style="font-size:18px;">public</span>
+        <span class="material-symbols-outlined stitch-public-badge-icon" style="font-size:18px;" aria-hidden="true">public</span>
         <div>
           <div class="stitch-public-badge-title">Public Workspace</div>
           <div class="stitch-public-badge-sub">Free &amp; Instant Access</div>
@@ -48,19 +48,19 @@
         <span class="stitch-nav-heading">Analytics Engine</span>
         <nav class="stitch-nav-list">
           <a href="/tools/trend-analyzer" class="stitch-nav-link active" aria-current="page">
-            <span class="material-symbols-outlined stitch-nav-icon" style="font-size:20px;">trending_up</span>
+            <span class="material-symbols-outlined stitch-nav-icon" style="font-size:20px;" aria-hidden="true">trending_up</span>
             <span>Trend Analyzer</span>
           </a>
           <a href="/tools/video-analyzer" class="stitch-nav-link">
-            <span class="material-symbols-outlined stitch-nav-icon" style="font-size:20px;">analytics</span>
+            <span class="material-symbols-outlined stitch-nav-icon" style="font-size:20px;" aria-hidden="true">analytics</span>
             <span>Video Analyzer</span>
           </a>
           <a href="/tools/competitor-audit" class="stitch-nav-link">
-            <span class="material-symbols-outlined stitch-nav-icon" style="font-size:20px;">compare_arrows</span>
+            <span class="material-symbols-outlined stitch-nav-icon" style="font-size:20px;" aria-hidden="true">compare_arrows</span>
             <span>Competitor Audit</span>
           </a>
           <a href="/tools/ai-strategist" class="stitch-nav-link">
-            <span class="material-symbols-outlined stitch-nav-icon" style="font-size:20px;">smart_toy</span>
+            <span class="material-symbols-outlined stitch-nav-icon" style="font-size:20px;" aria-hidden="true">smart_toy</span>
             <span>AI Strategist</span>
           </a>
         </nav>
@@ -70,19 +70,19 @@
         <span class="stitch-nav-heading">Resources &amp; Hub</span>
         <nav class="stitch-nav-list">
           <a href="/tools" class="stitch-nav-link">
-            <span class="material-symbols-outlined stitch-nav-icon" style="font-size:18px;">apps</span>
+            <span class="material-symbols-outlined stitch-nav-icon" style="font-size:18px;" aria-hidden="true">apps</span>
             <span>All Tools Directory</span>
           </a>
           <a href="/blog/" class="stitch-nav-link">
-            <span class="material-symbols-outlined stitch-nav-icon" style="font-size:18px;">menu_book</span>
+            <span class="material-symbols-outlined stitch-nav-icon" style="font-size:18px;" aria-hidden="true">menu_book</span>
             <span>Guides &amp; Articles</span>
           </a>
           <a href="/privacy" class="stitch-nav-link">
-            <span class="material-symbols-outlined stitch-nav-icon" style="font-size:18px;">security</span>
+            <span class="material-symbols-outlined stitch-nav-icon" style="font-size:18px;" aria-hidden="true">security</span>
             <span>Privacy Policy</span>
           </a>
           <a href="/terms" class="stitch-nav-link">
-            <span class="material-symbols-outlined stitch-nav-icon" style="font-size:18px;">description</span>
+            <span class="material-symbols-outlined stitch-nav-icon" style="font-size:18px;" aria-hidden="true">description</span>
             <span>Terms of Service</span>
           </a>
         </nav>
@@ -91,12 +91,12 @@
 
     <div class="stitch-sidebar-footer-card">
       <div class="stitch-footer-card-header">
-        <span class="material-symbols-outlined" style="font-size:18px; color:var(--stitch-secondary);">rocket_launch</span>
+        <span class="material-symbols-outlined" style="font-size:18px; color:var(--stitch-secondary);" aria-hidden="true">rocket_launch</span>
         <span>Automated Tracking</span>
       </div>
       <p class="stitch-footer-card-desc">Continuous 24/7 channel surveillance and automated alerts are scheduled for a future release.</p>
       <div class="stitch-footer-card-pill" aria-label="Planned Feature">
-        <span class="material-symbols-outlined" style="font-size:13px;">schedule</span>
+        <span class="material-symbols-outlined" style="font-size:13px;" aria-hidden="true">schedule</span>
         <span>Planned Feature &bull; 100% Free Suite</span>
       </div>
     </div>
@@ -106,8 +106,8 @@
   <header class="stitch-topbar" aria-label="Desktop Topbar">
     <div class="stitch-topbar-left">
       <div class="stitch-topbar-search-box">
-        <span class="material-symbols-outlined stitch-topbar-search-icon" style="font-size:18px;">search</span>
-        <input type="text" class="stitch-topbar-search-input" placeholder="Search YouTube channels, video URLs, or keywords..." onclick="document.getElementById('pulseSearchInput')?.focus()" />
+        <span class="material-symbols-outlined stitch-topbar-search-icon" style="font-size:18px;" aria-hidden="true">search</span>
+        <button type="button" class="stitch-topbar-search-input" data-focus-tool-input>Jump to tool input</button>
         <span class="stitch-topbar-search-shortcut">⌘K</span>
       </div>
     </div>
@@ -115,14 +115,14 @@
     <div class="stitch-topbar-right">
       <div class="stitch-badge-pill">
         <span class="stitch-live-dot"></span>
-        <span>Heuristic Engine · Live Demo</span>
+        <span>Public creator workspace</span>
       </div>
       <div class="stitch-badge-pill">
         <span>🇵🇰</span>
         <span>PK</span>
       </div>
       <a href="/tools" class="stitch-btn-secondary" style="height:36px; padding:0 14px; font-size:0.75rem;">
-        <span class="material-symbols-outlined" style="font-size:16px;">explore</span>
+        <span class="material-symbols-outlined" style="font-size:16px;" aria-hidden="true">explore</span>
         <span>Tools Hub</span>
       </a>
       <div class="stitch-user-chip">
@@ -135,11 +135,11 @@
   <header class="stitch-mobile-topbar" aria-label="Mobile Navigation Bar">
     <div class="stitch-flex-row stitch-gap-xs">
       <button class="stitch-hamburger-btn" onclick="toggleSidebarDrawer()" aria-label="Open navigation menu">
-        <span class="material-symbols-outlined" style="font-size:24px;">menu</span>
+        <span class="material-symbols-outlined" style="font-size:24px;" aria-hidden="true">menu</span>
       </button>
       <a href="/" class="stitch-brand-link" style="gap:8px;">
         <div class="stitch-brand-logo-icon" style="width:32px; height:32px; border-radius:8px;">
-          <span class="material-symbols-outlined" style="font-size:18px;">play_shapes</span>
+          <span class="material-symbols-outlined" style="font-size:18px;" aria-hidden="true">play_shapes</span>
         </div>
         <span class="stitch-brand-title" style="font-size:1rem;">PLEXUDO</span>
       </a>
@@ -154,17 +154,17 @@
 
   <!-- Mobile Drawer Backdrop & Menu -->
   <div class="stitch-drawer-backdrop" id="stitchDrawerBackdrop" onclick="closeSidebarDrawer()" aria-hidden="true"></div>
-  <aside class="stitch-drawer" id="stitchMobileDrawer" aria-hidden="true" aria-label="Mobile Drawer">
+  <aside class="stitch-drawer" id="stitchMobileDrawer" inert aria-hidden="true" aria-label="Mobile Drawer">
     <div>
       <div class="stitch-drawer-header">
         <div class="stitch-flex-row stitch-gap-xs">
           <div class="stitch-brand-logo-icon" style="width:32px; height:32px; border-radius:8px;">
-            <span class="material-symbols-outlined" style="font-size:18px;">play_shapes</span>
+            <span class="material-symbols-outlined" style="font-size:18px;" aria-hidden="true">play_shapes</span>
           </div>
           <span class="stitch-brand-title" style="font-size:1.05rem;">PLEXUDO</span>
         </div>
         <button class="stitch-drawer-close-btn" onclick="closeSidebarDrawer()" aria-label="Close navigation menu">
-          <span class="material-symbols-outlined" style="font-size:20px;">close</span>
+          <span class="material-symbols-outlined" style="font-size:20px;" aria-hidden="true">close</span>
         </button>
       </div>
 
@@ -172,23 +172,23 @@
         <span class="stitch-nav-heading">Creator Utilities</span>
         <nav class="stitch-nav-list">
           <a href="/tools/trend-analyzer" class="stitch-nav-link active" onclick="closeSidebarDrawer()">
-            <span class="material-symbols-outlined" style="font-size:20px;">trending_up</span>
+            <span class="material-symbols-outlined" style="font-size:20px;" aria-hidden="true">trending_up</span>
             <span>Trend Analyzer</span>
           </a>
           <a href="/tools/video-analyzer" class="stitch-nav-link" onclick="closeSidebarDrawer()">
-            <span class="material-symbols-outlined" style="font-size:20px;">analytics</span>
+            <span class="material-symbols-outlined" style="font-size:20px;" aria-hidden="true">analytics</span>
             <span>Video Analyzer</span>
           </a>
           <a href="/tools/competitor-audit" class="stitch-nav-link" onclick="closeSidebarDrawer()">
-            <span class="material-symbols-outlined" style="font-size:20px;">compare_arrows</span>
+            <span class="material-symbols-outlined" style="font-size:20px;" aria-hidden="true">compare_arrows</span>
             <span>Competitor Audit</span>
           </a>
           <a href="/tools/ai-strategist" class="stitch-nav-link" onclick="closeSidebarDrawer()">
-            <span class="material-symbols-outlined" style="font-size:20px;">smart_toy</span>
+            <span class="material-symbols-outlined" style="font-size:20px;" aria-hidden="true">smart_toy</span>
             <span>AI Strategist</span>
           </a>
           <a href="/tools" class="stitch-nav-link" onclick="closeSidebarDrawer()">
-            <span class="material-symbols-outlined" style="font-size:20px;">apps</span>
+            <span class="material-symbols-outlined" style="font-size:20px;" aria-hidden="true">apps</span>
             <span>All Tools Hub</span>
           </a>
         </nav>
@@ -198,19 +198,19 @@
         <span class="stitch-nav-heading">Platform &amp; Legal</span>
         <nav class="stitch-nav-list">
           <a href="/" class="stitch-nav-link" onclick="closeSidebarDrawer()">
-            <span class="material-symbols-outlined" style="font-size:18px;">home</span>
+            <span class="material-symbols-outlined" style="font-size:18px;" aria-hidden="true">home</span>
             <span>Homepage</span>
           </a>
           <a href="/blog/" class="stitch-nav-link" onclick="closeSidebarDrawer()">
-            <span class="material-symbols-outlined" style="font-size:18px;">menu_book</span>
+            <span class="material-symbols-outlined" style="font-size:18px;" aria-hidden="true">menu_book</span>
             <span>Blog &amp; Guides</span>
           </a>
           <a href="/privacy" class="stitch-nav-link" onclick="closeSidebarDrawer()">
-            <span class="material-symbols-outlined" style="font-size:18px;">security</span>
+            <span class="material-symbols-outlined" style="font-size:18px;" aria-hidden="true">security</span>
             <span>Privacy Policy</span>
           </a>
           <a href="/terms" class="stitch-nav-link" onclick="closeSidebarDrawer()">
-            <span class="material-symbols-outlined" style="font-size:18px;">description</span>
+            <span class="material-symbols-outlined" style="font-size:18px;" aria-hidden="true">description</span>
             <span>Terms of Service</span>
           </a>
         </nav>
@@ -219,12 +219,12 @@
 
     <div class="stitch-sidebar-footer-card">
       <div class="stitch-footer-card-header">
-        <span class="material-symbols-outlined" style="font-size:18px; color:var(--stitch-secondary);">rocket_launch</span>
+        <span class="material-symbols-outlined" style="font-size:18px; color:var(--stitch-secondary);" aria-hidden="true">rocket_launch</span>
         <span>Automated Tracking</span>
       </div>
       <p class="stitch-footer-card-desc">Continuous 24/7 channel surveillance and automated alerts are scheduled for a future release.</p>
       <div class="stitch-footer-card-pill" aria-label="Planned Feature">
-        <span class="material-symbols-outlined" style="font-size:13px;">schedule</span>
+        <span class="material-symbols-outlined" style="font-size:13px;" aria-hidden="true">schedule</span>
         <span>Planned Feature &bull; 100% Free Suite</span>
       </div>
     </div>
@@ -238,18 +238,18 @@
       <section class="stitch-page-header">
         <div class="stitch-breadcrumb-bar">
           <a href="/tools" class="stitch-breadcrumb-link">Tools</a>
-          <span class="material-symbols-outlined" style="font-size:14px;">chevron_right</span>
+          <span class="material-symbols-outlined" style="font-size:14px;" aria-hidden="true">chevron_right</span>
           <span class="stitch-breadcrumb-current">Trend Analyzer</span>
           <span class="stitch-badge-pill" style="margin-left:6px; font-size:0.6875rem; padding:2px 8px;">
-            <span class="material-symbols-outlined" style="font-size:12px; color:var(--stitch-tertiary);">check_circle</span>
-            <span>Live Sample Stream</span>
+            <span class="material-symbols-outlined" style="font-size:12px; color:var(--stitch-tertiary);" aria-hidden="true">check_circle</span>
+            <span>Public API snapshots</span>
           </span>
         </div>
 
         <div class="stitch-page-title-row">
           <h1 class="stitch-page-title">YouTube Trend Analyzer &amp; Topic Momentum</h1>
           <p class="stitch-page-desc">
-            Real-time query velocity, category breakout momentum, and audience engagement signals derived across public YouTube uploads. Analyze view velocities, SEO keyword density, and algorithmic sentiment with 100% anonymous access.
+            Compare public video snapshots, estimated lifetime-average performance, and relative scores within the returned sample. Freshness is unavailable unless the API supplies it; these are not real-time audience analytics.
           </p>
         </div>
       </section>
@@ -259,8 +259,8 @@
         <div class="stitch-controls-row">
           <!-- Search Bar -->
           <div class="stitch-search-input-group">
-            <span class="material-symbols-outlined stitch-search-icon-inside" style="font-size:20px;">search_insights</span>
-            <input type="text" id="pulseSearchInput" class="stitch-search-input pulsecheck-search-input" placeholder="Search keywords, niche topics, or creators..." autocomplete="off" aria-label="Search trending topics" />
+            <span class="material-symbols-outlined stitch-search-icon-inside" style="font-size:20px;" aria-hidden="true">search_insights</span>
+            <input type="text" id="pulseSearchInput" class="stitch-search-input pulsecheck-search-input" placeholder="Search topics" autocomplete="off" aria-label="Search trending topics" />
             <div id="suggestionsDropdown" class="suggestions-dropdown" style="display:none;"></div>
           </div>
 
@@ -268,7 +268,7 @@
           <div class="stitch-filter-cluster">
             <!-- Search Button -->
             <button id="analyzeBtn" class="stitch-btn-primary pulsecheck-search-btn" type="button">
-              <span class="material-symbols-outlined" style="font-size:18px;">search</span>
+              <span class="material-symbols-outlined" style="font-size:18px;" aria-hidden="true">search</span>
               <span>Search</span>
             </button>
 
@@ -304,7 +304,7 @@
       <div id="pulseLoading" class="tool-loading" style="display:none; padding:32px 16px;">
         <div class="tool-spinner"></div>
         <p style="color:var(--stitch-on-surface-variant); margin-top:8px; font-weight:500;">
-          Connecting to YouTube Data API v3 and calculating view velocity…
+          Requesting public YouTube snapshots and calculating sample estimates…
         </p>
       </div>
 
@@ -313,25 +313,17 @@
         <!-- KPI 1: Total Views Across Set -->
         <div class="stitch-kpi-card">
           <div class="stitch-kpi-header">
-            <span class="stitch-kpi-label">Views in Trending Set</span>
+            <span class="stitch-kpi-label">Views in Returned Sample</span>
             <span class="stitch-kpi-badge mint" id="kpiTotalViewsDelta">
-              <span class="material-symbols-outlined" style="font-size:13px;">trending_up</span>
-              <span id="kpiTotalViewsDeltaText">Live API</span>
+              <span class="material-symbols-outlined" style="font-size:13px;" aria-hidden="true">trending_up</span>
+              <span id="kpiTotalViewsDeltaText">Awaiting data</span>
             </span>
           </div>
           <div>
             <div id="kpiTotalViewsVal" class="stitch-kpi-value pulsecheck-kpi-value">—</div>
-            <div class="stitch-kpi-sub">Total views across indexed cohort</div>
+            <div class="stitch-kpi-sub">Total lifetime views across returned videos</div>
           </div>
-          <!-- Mini Sparkline Bars -->
-          <div class="stitch-sparkline-row">
-            <span style="flex:1; height:45%; background:var(--stitch-surface-container-high); border-radius:3px 3px 0 0;"></span>
-            <span style="flex:1; height:60%; background:var(--stitch-surface-container-high); border-radius:3px 3px 0 0;"></span>
-            <span style="flex:1; height:40%; background:var(--stitch-surface-container-high); border-radius:3px 3px 0 0;"></span>
-            <span style="flex:1; height:75%; background:#c0c1ff; border-radius:3px 3px 0 0;"></span>
-            <span style="flex:1; height:90%; background:var(--stitch-primary); border-radius:3px 3px 0 0;"></span>
-            <span style="flex:1; height:100%; background:var(--stitch-primary-container); border-radius:3px 3px 0 0;"></span>
-          </div>
+          <p class="stitch-metric-note">Lifetime view totals for the returned sample; not views gained during the selected window.</p>
         </div>
 
         <!-- KPI 2: Average Engagement Rate -->
@@ -339,7 +331,7 @@
           <div class="stitch-kpi-header">
             <span class="stitch-kpi-label">Avg Engagement Rate</span>
             <span class="stitch-kpi-badge mint" id="kpiAvgEngDelta">
-              <span class="material-symbols-outlined" style="font-size:13px;">bolt</span>
+              <span class="material-symbols-outlined" style="font-size:13px;" aria-hidden="true">bolt</span>
               <span id="kpiAvgEngDeltaText">Ratio</span>
             </span>
           </div>
@@ -347,19 +339,7 @@
             <div id="kpiAvgEngVal" class="stitch-kpi-value pulsecheck-kpi-value">—</div>
             <div class="stitch-kpi-sub">Likes + comments per 100 views</div>
           </div>
-          <!-- Multi-segment Horizontal Capsule Bar -->
-          <div class="stitch-flex-col">
-            <div class="stitch-capsule-bar">
-              <div class="stitch-capsule-seg-1"></div>
-              <div class="stitch-capsule-seg-2"></div>
-              <div class="stitch-capsule-seg-3"></div>
-            </div>
-            <div class="stitch-flex-between" style="font-size:0.6875rem; color:var(--stitch-on-surface-variant);">
-              <span>Shorts 55%</span>
-              <span>Longform 30%</span>
-              <span>Live 15%</span>
-            </div>
-          </div>
+          <p class="stitch-metric-note">Format shares unavailable: Shorts, long-form and live percentages are not provided.</p>
         </div>
 
         <!-- KPI 3: Highest-View Category -->
@@ -371,38 +351,25 @@
             </span>
           </div>
           <div>
-            <div id="kpiTopCatVal" class="stitch-kpi-value pulsecheck-kpi-value" style="font-size:1.5rem; text-overflow:ellipsis; overflow:hidden; white-space:nowrap;">—</div>
-            <div class="stitch-kpi-sub">Dominant search volume sector</div>
+            <div id="kpiTopCatVal" class="stitch-kpi-value pulsecheck-kpi-value" >—</div>
+            <div class="stitch-kpi-sub">Highest lifetime-view category in the returned sample</div>
           </div>
           <div class="stitch-flex-row" style="gap:6px; font-size:0.75rem; color:var(--stitch-on-surface-variant); padding-top:6px;">
-            <span class="material-symbols-outlined" style="font-size:16px; color:var(--stitch-primary);">category</span>
-            <span>Audience cluster alignment</span>
+            <span class="material-symbols-outlined" style="font-size:16px; color:var(--stitch-primary);" aria-hidden="true">category</span>
+            <span>Sample category totals</span>
           </div>
         </div>
 
         <!-- KPI 4: Momentum & High Velocity Count -->
         <div class="stitch-kpi-card">
           <div class="stitch-kpi-header">
-            <span class="stitch-kpi-label">Momentum Cohort</span>
+            <span class="stitch-kpi-label">Relative Momentum Count</span>
             <span class="stitch-kpi-badge mint" id="kpiRisingCountDelta">
               <span id="kpiRisingCountDeltaText">tracked</span>
             </span>
           </div>
-          <!-- Semi-circle radial gauge representation -->
-          <div class="stitch-radial-gauge-box">
-            <svg class="stitch-radial-gauge-svg" viewBox="0 0 140 75">
-              <path d="M 15 70 A 55 55 0 0 1 125 70" fill="none" stroke="#eaedff" stroke-width="12" stroke-linecap="round" />
-              <path d="M 15 70 A 55 55 0 0 1 115 35" fill="none" stroke="#6063ee" stroke-width="12" stroke-linecap="round" />
-            </svg>
-            <div class="stitch-radial-gauge-center">
-              <div id="kpiRisingCountVal" class="stitch-radial-gauge-value pulsecheck-kpi-value">—</div>
-              <div class="stitch-radial-gauge-label">Idx &gt;40</div>
-            </div>
-          </div>
-          <div class="stitch-flex-between" style="font-size:0.6875rem; color:var(--stitch-on-surface-variant);">
-            <span>0 Stagnant</span>
-            <span>100 Peak Viral</span>
-          </div>
+          <div id="kpiRisingCountVal" class="stitch-kpi-value pulsecheck-kpi-value">—</div>
+          <p class="stitch-metric-note">Count with relative momentum index above 40 in this sample. An estimate, not observed acceleration or a virality probability.</p>
         </div>
       </section>
 
@@ -416,15 +383,16 @@
                 Lifetime views by upload age
               </h2>
               <p style="font-size:0.8125rem; color:var(--stitch-on-surface-variant); margin:2px 0 0;">
-                Aggregated view velocity compared with category publication trajectory
+                Accumulated lifetime views across video age buckets in the current sampled cohort
               </p>
             </div>
             <div class="stitch-flex-row stitch-gap-xs">
-              <span class="stitch-badge-pill" style="font-size:0.6875rem;">Daily Indexed</span>
+              <span class="stitch-badge-pill" style="font-size:0.6875rem;">Sampled Age Brackets</span>
             </div>
           </div>
           <div class="pulsecheck-chart-box" style="height:280px; position:relative;">
-            <canvas id="pulseViewsChart"></canvas>
+            <canvas id="pulseViewsChart" role="img" aria-label="Lifetime views grouped by video upload age in current sample"></canvas>
+            <div id="viewsChartA11y" class="sr-only" aria-live="polite"></div>
           </div>
         </div>
 
@@ -434,7 +402,7 @@
             <h2 style="font-size:1.125rem; font-weight:700; color:var(--stitch-on-surface); margin:0;">
               Views by category
             </h2>
-            <span class="material-symbols-outlined" style="font-size:20px; color:var(--stitch-outline);">pie_chart</span>
+            <span class="material-symbols-outlined" style="font-size:20px; color:var(--stitch-outline);" aria-hidden="true">pie_chart</span>
           </div>
           <div class="pulsecheck-chart-box" style="height:280px; position:relative;">
             <canvas id="pulseCatChart"></canvas>
@@ -455,11 +423,11 @@
           </div>
           <div class="stitch-flex-row stitch-gap-xs">
             <button id="exportCsvBtn" class="stitch-btn-secondary" type="button" style="height:36px; padding:0 12px; font-size:0.75rem;">
-              <span class="material-symbols-outlined" style="font-size:16px;">table_chart</span>
+              <span class="material-symbols-outlined" style="font-size:16px;" aria-hidden="true">table_chart</span>
               <span>CSV</span>
             </button>
             <button id="exportPdfBtn" class="stitch-btn-secondary" type="button" style="height:36px; padding:0 12px; font-size:0.75rem;">
-              <span class="material-symbols-outlined" style="font-size:16px;">picture_as_pdf</span>
+              <span class="material-symbols-outlined" style="font-size:16px;" aria-hidden="true">picture_as_pdf</span>
               <span>Report</span>
             </button>
           </div>
@@ -479,7 +447,7 @@
         <!-- Educational Baseline Notification Banner -->
         <div id="trendBanner" class="stitch-card trend-banner" style="display:none; margin-bottom:20px; background:#eff4ff; border-color:#c7d2fe;">
           <div class="stitch-flex-row" style="align-items:flex-start; gap:12px;">
-            <span class="material-symbols-outlined" style="font-size:22px; color:var(--stitch-primary); shrink:0;">info</span>
+            <span class="material-symbols-outlined" style="font-size:22px; color:var(--stitch-primary); shrink:0;" aria-hidden="true">info</span>
             <div>
               <h3 style="font-size:0.9375rem; font-weight:700; color:var(--stitch-primary); margin:0 0 4px;">Baseline Established</h3>
               <p id="trendBannerText" class="trend-banner-text" style="font-size:0.84rem; color:var(--stitch-on-surface); margin:0; line-height:1.5;">
@@ -496,9 +464,14 @@
             <!-- Interactive Time-Series View Trajectory -->
             <div class="stitch-card tool-results-panel">
               <div class="stitch-flex-between stitch-flex-wrap stitch-gap-sm">
-                <h3 style="font-size:1.1rem; font-weight:700; margin:0; color:var(--stitch-on-surface);">
-                  📈 Time-Series View Trajectory
-                </h3>
+                <div>
+                  <h3 style="font-size:1.1rem; font-weight:700; margin:0; color:var(--stitch-on-surface);">
+                    📈 Time-Series View Trajectory
+                  </h3>
+                  <p style="font-size:0.8125rem; color:var(--stitch-on-surface-variant); margin:2px 0 0;">
+                    Audited view changes across repeated observations of this topic over time
+                  </p>
+                </div>
                 <div class="stitch-pill-toggle-group trend-timeframe-tabs">
                   <button class="stitch-pill-btn trend-tab-btn active" data-range="all">All</button>
                   <button class="stitch-pill-btn trend-tab-btn" data-range="1d">1D</button>
@@ -509,8 +482,9 @@
               </div>
 
               <div class="chart-container-box" style="height:260px; position:relative;">
-                <canvas id="viewsChart"></canvas>
+                <canvas id="viewsChart" role="img" aria-label="Time-series view trajectory over repeated scans"></canvas>
                 <div id="viewsChartEmpty" class="chart-empty-placeholder" style="display:none;"></div>
+                <div id="viewsTrajectoryA11y" class="sr-only" aria-live="polite"></div>
               </div>
               <div id="chartBaselineNote" style="font-size:0.78rem; color:var(--stitch-on-surface-variant); text-align:center; margin-top:8px; display:none;">
                 📍 Initial baseline recorded today. Recurring scans connect future observations into an audited trajectory curve.
@@ -671,7 +645,7 @@
         <div class="stitch-faq-grid">
           <div class="stitch-faq-item">
             <div class="stitch-faq-title">
-              <span class="material-symbols-outlined" style="font-size:18px; color:var(--stitch-primary);">speed</span>
+              <span class="material-symbols-outlined" style="font-size:18px; color:var(--stitch-primary);" aria-hidden="true">speed</span>
               <span>View Velocity (views/hr)</span>
             </div>
             <p class="stitch-faq-desc">
@@ -681,7 +655,7 @@
 
           <div class="stitch-faq-item">
             <div class="stitch-faq-title">
-              <span class="material-symbols-outlined" style="font-size:18px; color:var(--stitch-secondary);">hub</span>
+              <span class="material-symbols-outlined" style="font-size:18px; color:var(--stitch-secondary);" aria-hidden="true">hub</span>
               <span>Plexudo Momentum Index (0–100)</span>
             </div>
             <p class="stitch-faq-desc">
@@ -691,7 +665,7 @@
 
           <div class="stitch-faq-item">
             <div class="stitch-faq-title">
-              <span class="material-symbols-outlined" style="font-size:18px; color:var(--stitch-tertiary);">forum</span>
+              <span class="material-symbols-outlined" style="font-size:18px; color:var(--stitch-tertiary);" aria-hidden="true">forum</span>
               <span>Comment Sentiment Sampling</span>
             </div>
             <p class="stitch-faq-desc">
@@ -701,7 +675,7 @@
 
           <div class="stitch-faq-item">
             <div class="stitch-faq-title">
-              <span class="material-symbols-outlined" style="font-size:18px; color:var(--stitch-on-surface);">lock_open</span>
+              <span class="material-symbols-outlined" style="font-size:18px; color:var(--stitch-on-surface);" aria-hidden="true">lock_open</span>
               <span>Public &amp; Anonymous Access</span>
             </div>
             <p class="stitch-faq-desc">
@@ -715,7 +689,7 @@
             <h3 style="font-size:1rem; font-weight:800; color:#ffffff; margin:0 0 2px;">Need continuous 24/7 channel tracking?</h3>
             <p style="font-size:0.8125rem; color:#e0e7ff; margin:0;">Set up automated webhooks and Slack alerts for category spikes in Creator Pro.</p>
           </div>
-          <a href="/#faq" class="stitch-btn-secondary" style="background:#ffffff; color:var(--stitch-primary); font-weight:700;">Explore Automated Alerts</a>
+          <a href="/#faq" class="stitch-btn-secondary" style="background:#ffffff; color:var(--stitch-primary); font-weight:700;">About planned alerts</a>
         </div>
       </section>
 
@@ -793,7 +767,7 @@
   </div>
 </footer>
 
-<script src="/js/tools/common.js?v=28.1"></script>
-<script src="/js/tools/trend-analyzer.js?v=34.0"></script>
+<script src="/js/tools/common.js?v=28.2"></script>
+<script src="/js/tools/trend-analyzer.js?v=28.2"></script>
 </body>
 </html>

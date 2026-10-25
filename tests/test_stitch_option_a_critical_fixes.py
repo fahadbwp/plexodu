@@ -11,7 +11,7 @@ Covers:
 7. Stale cached response handling
 8. AI Strategist chat layout and word-break wrapping
 9. Sidebar drawer accessible focus management
-10. Cache-busting parameter consistency (v=28.1)
+10. Cache-busting parameter consistency (v=28.2)
 """
 
 import os
@@ -150,17 +150,17 @@ def test_sidebar_drawer_accessible_focus_management():
 
 
 def test_all_tools_cache_busting_version_consistency():
-    """Verify all 5 tool pages use the latest cache-busting version v=28.1."""
+    """Verify all 5 tool pages use the latest cache-busting version v=28.2."""
     tool_files = list(TOOLS_DIR.glob("*.html"))
     for tf in tool_files:
         content = tf.read_text(encoding="utf-8")
-        assert "style.css?v=28.1" in content, f"{tf.name} must use style.css?v=28.1"
-        assert "common.js?v=28.1" in content, f"{tf.name} must use common.js?v=28.1"
+        assert "style.css?v=28.2" in content, f"{tf.name} must use style.css?v=28.2"
+        assert "common.js?v=28.2" in content, f"{tf.name} must use common.js?v=28.2"
 
 
 def test_trending_feed_returns_safe_error_on_missing_api_key(client, flask_mod):
     """Verify /api/trending-feed returns safe 500 when YOUTUBE_API_KEY is unset without leaking internals."""
-    with patch.object(flask_mod, "YOUTUBE_API_KEY", ""):
+    with patch("services.real_api.get_yt_api_key", return_value=""):
         res = client.get("/api/trending-feed?region=Pakistan&timeframe=7d")
         assert res.status_code == 500
         data = res.get_json()
