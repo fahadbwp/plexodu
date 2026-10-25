@@ -118,6 +118,49 @@ function copyToClipboard(text, btn) {
 }
 
 function toggleMobileMenu() {
-  const drawer = document.getElementById("mobileDrawer");
-  if (drawer) drawer.classList.toggle("active");
+  toggleSidebarDrawer();
 }
+
+function openSidebarDrawer() {
+  const drawer = document.getElementById("stitchMobileDrawer") || document.getElementById("mobileDrawer");
+  const backdrop = document.getElementById("stitchDrawerBackdrop");
+  if (drawer) {
+    drawer.classList.add("active");
+    drawer.setAttribute("aria-hidden", "false");
+  }
+  if (backdrop) {
+    backdrop.classList.add("active");
+    backdrop.setAttribute("aria-hidden", "false");
+  }
+  document.body.style.overflow = "hidden";
+}
+
+function closeSidebarDrawer() {
+  const drawer = document.getElementById("stitchMobileDrawer") || document.getElementById("mobileDrawer");
+  const backdrop = document.getElementById("stitchDrawerBackdrop");
+  if (drawer) {
+    drawer.classList.remove("active");
+    drawer.setAttribute("aria-hidden", "true");
+  }
+  if (backdrop) {
+    backdrop.classList.remove("active");
+    backdrop.setAttribute("aria-hidden", "true");
+  }
+  document.body.style.overflow = "";
+}
+
+function toggleSidebarDrawer() {
+  const drawer = document.getElementById("stitchMobileDrawer") || document.getElementById("mobileDrawer");
+  if (drawer && drawer.classList.contains("active")) {
+    closeSidebarDrawer();
+  } else {
+    openSidebarDrawer();
+  }
+}
+
+// Global dismiss listeners for accessibility
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") {
+    closeSidebarDrawer();
+  }
+});
