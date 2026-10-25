@@ -13,7 +13,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
-<link rel="stylesheet" href="/css/style.css?v=28.0">
+<link rel="stylesheet" href="/css/style.css?v=28.1">
 <script defer src="/js/analytics.js"></script>
 </head>
 <body>
@@ -90,13 +90,13 @@
     <div class="stitch-sidebar-footer-card">
       <div class="stitch-footer-card-header">
         <span class="material-symbols-outlined" style="font-size:18px; color:var(--stitch-secondary);">rocket_launch</span>
-        <span>Need Automated Tracking?</span>
+        <span>Automated Tracking</span>
       </div>
-      <p class="stitch-footer-card-desc">Automatic 24/7 channel surveillance and batch analysis in Pro.</p>
-      <a href="/#faq" class="stitch-footer-card-btn">
-        <span>Preview Pro</span>
-        <span class="material-symbols-outlined" style="font-size:15px;">chevron_right</span>
-      </a>
+      <p class="stitch-footer-card-desc">Continuous 24/7 channel surveillance and automated alerts are scheduled for a future release.</p>
+      <div class="stitch-footer-card-pill" aria-label="Planned Feature">
+        <span class="material-symbols-outlined" style="font-size:13px;">schedule</span>
+        <span>Planned Feature &bull; 100% Free Suite</span>
+      </div>
     </div>
   </aside>
 
@@ -214,9 +214,13 @@
     <div class="stitch-sidebar-footer-card">
       <div class="stitch-footer-card-header">
         <span class="material-symbols-outlined" style="font-size:18px; color:var(--stitch-secondary);">rocket_launch</span>
-        <span>Plexudo Creator Suite</span>
+        <span>Automated Tracking</span>
       </div>
-      <p class="stitch-footer-card-desc">100% anonymous &amp; login-free analytics powered by YouTube Data API v3.</p>
+      <p class="stitch-footer-card-desc">Continuous 24/7 channel surveillance and automated alerts are scheduled for a future release.</p>
+      <div class="stitch-footer-card-pill" aria-label="Planned Feature">
+        <span class="material-symbols-outlined" style="font-size:13px;">schedule</span>
+        <span>Planned Feature &bull; 100% Free Suite</span>
+      </div>
     </div>
   </aside>
 
@@ -245,16 +249,16 @@
       </section>
 
       <!-- AI Strategist Chat Panel -->
-      <section class="stitch-card tool-results-panel tool-panel-chat" class="stitch-card tool-results-panel tool-panel-chat stitch-flex-col stitch-gap-md">
+      <section class="stitch-card tool-results-panel tool-panel-chat stitch-flex-col stitch-gap-md">
         <!-- Chat Messages Container -->
-        <div id="chatMessages" class="chat-messages chat-messages-box" class="chat-messages chat-messages-box stitch-chat-box">
+        <div id="chatMessages" class="chat-messages chat-messages-box stitch-chat-box">
           <!-- Welcome Initial Message -->
-          <div class="chat-message ai" class="chat-message ai stitch-chat-row">
-            <div class="chat-avatar" class="chat-avatar stitch-chat-avatar">
+          <div class="chat-message ai stitch-chat-row">
+            <div class="chat-avatar stitch-chat-avatar">
               <span class="material-symbols-outlined" style="font-size:20px;">smart_toy</span>
             </div>
-            <div>
-              <div class="chat-bubble" style="background:var(--stitch-surface-low); padding:14px 18px; border-radius:16px 16px 16px 4px; font-size:0.875rem; color:var(--stitch-on-surface); line-height:1.6; max-width:760px;">
+            <div class="stitch-chat-bubble-wrap">
+              <div class="chat-bubble stitch-chat-bubble">
                 👋 Hello! I am <strong>Plexudo AI Strategist</strong> — your YouTube growth and analytics advisor.<br><br>
                 Ask me anything about YouTube content strategy, high-CTR titles, viewer retention hooks, or keyword opportunities! (Aap Roman Urdu mein bhi pooch saktay hain 🚀)
               </div>
@@ -264,7 +268,7 @@
         </div>
 
         <!-- Suggestion Chips Wrap -->
-        <div id="chatChips" class="chat-chips-wrap" class="chat-chips-wrap stitch-chips-wrap">
+        <div id="chatChips" class="chat-chips-wrap stitch-chips-wrap">
           <button class="stitch-btn-secondary chat-chip-btn" onclick="sendChipPrompt('🔥 3 High-CTR Title & Hook Ideas for my channel')">
             <span>🔥 3 Viral Ideas</span>
           </button>
@@ -283,7 +287,7 @@
         </div>
 
         <!-- Chat Input Row -->
-        <div class="chat-input-area chat-input-row" class="chat-input-area chat-input-row stitch-chat-input-row">
+        <div class="chat-input-area chat-input-row stitch-chat-input-row">
           <textarea id="chatInput" class="stitch-search-input chat-input-textarea" placeholder="Ask anything about YouTube strategy… (e.g. 'How can I increase CTR on my gaming tutorials?')" rows="1" style="height:48px; resize:none; padding-top:12px;"></textarea>
           <button id="chatSendBtn" class="stitch-btn-primary tool-primary-btn" type="button" style="height:48px;">
             <span>Send ➤</span>
@@ -398,7 +402,7 @@
   </div>
 </footer>
 
-<script src="/js/tools/common.js?v=28.0"></script>
-<script src="/js/tools/ai-strategist.js?v=28.0"></script>
+<script src="/js/tools/common.js?v=28.1"></script>
+<script src="/js/tools/ai-strategist.js?v=28.1"></script>
 </body>
 </html>

@@ -59,7 +59,11 @@ async function fetchWithTimeout(resource, options = {}, timeoutMs = 20000) {
           ? trimmed.slice(0, 240)
           : response.status >= 500
             ? "Server error. Please try again in a moment."
-            : "Server returned an unexpected response.";
+            : response.status === 404
+              ? "The requested service endpoint was not found (HTTP 404)."
+              : response.status === 429
+                ? "API rate limit reached. Please wait a moment and try again."
+                : `Unexpected server response (HTTP ${response.status}).`;
         return { error: message };
       }
     };
@@ -117,16 +121,23 @@ function copyToClipboard(text, btn) {
   });
 }
 
+let drawerLastFocusedElement = null;
+
 function toggleMobileMenu() {
   toggleSidebarDrawer();
 }
 
 function openSidebarDrawer() {
+  drawerLastFocusedElement = document.activeElement;
   const drawer = document.getElementById("stitchMobileDrawer") || document.getElementById("mobileDrawer");
   const backdrop = document.getElementById("stitchDrawerBackdrop");
   if (drawer) {
     drawer.classList.add("active");
     drawer.setAttribute("aria-hidden", "false");
+    const focusable = drawer.querySelector("button, [href], input, select, textarea, [tabindex]:not([tabindex='-1'])");
+    if (focusable) {
+      setTimeout(() => focusable.focus(), 50);
+    }
   }
   if (backdrop) {
     backdrop.classList.add("active");
@@ -147,6 +158,11 @@ function closeSidebarDrawer() {
     backdrop.setAttribute("aria-hidden", "true");
   }
   document.body.style.overflow = "";
+  if (drawerLastFocusedElement && typeof drawerLastFocusedElement.focus === "function") {
+    try {
+      drawerLastFocusedElement.focus();
+    } catch (_) {}
+  }
 }
 
 function toggleSidebarDrawer() {

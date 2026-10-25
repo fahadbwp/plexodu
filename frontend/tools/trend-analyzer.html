@@ -13,7 +13,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
-<link rel="stylesheet" href="/css/style.css?v=28.0">
+<link rel="stylesheet" href="/css/style.css?v=28.1">
 <link rel="stylesheet" href="/css/trend-analyzer.css?v=28.0">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
 <script defer src="/js/analytics.js"></script>
@@ -92,13 +92,13 @@
     <div class="stitch-sidebar-footer-card">
       <div class="stitch-footer-card-header">
         <span class="material-symbols-outlined" style="font-size:18px; color:var(--stitch-secondary);">rocket_launch</span>
-        <span>Need Automated Tracking?</span>
+        <span>Automated Tracking</span>
       </div>
-      <p class="stitch-footer-card-desc">Automatic 24/7 channel surveillance and batch analysis in Pro.</p>
-      <a href="/#faq" class="stitch-footer-card-btn">
-        <span>Preview Pro</span>
-        <span class="material-symbols-outlined" style="font-size:15px;">chevron_right</span>
-      </a>
+      <p class="stitch-footer-card-desc">Continuous 24/7 channel surveillance and automated alerts are scheduled for a future release.</p>
+      <div class="stitch-footer-card-pill" aria-label="Planned Feature">
+        <span class="material-symbols-outlined" style="font-size:13px;">schedule</span>
+        <span>Planned Feature &bull; 100% Free Suite</span>
+      </div>
     </div>
   </aside>
 
@@ -220,9 +220,13 @@
     <div class="stitch-sidebar-footer-card">
       <div class="stitch-footer-card-header">
         <span class="material-symbols-outlined" style="font-size:18px; color:var(--stitch-secondary);">rocket_launch</span>
-        <span>Plexudo Creator Suite</span>
+        <span>Automated Tracking</span>
       </div>
-      <p class="stitch-footer-card-desc">100% anonymous &amp; login-free analytics powered by YouTube Data API v3.</p>
+      <p class="stitch-footer-card-desc">Continuous 24/7 channel surveillance and automated alerts are scheduled for a future release.</p>
+      <div class="stitch-footer-card-pill" aria-label="Planned Feature">
+        <span class="material-symbols-outlined" style="font-size:13px;">schedule</span>
+        <span>Planned Feature &bull; 100% Free Suite</span>
+      </div>
     </div>
   </aside>
 
@@ -488,7 +492,7 @@
         <!-- Deep Intelligence Bento Layout -->
         <div class="stitch-grid-12" style="margin-bottom:24px;">
           <!-- Left Column: Trajectory & Historical Change Windows (8 cols) -->
-          <div class="stitch-col-8" class="stitch-flex-col stitch-gap-md">
+          <div class="stitch-col-8 stitch-flex-col stitch-gap-md">
             <!-- Interactive Time-Series View Trajectory -->
             <div class="stitch-card tool-results-panel">
               <div class="stitch-flex-between stitch-flex-wrap stitch-gap-sm">
@@ -565,7 +569,7 @@
           </div>
 
           <!-- Right Column: Sentiment, Milestones & Forecast (4 cols) -->
-          <div class="stitch-col-4" class="stitch-flex-col stitch-gap-md">
+          <div class="stitch-col-4 stitch-flex-col stitch-gap-md">
             <!-- Audience Sentiment Card -->
             <div class="stitch-card tool-results-panel">
               <h3 style="font-size:1.1rem; font-weight:700; margin:0 0 8px; color:var(--stitch-on-surface);">
@@ -575,7 +579,7 @@
                 Sampled comments from the top-ranked video, analyzed with English-oriented TextBlob classifiers.
               </p>
               <div id="sentimentSummary" style="margin-bottom:14px;">
-                <div class="trend-sentiment-label" class="stitch-flex-row stitch-gap-xs">
+                <div class="trend-sentiment-label stitch-flex-row stitch-gap-xs">
                   <span style="font-size:0.84rem; font-weight:600; color:var(--stitch-on-surface);">Dominant:</span>
                   <span id="dominantSentimentBadge" class="stitch-kpi-badge mint">Neutral</span>
                 </div>
@@ -594,8 +598,8 @@
               <h3 style="font-size:1.1rem; font-weight:700; margin:0 0 12px; color:var(--stitch-on-surface);">
                 ⚡ Milestones &amp; Events
               </h3>
-              <div id="trendEventsList" class="trend-events-list" class="stitch-flex-col stitch-gap-xs">
-                <div class="stitch-card trend-event-item" class="stitch-card trend-event-item stitch-flex-row" style="background:var(--stitch-surface-low); border:none; padding:10px 14px; gap:10px;">
+              <div id="trendEventsList" class="trend-events-list stitch-flex-col stitch-gap-xs">
+                <div class="stitch-card trend-event-item stitch-flex-row" style="background:var(--stitch-surface-low); border:none; padding:10px 14px; gap:10px;">
                   <span style="font-size:1.1rem;">📍</span>
                   <div style="flex:1;">
                     <div class="trend-event-title" style="font-size:0.8125rem; font-weight:700; color:var(--stitch-on-surface);">Baseline Created</div>
@@ -626,8 +630,8 @@
           <h3 style="font-size:1.125rem; font-weight:700; margin:0 0 10px; color:var(--stitch-on-surface);">
             🏷️ Generated YouTube Tags &amp; Keywords
           </h3>
-          <div id="tagsList" class="tags-wrap" class="tags-wrap stitch-chips-wrap"></div>
-          <div id="hashtagsList" class="tags-wrap" class="tags-wrap stitch-chips-wrap"></div>
+          <div id="tagsList" class="tags-wrap stitch-chips-wrap"></div>
+          <div id="hashtagsList" class="tags-wrap stitch-chips-wrap"></div>
 
           <h3 style="font-size:1.125rem; font-weight:700; margin:0 0 10px; color:var(--stitch-on-surface);">
             💡 Topic-Based Title Templates
@@ -706,7 +710,7 @@
           </div>
         </div>
 
-        <div class="stitch-card" class="stitch-cta-banner">
+        <div class="stitch-card stitch-cta-banner">
           <div>
             <h3 style="font-size:1rem; font-weight:800; color:#ffffff; margin:0 0 2px;">Need continuous 24/7 channel tracking?</h3>
             <p style="font-size:0.8125rem; color:#e0e7ff; margin:0;">Set up automated webhooks and Slack alerts for category spikes in Creator Pro.</p>
@@ -789,7 +793,7 @@
   </div>
 </footer>
 
-<script src="/js/tools/common.js?v=28.0"></script>
+<script src="/js/tools/common.js?v=28.1"></script>
 <script src="/js/tools/trend-analyzer.js?v=34.0"></script>
 </body>
 </html>

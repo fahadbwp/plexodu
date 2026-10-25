@@ -203,6 +203,55 @@ function filterCurrentVideos(q) {
   renderTrendingList(filtered, q);
 }
 
+// ── Trend Analyzer UI State Management ───────────────────────────────────────
+function updateKpiBadges(state, isCached = false) {
+  const totalViewsBadge = document.getElementById("kpiTotalViewsDelta");
+  const totalViewsDeltaText = document.getElementById("kpiTotalViewsDeltaText");
+  const avgEngBadge = document.getElementById("kpiAvgEngDelta");
+  const avgEngDeltaText = document.getElementById("kpiAvgEngDeltaText");
+  const topCatBadge = document.getElementById("kpiTopCatDelta");
+  const risingCountBadge = document.getElementById("kpiRisingCountDelta");
+
+  if (!totalViewsBadge || !totalViewsDeltaText) return;
+
+  if (state === "SUCCESS") {
+    if (isCached) {
+      totalViewsBadge.className = "stitch-kpi-badge amber";
+      totalViewsDeltaText.textContent = "Cached Snapshot";
+    } else {
+      totalViewsBadge.className = "stitch-kpi-badge mint";
+      totalViewsDeltaText.textContent = "Live YouTube RSS";
+    }
+    if (avgEngBadge && avgEngDeltaText) {
+      avgEngBadge.className = "stitch-kpi-badge mint";
+      avgEngDeltaText.textContent = "Ratio";
+    }
+    if (topCatBadge) topCatBadge.className = "stitch-kpi-badge violet";
+    if (risingCountBadge) risingCountBadge.className = "stitch-kpi-badge mint";
+  } else if (state === "EMPTY") {
+    totalViewsBadge.className = "stitch-kpi-badge amber";
+    totalViewsDeltaText.textContent = "No Data";
+    if (avgEngBadge && avgEngDeltaText) {
+      avgEngBadge.className = "stitch-kpi-badge amber";
+      avgEngDeltaText.textContent = "—";
+    }
+  } else if (state === "QUOTA_LIMITED") {
+    totalViewsBadge.className = "stitch-kpi-badge amber";
+    totalViewsDeltaText.textContent = "Quota Exceeded";
+    if (avgEngBadge && avgEngDeltaText) {
+      avgEngBadge.className = "stitch-kpi-badge amber";
+      avgEngDeltaText.textContent = "Rate Limited";
+    }
+  } else {
+    totalViewsBadge.className = "stitch-kpi-badge amber";
+    totalViewsDeltaText.textContent = "Unavailable";
+    if (avgEngBadge && avgEngDeltaText) {
+      avgEngBadge.className = "stitch-kpi-badge amber";
+      avgEngDeltaText.textContent = "Unavailable";
+    }
+  }
+}
+
 // ── Fetch Trending Feed from Live YouTube API ────────────────────────────────
 let feedRequestId = 0;
 async function fetchTrendingFeed(shouldScroll = false) {
@@ -222,12 +271,41 @@ async function fetchTrendingFeed(shouldScroll = false) {
     const res = await fetchWithTimeout(`/api/trending-feed?${params.toString()}`, {}, 45000);
     const data = await res.json();
     if (requestId !== feedRequestId) return;
+
+    if (res.status === 429) {
+      updateKpiBadges("QUOTA_LIMITED");
+      renderKpis(null, false);
+      renderViewsChart([], activeCategory);
+      renderCategoryChart([]);
+      showStatusBar(document.getElementById("statusLine"), "YouTube API quota limit reached. Please wait a moment or try again.", true);
+      const listEl = document.getElementById("pulseList");
+      if (listEl) {
+        listEl.innerHTML = `<div class="pulsecheck-empty-state">YouTube API quota limit reached. Please wait a few moments or try refreshing.</div>`;
+      }
+      return;
+    }
+
     if (!res.ok || data.error) {
       throw new Error(data.error || `API returned HTTP ${res.status}`);
     }
-    currentVideos = data.videos || [];
 
-    renderKpis(data.kpis || {});
+    currentVideos = data.videos || [];
+    const isCached = Boolean(data.cached || data.is_stale || data.from_cache);
+
+    if (currentVideos.length === 0) {
+      updateKpiBadges("EMPTY");
+      renderKpis(null, false);
+      renderViewsChart([], activeCategory);
+      renderCategoryChart([]);
+      const listEl = document.getElementById("pulseList");
+      if (listEl) {
+        listEl.innerHTML = `<div class="pulsecheck-empty-state">No matching public videos found for "${escapeHtml(activeQuery || activeCategory)}". Try clearing search or selecting a different category.</div>`;
+      }
+      return;
+    }
+
+    updateKpiBadges("SUCCESS", isCached);
+    renderKpis(data.kpis || {}, true);
     renderViewsChart(data.timeSeries || [], activeCategory);
     renderCategoryChart(data.catBreakdown || []);
     renderTrendingList(currentVideos, activeQuery);
@@ -246,9 +324,11 @@ async function fetchTrendingFeed(shouldScroll = false) {
     }
   } catch (err) {
     if (requestId !== feedRequestId) return;
+    const isQuota = /quota|429/i.test(err.message || "");
+    updateKpiBadges(isQuota ? "QUOTA_LIMITED" : "ERROR");
     showStatusBar(document.getElementById("statusLine"), err.message || "Unable to load YouTube data.", true);
     currentVideos = [];
-    renderKpis({});
+    renderKpis(null, false);
     renderViewsChart([], activeCategory);
     renderCategoryChart([]);
     const results = document.getElementById("resultsArea");
@@ -268,14 +348,24 @@ async function fetchTrendingFeed(shouldScroll = false) {
   }
 }
 
-// ── Render KPIs ──────────────────────────────────────────────────────────────
-function renderKpis(kpis) {
+// ── Render KPIs (Explicit Non-Misleading Placeholders on Error/Empty) ─────────
+function renderKpis(kpis, isValid = true) {
   const totalViewsVal = document.getElementById("kpiTotalViewsVal");
   const avgEngVal = document.getElementById("kpiAvgEngVal");
   const topCatVal = document.getElementById("kpiTopCatVal");
   const topCatDeltaText = document.getElementById("kpiTopCatDeltaText");
   const risingCountVal = document.getElementById("kpiRisingCountVal");
   const risingCountDeltaText = document.getElementById("kpiRisingCountDeltaText");
+
+  if (!isValid || !kpis || typeof kpis.totalViews === "undefined") {
+    if (totalViewsVal) totalViewsVal.textContent = "—";
+    if (avgEngVal) avgEngVal.textContent = "—";
+    if (topCatVal) topCatVal.textContent = "—";
+    if (topCatDeltaText) topCatDeltaText.textContent = "Unavailable";
+    if (risingCountVal) risingCountVal.textContent = "—";
+    if (risingCountDeltaText) risingCountDeltaText.textContent = "Unavailable";
+    return;
+  }
 
   if (totalViewsVal) {
     totalViewsVal.textContent = formatCompact(kpis.totalViews || 0);
