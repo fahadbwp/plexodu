@@ -98,6 +98,27 @@ def get_content_tokens(tokens: list[str]) -> list[str]:
 # Component Scoring Functions
 # -----------------------------------------------------------------------------
 
+def calculate_youtube_tag_chars(tags: list[str]) -> int:
+    """
+    Calculate the exact character count enforced by YouTube Studio and the YouTube Data API.
+    Multi-word tags (or tags containing whitespace or commas) are wrapped in quotation marks ("..."),
+    and all tags are joined by comma separators.
+    """
+    clean_tags = [t.strip() for t in tags if isinstance(t, str) and t.strip()]
+    if not clean_tags:
+        return 0
+    total = 0
+    for t in clean_tags:
+        if t.startswith('"') and t.endswith('"') and len(t) >= 2:
+            total += len(t)
+        elif any(c in t for c in (" ", "\t", ",")):
+            total += len(t) + 2
+        else:
+            total += len(t)
+    total += max(0, len(clean_tags) - 1)
+    return total
+
+
 def evaluate_title(title: str) -> dict[str, Any]:
     """
     Evaluate Title Quality (Max 25 points).
@@ -614,25 +635,41 @@ def evaluate_description(description: str) -> dict[str, Any]:
       (250+ chars) help YouTube understand content context, index chapters, and inform viewers.
     - Informative opening: The first 150 characters should introduce the video topic naturally,
       rather than opening immediately with raw links, promo codes, or hashtags.
-    - Hashtags: YouTube recommends 3-5 relevant hashtags. Using >15 causes YouTube to ignore
-      all hashtags on the video completely.
+    - Hashtags: YouTube recommends 3-5 relevant hashtags. Official YouTube policy states exceeding 60 hashtags causes YouTube to ignore all hashtags.
     - Keyword dump: Repeating unnatural lists of comma-separated keywords violates YouTube
       anti-spam policies.
     """
     clean_desc = (description or "").strip()
     char_len = len(clean_desc)
+    byte_len = len(clean_desc.encode("utf-8"))
     checks: list[dict[str, Any]] = []
     suggestions: list[dict[str, Any]] = []
 
-    # 1. Length bands (8 points)
+    # 1. Platform Limit & Length bands (8 points)
+    # YouTube Data API v3 specifies: snippet.description maximum 5000 bytes.
     length_pts = 0
-    if char_len >= 250:
+    if byte_len > 5000:
+        length_pts = 0
+        checks.append({
+            "id": "desc_length",
+            "component": "description",
+            "status": "fail",
+            "message": f"YouTube Platform Limit: Description exceeds YouTube Data API maximum of 5,000 bytes ({byte_len} bytes in UTF-8). Upload will be rejected by YouTube."
+        })
+        suggestions.append({
+            "priority": 1,
+            "impact": "critical",
+            "component": "description",
+            "message": f"Trim description by {byte_len - 5000} bytes to stay within YouTube's 5,000-byte platform limit.",
+            "fix": "Shorten description below 5,000 UTF-8 bytes."
+        })
+    elif char_len >= 250:
         length_pts = 8
         checks.append({
             "id": "desc_length",
             "component": "description",
             "status": "pass",
-            "message": f"Comprehensive description length ({char_len} characters)."
+            "message": f"Plexudo Tip: Comprehensive description length ({char_len} characters, {byte_len}/5000 bytes)."
         })
     elif 100 <= char_len < 250:
         length_pts = 5
@@ -640,7 +677,7 @@ def evaluate_description(description: str) -> dict[str, Any]:
             "id": "desc_length",
             "component": "description",
             "status": "pass",
-            "message": f"Adequate description length ({char_len} chars). Expanding to 250+ chars adds SEO depth."
+            "message": f"Plexudo Tip: Adequate description length ({char_len} chars, {byte_len}/5000 bytes). Expanding to 250+ chars adds SEO depth."
         })
         suggestions.append({
             "priority": 3,
@@ -655,7 +692,7 @@ def evaluate_description(description: str) -> dict[str, Any]:
             "id": "desc_length",
             "component": "description",
             "status": "warn",
-            "message": f"Description is very brief ({char_len} chars). Under 100 chars provides little context."
+            "message": f"Plexudo Tip: Description is very brief ({char_len} chars, {byte_len}/5000 bytes). Under 100 chars provides little context."
         })
         suggestions.append({
             "priority": 2,
@@ -736,37 +773,39 @@ def evaluate_description(description: str) -> dict[str, Any]:
         })
 
     # 3. Hashtag usage (3 points)
+    # YouTube Official Policy: "If a video has more than 60 hashtags, we'll ignore each hashtag on that video."
+    # Plexudo Creator Advice: 3-5 relevant hashtags is the recommended sweet spot.
     hashtag_pts = 3
     hashtags = re.findall(r"(?u)#[\w]+", clean_desc)
     ht_count = len(hashtags)
-    if ht_count > 15:
+    if ht_count > 60:
         hashtag_pts = 0
         checks.append({
             "id": "desc_hashtags",
             "component": "description",
             "status": "fail",
-            "message": f"Over 15 hashtags detected ({ht_count}). YouTube policy states all hashtags will be ignored."
+            "message": f"YouTube Policy Violation: Over 60 hashtags detected ({ht_count}). Official YouTube policy states videos with more than 60 hashtags will have each hashtag ignored, and may be flagged for over-tagging."
         })
         suggestions.append({
             "priority": 1,
-            "impact": "high",
+            "impact": "critical",
             "component": "description",
-            "message": "Reduce hashtags to 3-5. YouTube ignores all hashtags on uploads exceeding 15 hashtags.",
-            "fix": "Keep only the 3-5 most relevant hashtags."
+            "message": f"Reduce hashtags immediately. YouTube ignores all hashtags when exceeding 60 hashtags ({ht_count} found).",
+            "fix": "Delete excessive hashtags so total count is at most 3-5 (strictly <= 60)."
         })
-    elif 6 <= ht_count <= 15:
+    elif 6 <= ht_count <= 60:
         hashtag_pts = 1
         checks.append({
             "id": "desc_hashtags",
             "component": "description",
             "status": "warn",
-            "message": f"Contains {ht_count} hashtags. YouTube creators see best results with 3-5 hashtags."
+            "message": f"Plexudo Tip: Contains {ht_count} hashtags. Within YouTube's 60-hashtag limit, but Plexudo recommends 3-5 focused hashtags for cleaner presentation."
         })
         suggestions.append({
             "priority": 3,
             "impact": "low",
             "component": "description",
-            "message": "Trim hashtags to 3-5 focused tags to avoid looking spammy.",
+            "message": "Plexudo tip: Trim hashtags to 3-5 focused tags to avoid visual clutter.",
             "fix": "Keep 3-5 top hashtags."
         })
     elif 1 <= ht_count <= 5:
@@ -775,7 +814,7 @@ def evaluate_description(description: str) -> dict[str, Any]:
             "id": "desc_hashtags",
             "component": "description",
             "status": "pass",
-            "message": f"Optimal hashtag count ({ht_count} hashtags, YouTube standard is 3-5)."
+            "message": f"Optimal hashtag count ({ht_count} hashtags; aligns with Plexudo recommendation of 3-5)."
         })
     else:  # ht_count == 0
         hashtag_pts = 2
@@ -830,7 +869,7 @@ def evaluate_description(description: str) -> dict[str, Any]:
         "points": total_pts,
         "max": 20,
         "status": status,
-        "evidence": f"{char_len}/5000 chars, {ht_count} hashtags, opening snippet quality {opening_pts}/6",
+        "evidence": f"{char_len} chars ({byte_len}/5000 bytes), {ht_count} hashtags, opening snippet quality {opening_pts}/6",
         "checks": checks,
         "suggestions": suggestions,
     }
@@ -1046,8 +1085,8 @@ def evaluate_tags(
         }
 
     # 1. Total character count under YouTube's 500-char limit (4 points)
-    # YouTube joins tags with commas in their internal representation
-    total_tag_chars = sum(len(t) for t in clean_tags) + max(0, len(clean_tags) - 1)
+    # YouTube Studio and API calculate tag capacity by enclosing multi-word tags in quotes and joining with commas.
+    total_tag_chars = calculate_youtube_tag_chars(clean_tags)
     limit_pts = 4
     if total_tag_chars > 500:
         limit_pts = 0
@@ -1055,7 +1094,7 @@ def evaluate_tags(
             "id": "tag_char_limit",
             "component": "tags",
             "status": "fail",
-            "message": f"Tags exceed YouTube's 500-character limit ({total_tag_chars}/500 chars). Upload will fail."
+            "message": f"YouTube Platform Limit: Tag formatted characters ({total_tag_chars}/500 chars) exceed YouTube's 500-character limit. Note multi-word tags include quotation marks and commas per YouTube requirements."
         })
         suggestions.append({
             "priority": 1,
@@ -1069,7 +1108,7 @@ def evaluate_tags(
             "id": "tag_char_limit",
             "component": "tags",
             "status": "pass",
-            "message": f"Tag volume within YouTube's 500-character limit ({total_tag_chars}/500 chars)."
+            "message": f"YouTube Platform Limit: Tag volume within YouTube's 500-character limit ({total_tag_chars}/500 chars)."
         })
 
     # 2. Duplicate tags check (3 points)

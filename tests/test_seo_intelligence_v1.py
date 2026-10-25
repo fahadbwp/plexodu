@@ -35,6 +35,7 @@ from services.seo_engine import (
     ENGINE_VERSION,
     SCHEMA_VERSION,
     analyze_seo_metadata,
+    calculate_youtube_tag_chars,
 )
 
 # -----------------------------------------------------------------------------
@@ -409,3 +410,108 @@ def test_max_size_input_finishes_under_100ms():
 
     assert res["score"] >= 0
     assert elapsed_ms < 100.0, f"Max size evaluation took {elapsed_ms:.2f}ms (threshold: 100ms)"
+
+
+# -----------------------------------------------------------------------------
+# Policy & Platform Boundary Tests (Hashtags, Multi-word Tag Quotes, 5000-byte Desc)
+# -----------------------------------------------------------------------------
+
+@pytest.mark.parametrize("count,expected_status,is_policy_violation", [
+    (5, "pass", False),
+    (15, "warn", False),
+    (16, "warn", False),
+    (60, "warn", False),
+    (61, "fail", True),
+])
+def test_hashtag_policy_and_advice_thresholds(count, expected_status, is_policy_violation):
+    """
+    Verify YouTube official policy (>60 hashtags ignored/flagged) vs
+    Plexudo creator recommendation (3-5 hashtags) across boundary counts.
+    Exceeding 15 hashtags is NOT called a YouTube policy violation.
+    """
+    hashtags = " ".join(f"#tag{i}" for i in range(1, count + 1))
+    desc = f"In this video we review key concepts and tutorials.\n\n{hashtags}"
+    res = analyze_seo_metadata("Valid Title Testing Hashtags", desc, ["test"])
+
+    ht_check = next(c for c in res["checks"] if c["id"] == "desc_hashtags")
+    assert ht_check["status"] == expected_status
+
+    if is_policy_violation:
+        assert "YouTube Policy Violation" in ht_check["message"]
+        assert "Over 60 hashtags detected" in ht_check["message"]
+    else:
+        assert "YouTube Policy Violation" not in ht_check["message"]
+        if count in (15, 16, 60):
+            assert "Plexudo Tip" in ht_check["message"]
+            assert "60-hashtag limit" in ht_check["message"]
+
+
+def test_tag_character_calculation_with_quotes_commas_and_unicode():
+    """
+    Verify exact YouTube Studio tag character count accounting for:
+    - Multi-word tags enclosed in quotation marks (+2 chars)
+    - Comma separators between tags
+    - Unicode and Urdu/Hindi script tags
+    """
+    # 1. Single word tags
+    assert calculate_youtube_tag_chars(["python", "coding"]) == len("python,coding")  # 6+6+1 = 13
+
+    # 2. Multi-word tags with quotes added
+    # "python tutorial" (15 chars + 2 quotes = 17) + comma (1) + "coding" (6) = 24
+    assert calculate_youtube_tag_chars(["python tutorial", "coding"]) == 24
+
+    # 3. Unicode script with spaces
+    # "فری فائر" (8 chars + 2 quotes = 10) + comma (1) + "پرو گیمنگ" (9 chars + 2 quotes = 11) = 22
+    assert calculate_youtube_tag_chars(["فری فائر", "پرو گیمنگ"]) == 22
+
+    # 4. Empty or whitespace tags ignored
+    assert calculate_youtube_tag_chars(["", "   ", "python"]) == 6
+
+    # 5. Boundary testing 500 characters
+    # 49 tags of 9 chars each + 1 quote-free tag
+    # Construct exact 500 char payload
+    tags_500 = ["a" * 9 for _ in range(50)]  # 50 tags of 9 chars = 450 + 49 commas = 499 chars + 1 char = 500 chars
+    tags_500[0] = "a" * 10  # 451 + 49 = 500
+    assert calculate_youtube_tag_chars(tags_500) == 500
+
+    res_500 = analyze_seo_metadata("Title", "Description", tags_500)
+    tag_check_500 = next(c for c in res_500["checks"] if c["id"] == "tag_char_limit")
+    assert tag_check_500["status"] == "pass"
+
+    # 501 chars fails platform limit
+    tags_501 = list(tags_500)
+    tags_501.append("x")  # adds 1 comma + 1 char = 502 chars
+    res_501 = analyze_seo_metadata("Title", "Description", tags_501)
+    tag_check_501 = next(c for c in res_501["checks"] if c["id"] == "tag_char_limit")
+    assert tag_check_501["status"] == "fail"
+    assert "YouTube Platform Limit" in tag_check_501["message"]
+
+
+def test_description_5000_byte_boundary_utf8():
+    """
+    Verify YouTube Data API 5,000-byte maximum description validation.
+    Multi-byte UTF-8 characters count by byte length, not purely character count.
+    """
+    # 1. Exactly 5,000 ASCII bytes passes platform limit
+    desc_5000 = "a" * 5000
+    res_5000 = analyze_seo_metadata("Title", desc_5000, ["test"])
+    desc_check_5000 = next(c for c in res_5000["checks"] if c["id"] == "desc_length")
+    assert desc_check_5000["status"] == "pass"
+    assert "5000/5000 bytes" in desc_check_5000["message"]
+
+    # 2. 5,001 ASCII bytes fails platform limit
+    desc_5001 = "a" * 5001
+    res_5001 = analyze_seo_metadata("Title", desc_5001, ["test"])
+    desc_check_5001 = next(c for c in res_5001["checks"] if c["id"] == "desc_length")
+    assert desc_check_5001["status"] == "fail"
+    assert "YouTube Platform Limit: Description exceeds YouTube Data API maximum of 5,000 bytes" in desc_check_5001["message"]
+
+    # 3. Multi-byte Unicode: 2,600 Urdu characters (each 2 bytes = 5,200 bytes)
+    # Character count is 2,600 (<5000 chars), but UTF-8 byte count exceeds 5,000 bytes!
+    urdu_word = "اردو "  # 5 chars, 9 bytes in UTF-8
+    urdu_long_desc = urdu_word * 600  # 3,000 chars, 5,400 bytes
+    res_urdu_overflow = analyze_seo_metadata("Title", urdu_long_desc, ["test"])
+    urdu_check = next(c for c in res_urdu_overflow["checks"] if c["id"] == "desc_length")
+    assert urdu_check["status"] == "fail"
+    assert "bytes in UTF-8" in urdu_check["message"]
+    assert "5,000 bytes" in urdu_check["message"]
