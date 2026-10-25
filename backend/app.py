@@ -42,6 +42,7 @@ from services.trend_engine import (
 from services.trend_intelligence import analyze_trend_intelligence
 from services.report_generator import generate_pdf_report, generate_pdf_report_buffer
 from services.groq_service import chat_with_groq          # Groq AI Service (Llama 3.3 70B)
+from services.seo_engine import analyze_seo_metadata
 
 from services.security_guard import (
     rate_limiter,
@@ -980,7 +981,88 @@ def video_analysis():
         "views":         result.get("views") or result.get("view_count", 0),
         "published_at":  result.get("published_at") or result.get("upload_date", ""),
         "description":   result.get("description", ""),
+        "seo_quality":   analyze_seo_metadata(
+            title=result.get("title", ""),
+            description=result.get("description", ""),
+            tags=result.get("tags", []),
+        ),
     })
+
+
+# --------------------------------------------------------------------------
+# YouTube SEO Intelligence Endpoint (Metadata Quality & Optimization)
+# --------------------------------------------------------------------------
+@app.route("/api/seo/analyze", methods=["POST"])
+def analyze_seo():
+    # Enforce 64 KB route-specific body limit
+    raw_body = request.get_data()
+    if len(raw_body) > 65536:
+        return jsonify({"error": "Payload exceeds 64 KB limit"}), 413
+
+    if not request.is_json:
+        return jsonify({"error": "Content-Type must be application/json"}), 415
+
+    client_ip = request.remote_addr or "127.0.0.1"
+    allowed, retry_after = rate_limiter.is_allowed(f"seo_ip_{client_ip}", API_LIMIT_PER_MIN, 60)
+    if not allowed:
+        return jsonify({"error": f"Rate limit exceeded. Please wait {retry_after} seconds."}), 429
+
+    data = request.get_json(silent=True)
+    if data is None or not isinstance(data, dict):
+        return jsonify({"error": "Malformed or invalid JSON payload"}), 400
+
+    allowed_keys = {"title", "description", "tags", "focus_keyword", "language"}
+    extra_keys = set(data.keys()) - allowed_keys
+    if extra_keys:
+        return jsonify({"error": "Payload contains unrecognized fields"}), 400
+
+    if "title" not in data or not isinstance(data["title"], str):
+        return jsonify({"error": "Field 'title' is required and must be a string"}), 400
+
+    raw_title = data["title"]
+    if len(raw_title) > 200:
+        return jsonify({"error": "Field 'title' exceeds maximum length of 200 characters"}), 400
+
+    title = raw_title.strip()
+    if not title:
+        return jsonify({"error": "Field 'title' cannot be empty"}), 400
+
+    description = data.get("description", "")
+    if description is not None and not isinstance(description, str):
+        return jsonify({"error": "Field 'description' must be a string"}), 400
+    if description and len(description) > 10000:
+        return jsonify({"error": "Field 'description' exceeds maximum length of 10,000 characters"}), 400
+
+    tags = data.get("tags", [])
+    if tags is not None:
+        if not isinstance(tags, list):
+            return jsonify({"error": "Field 'tags' must be a list of strings"}), 400
+        if len(tags) > 100:
+            return jsonify({"error": "Field 'tags' exceeds maximum limit of 100 items"}), 400
+        for t in tags:
+            if not isinstance(t, str):
+                return jsonify({"error": "All items in 'tags' must be strings"}), 400
+            if len(t) > 100:
+                return jsonify({"error": "Individual tag exceeds maximum length of 100 characters"}), 400
+
+    focus_keyword = data.get("focus_keyword")
+    if focus_keyword is not None and not isinstance(focus_keyword, str):
+        return jsonify({"error": "Field 'focus_keyword' must be a string"}), 400
+    if focus_keyword and len(focus_keyword) > 100:
+        return jsonify({"error": "Field 'focus_keyword' exceeds maximum length of 100 characters"}), 400
+
+    language = data.get("language", "auto")
+    if language is not None and not isinstance(language, str):
+        return jsonify({"error": "Field 'language' must be a string"}), 400
+
+    result = analyze_seo_metadata(
+        title=title,
+        description=description or "",
+        tags=tags or [],
+        focus_keyword=focus_keyword,
+        language=language or "auto",
+    )
+    return jsonify(result), 200
 
 
 # /api/audit-log has been removed from the public API.
