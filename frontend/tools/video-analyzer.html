@@ -9,7 +9,7 @@
 <link rel="canonical" href="https://plexudo.vercel.app/tools/video-analyzer">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=3">
 <link rel="icon" type="image/png" sizes="64x64" href="/favicon.png?v=3">
-<link rel="stylesheet" href="/css/style.css?v=20.0">
+<link rel="stylesheet" href="/css/style.css?v=27.0">
 <script defer src="/js/analytics.js"></script>
 </head>
 <body>
@@ -112,6 +112,77 @@
       <div class="tool-metric-box">
         <div id="videoEngagementVal" class="tool-metric-val">0%</div>
         <div class="tool-metric-label">Engagement Ratio</div>
+      </div>
+    </div>
+
+    <!-- SEO Quality Score & Diagnostics Panel -->
+    <div class="seo-quality-panel" id="seoQualityPanel">
+      <div class="seo-panel-header">
+        <div class="seo-score-box">
+          <div class="seo-score-circle" id="seoScoreCircle" aria-label="SEO Quality Score">
+            <span id="seoScoreVal" class="seo-score-num" aria-live="polite">--</span>
+            <span class="seo-score-max">/100</span>
+          </div>
+          <div>
+            <div class="seo-rating-title" id="seoRatingTitle">SEO Quality Score</div>
+            <div style="font-size:0.85rem; color:#64748b;" id="seoScoreBasisNote">
+              Comprehensive metadata heuristic &amp; search snippet evaluation
+            </div>
+          </div>
+        </div>
+        <div>
+          <button id="toggleDraftBtn" class="tool-copy-action-btn" type="button" aria-expanded="false">
+            ✏️ Edit &amp; Test Draft
+          </button>
+        </div>
+      </div>
+
+      <div class="seo-disclaimer-banner">
+        <strong>Plexudo metadata heuristic, not a YouTube ranking factor.</strong>
+        YouTube algorithmically ranks videos based on viewer satisfaction, retention, and click-through signals. This score evaluates title clarity, snippet preview, description depth, tag hygiene, and anti-spam compliance.
+      </div>
+
+      <!-- Component Breakdown Grid -->
+      <div class="seo-breakdown-grid" id="seoBreakdownGrid"></div>
+
+      <!-- Draft & Optimization Mode (Collapsible) -->
+      <div class="seo-draft-card" id="seoDraftCard" style="display:none;">
+        <div class="seo-draft-header">
+          <h4 style="margin:0; font-size:1rem; color:#0f172a;">✏️ Live Metadata Draft Editor</h4>
+          <span style="font-size:0.8rem; color:#64748b;">Test changes in real time before publishing</span>
+        </div>
+        <div id="seoDraftStatus" class="tool-status-bar" style="display:none;"></div>
+        <div class="seo-form-group">
+          <label class="seo-form-label" for="seoFocusKeywordInput">🎯 Target Focus Keyword (Optional)</label>
+          <input type="text" id="seoFocusKeywordInput" class="tool-input-field" maxlength="100" placeholder="e.g. python tutorial, free fire tips, pubg settings...">
+        </div>
+        <div class="seo-form-group">
+          <label class="seo-form-label" for="seoDraftTitleInput">Video Title (Max 200 chars, YouTube standard 30-70)</label>
+          <input type="text" id="seoDraftTitleInput" class="tool-input-field" maxlength="200" placeholder="Enter video title...">
+        </div>
+        <div class="seo-form-group">
+          <label class="seo-form-label" for="seoDraftDescInput">Video Description</label>
+          <textarea id="seoDraftDescInput" class="seo-textarea-field" rows="5" maxlength="10000" placeholder="Enter video description..."></textarea>
+        </div>
+        <div class="seo-form-group">
+          <label class="seo-form-label" for="seoDraftTagsInput">Video Tags (Comma-separated, max 500 characters)</label>
+          <input type="text" id="seoDraftTagsInput" class="tool-input-field" placeholder="tag 1, tag 2, tag 3...">
+        </div>
+        <div>
+          <button id="reanalyzeSeoBtn" class="tool-primary-btn" type="button">Re-evaluate Draft ⚡</button>
+        </div>
+      </div>
+
+      <!-- Actionable Suggestions -->
+      <div class="seo-suggestions-container">
+        <h4 style="margin:0 0 12px 0; font-size:1rem; color:#0f172a;">💡 Prioritized Actionable Recommendations</h4>
+        <div id="seoSuggestionsList"></div>
+      </div>
+
+      <!-- Honest Unavailable Telemetry -->
+      <div>
+        <h4 style="margin:0 0 10px 0; font-size:0.9rem; color:#475569;">🔒 Production Telemetry Status</h4>
+        <div class="seo-unavailable-grid" id="seoUnavailableGrid"></div>
       </div>
     </div>
 
@@ -224,6 +295,6 @@
 </footer>
 
 <script src="/js/tools/common.js?v=13.0"></script>
-<script src="/js/tools/video-analyzer.js?v=15.0"></script>
+<script src="/js/tools/video-analyzer.js?v=16.0"></script>
 </body>
 </html>
