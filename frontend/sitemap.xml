@@ -2,62 +2,79 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://plexudo.vercel.app/</loc>
-    <lastmod>2026-08-31</lastmod>
+    <lastmod>2026-10-25</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://plexudo.vercel.app/tools</loc>
-    <lastmod>2026-09-13</lastmod>
+    <lastmod>2026-10-25</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://plexudo.vercel.app/tools/trend-analyzer</loc>
-    <lastmod>2026-09-13</lastmod>
+    <lastmod>2026-10-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://plexudo.vercel.app/tools/video-analyzer</loc>
-    <lastmod>2026-09-13</lastmod>
+    <lastmod>2026-10-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
-
   <url>
     <loc>https://plexudo.vercel.app/tools/competitor-audit</loc>
-    <lastmod>2026-09-13</lastmod>
+    <lastmod>2026-10-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://plexudo.vercel.app/tools/ai-strategist</loc>
-    <lastmod>2026-09-13</lastmod>
+    <lastmod>2026-10-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://plexudo.vercel.app/blog/</loc>
-    <lastmod>2026-08-31</lastmod>
+    <lastmod>2026-10-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://plexudo.vercel.app/blog/google-gemini-student-offer-pakistan-2026/</loc>
-    <lastmod>2026-08-31</lastmod>
+    <lastmod>2026-10-25</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://plexudo.vercel.app/privacy.html</loc>
-    <lastmod>2026-08-31</lastmod>
+    <loc>https://plexudo.vercel.app/blog/how-to-write-high-ctr-youtube-titles/</loc>
+    <lastmod>2026-10-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://plexudo.vercel.app/blog/how-to-find-high-search-low-competition-youtube-keywords/</loc>
+    <lastmod>2026-10-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://plexudo.vercel.app/blog/youtube-competitor-channel-analysis-guide/</loc>
+    <lastmod>2026-10-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://plexudo.vercel.app/privacy</loc>
+    <lastmod>2026-10-25</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://plexudo.vercel.app/terms.html</loc>
-    <lastmod>2026-08-31</lastmod>
+    <loc>https://plexudo.vercel.app/terms</loc>
+    <lastmod>2026-10-25</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
