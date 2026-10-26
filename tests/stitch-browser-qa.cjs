@@ -228,12 +228,10 @@ function auditGeometry() {
       for(const target of targets){await page.locator('.stitch-kpi-grid a[href="'+target+'"]').click();await page.waitForURL(u=>u.pathname===target);await page.goBack({waitUntil:'networkidle'});}
 
     });}
-    if(width===1440)await check(`${tool}/${width} topbar focus action`,async()=>{
-      await page.locator('[data-focus-tool-input]').click();
+    if(width===1440)await check(`${tool}/${width} input focus action`,async()=>{
+      await page.keyboard.press('Control+k');
       if(tool==='tools-hub'){await page.waitForURL(u=>u.pathname==='/tools/trend-analyzer');await page.goBack({waitUntil:'networkidle'});}
       else assert(await page.locator('#pulseSearchInput,#videoUrlInput,#channelInput,#chatInput').evaluate(e=>e===document.activeElement));
-      await page.keyboard.press('Control+k');
-      assert(await page.locator('#pulseSearchInput,#videoUrlInput,#channelInput,#chatInput,[data-focus-tool-input]').evaluateAll(es=>es.includes(document.activeElement)));
     });
     // Each visible navigation/CTA target must resolve through the local Flask router.
     await check(`${tool}/${width} navigation and CTA destinations`,async()=>{

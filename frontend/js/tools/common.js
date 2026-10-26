@@ -196,7 +196,14 @@ document.addEventListener("keydown", (e) => {
   const drawer = document.getElementById("stitchMobileDrawer") || document.getElementById("mobileDrawer");
   if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k" && !drawer?.classList.contains("active")) {
     const input = document.querySelector("#pulseSearchInput, #videoUrlInput, #channelInput, #chatInput, [data-focus-tool-input]");
-    if (input) { e.preventDefault(); input.focus(); }
+    if (input) {
+      e.preventDefault();
+      input.focus();
+      if (typeof input.select === "function") input.select();
+    } else {
+      e.preventDefault();
+      window.location.href = "/tools/trend-analyzer";
+    }
   }
   if (e.key === "Tab" && drawer?.classList.contains("active")) {
     const items = [...drawer.querySelectorAll("button, a[href], input, select, textarea, [tabindex]:not([tabindex='-1'])")]
