@@ -1,7 +1,7 @@
 /* Scoped usability improvements for the Trend Analyzer. */
 .trend-ui .pulsecheck-filter-bar { gap: 16px; padding-bottom: 16px; }
 .trend-ui .pulsecheck-filter-group { gap: 12px; flex-wrap: wrap; }
-.trend-ui .pulsecheck-cat-bar { padding-top: 16px; padding-bottom: 20px; }
+.trend-ui .pulsecheck-cat-bar { padding-top: 8px; padding-bottom: 4px; }
 .trend-ui .pulsecheck-select,
 .trend-ui .pulsecheck-pill,
 .trend-ui .pulsecheck-cat-chip { min-height: 44px; border-radius: 12px; }

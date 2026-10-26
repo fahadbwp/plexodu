@@ -69,6 +69,13 @@ if (videoUrlInput) {
   videoUrlInput.addEventListener("keydown", (e) => {
     if (e.key === "Enter") runVideoAnalysis();
   });
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const urlParam = urlParams.get("url") || urlParams.get("v") || urlParams.get("video");
+  if (urlParam) {
+    videoUrlInput.value = urlParam;
+    setTimeout(() => runVideoAnalysis(), 300);
+  }
 }
 
 if (copyTitleBtn) copyTitleBtn.addEventListener("click", () => safeCopyToClipboard(currentVideoTitle, copyTitleBtn));

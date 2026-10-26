@@ -71,8 +71,9 @@ def test_chat_returns_reply_key(client, flask_mod):
     assert data["reply"] == "Here is your strategy!"
 
 
-def test_chat_topic_detection_and_fallback(client, flask_mod):
+def test_chat_topic_detection_and_fallback(client, flask_mod, monkeypatch):
     """Verify /api/chat automatically detects trending topic and calls fallback if groq fails."""
+    monkeypatch.setenv("GROQ_API_KEY", "test-groq-key")
     # When Groq request fails, fallback is called
     with patch("backend.services.groq_service.requests.post", side_effect=Exception("API key unavailable")):
         res = client.post(

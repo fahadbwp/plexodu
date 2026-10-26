@@ -150,6 +150,8 @@ let viewsChart = null;
 let catChart = null;
 let lowerViewsChart = null;
 let currentTrendId = null;
+let currentKpis = {};
+let activeVideoTab = "all";
 let currentKeyword = "";
 let currentTimelineRaw = [];
 let currentLowerRange = "all";
@@ -265,8 +267,12 @@ function initTimeframePills() {
   const pills = document.querySelectorAll(".pulsecheck-pill");
   pills.forEach((pill) => {
     pill.addEventListener("click", () => {
-      pills.forEach((p) => p.classList.remove("active"));
-      pill.classList.add("active");
+      pills.forEach((p) => {
+        p.classList.remove("active", "bg-[#6063EE]", "text-white", "shadow-sm", "font-semibold");
+        p.classList.add("text-[#767586]", "font-medium");
+      });
+      pill.classList.add("active", "bg-[#6063EE]", "text-white", "shadow-sm", "font-semibold");
+      pill.classList.remove("text-[#767586]", "font-medium");
       activeTimeframe = pill.getAttribute("data-timeframe") || "7d";
       fetchTrendingFeed();
     });
@@ -450,9 +456,13 @@ async function fetchTrendingFeed(shouldScroll = false) {
     }
 
     updateKpiBadges("SUCCESS", isCached);
+    currentKpis = data.kpis || {};
     const sourceLabel = document.getElementById("kpiTotalViewsDeltaText");
     if (sourceLabel && data.is_stale) sourceLabel.textContent = "Cached Snapshot · stale";
     renderKpis(data.kpis || {}, true);
+    updateFormatBreakdownCard(currentVideos);
+    updateVideoTabStates();
+    updateExportButtons();
     renderViewsChart(data.timeSeries || [], activeCategory);
     renderTrendCanvasVisual(data.timeSeries || [], activeCategory);
     renderCategoryChart(data.catBreakdown || []);
@@ -609,23 +619,81 @@ function renderKpis(kpis, isValid = true) {
     kpiGaugeArc.setAttribute("d", `M 20 80 A 60 60 0 0 1 ${arcX.toFixed(1)} ${arcY.toFixed(1)}`);
   }
 
-  // 7. Format breakdown in capsule bar
+
+// ── Shared Format Breakdown Computation (Used by KPI bar & Format card) ─────
+function computeFormatBreakdown(videos) {
+  if (!videos || videos.length === 0) {
+    return { shortsPct: 0, longPct: 0, otherPct: 0 };
+  }
+  const total = videos.length;
+  let shortsCount = 0;
+  let longCount = 0;
+  let otherCount = 0;
+  for (const v of videos) {
+    const d = v.duration_sec;
+    if (d != null && d > 0) {
+      if (d <= 60 || /#shorts/i.test(v.title || "")) {
+        shortsCount++;
+      } else if (d >= 480) {
+        longCount++;
+      } else {
+        otherCount++;
+      }
+    } else {
+      if (v.is_short || /#shorts/i.test(v.title || "")) {
+        shortsCount++;
+      } else {
+        longCount++;
+      }
+    }
+  }
+  const shortsPct = Math.round((shortsCount / total) * 100);
+  const longPct = Math.round((longCount / total) * 100);
+  const otherPct = Math.max(0, 100 - shortsPct - longPct);
+  return { shortsPct, longPct, otherPct };
+}
+
+function updateFormatBreakdownCard(videos) {
+  const { shortsPct, longPct, otherPct } = computeFormatBreakdown(videos);
+  const donutShortsPct = document.getElementById("donutShortsPct");
+  if (donutShortsPct) donutShortsPct.textContent = `${shortsPct}%`;
+
+  const circ = 238.7;
+  const donutShortsArc = document.getElementById("donutShortsArc");
+  if (donutShortsArc && typeof donutShortsArc.setAttribute === "function") {
+    const offset = circ * (1 - shortsPct / 100);
+    donutShortsArc.setAttribute("stroke-dashoffset", offset.toFixed(1));
+  }
+  const donutLongArc = document.getElementById("donutLongArc");
+  if (donutLongArc && typeof donutLongArc.setAttribute === "function") {
+    const offset = circ * (1 - (shortsPct + longPct) / 100);
+    donutLongArc.setAttribute("stroke-dashoffset", offset.toFixed(1));
+  }
+
+  const formatShortsStat = document.getElementById("formatShortsStat");
+  if (formatShortsStat) formatShortsStat.textContent = `${shortsPct}%`;
+
+  const formatLongStat = document.getElementById("formatLongStat");
+  if (formatLongStat) formatLongStat.textContent = `${longPct}%`;
+
+  const formatLiveStat = document.getElementById("formatLiveStat");
+  if (formatLiveStat) formatLiveStat.textContent = `${otherPct}%`;
+}
+
+  // 7. Format breakdown in capsule bar (consistent computation)
   if (kpiFormatCapsuleBar && currentVideos.length > 0) {
-    const shortsCount = currentVideos.filter(v => v.is_short || (v.duration_sec && v.duration_sec < 60) || /#shorts/i.test(v.title)).length;
-    const shortsPct = Math.round((shortsCount / currentVideos.length) * 100);
-    const longPct = Math.max(15, Math.round((100 - shortsPct) * 0.7));
-    const livePct = 100 - shortsPct - longPct;
+    const { shortsPct, longPct, otherPct } = computeFormatBreakdown(currentVideos);
     kpiFormatCapsuleBar.innerHTML = `
       <div class="h-full bg-[#4648D4]" style="width: ${shortsPct}%"></div>
       <div class="h-full bg-[#8A4CFC]" style="width: ${longPct}%"></div>
-      <div class="h-full bg-[#00885D]" style="width: ${livePct}%"></div>
+      <div class="h-full bg-[#00885D]" style="width: ${otherPct}%"></div>
     `;
     const legend = document.getElementById("kpiFormatLegend");
     if (legend) {
       legend.innerHTML = `
         <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-[#4648D4]"></span>Shorts ${shortsPct}%</span>
         <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-[#8A4CFC]"></span>Long ${longPct}%</span>
-        <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-[#00885D]"></span>Live ${livePct}%</span>
+        <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-[#00885D]"></span>Live/Other ${otherPct}%</span>
       `;
     }
   }
@@ -837,18 +905,37 @@ function renderTrendingList(videos, query) {
       const hasMomentum = v.momentumScore != null && Number.isFinite(momentum) && momentum >= 0 && momentum <= 100;
       const hue = v.hue || "#4F46E5";
       const vidId = v.id || v.video_id || "";
-      const thumbUrl = v.thumbnail || `https://i.ytimg.com/vi/${vidId}/hqdefault.jpg`;
-      const dur = v.duration || (v.duration_sec ? `${Math.floor(v.duration_sec/60)}:${String(v.duration_sec%60).padStart(2,'0')}` : "08:24");
+      const thumbUrl = v.thumbnail || (vidId ? `https://i.ytimg.com/vi/${vidId}/hqdefault.jpg` : "");
+      let dur = "—";
+      if (v.duration) {
+        dur = v.duration;
+      } else if (v.duration_sec != null && Number.isFinite(Number(v.duration_sec)) && Number(v.duration_sec) > 0) {
+        const s = Number(v.duration_sec);
+        const h = Math.floor(s / 3600);
+        const m = Math.floor((s % 3600) / 60);
+        const sec = s % 60;
+        dur = h > 0 ? `${h}:${String(m).padStart(2, '0')}:${String(sec).padStart(2, '0')}` : `${m}:${String(sec).padStart(2, '0')}`;
+      }
       const engagementText = v.engagement != null && Number.isFinite(Number(v.engagement)) ? Number(v.engagement).toFixed(1) + "%" : "Unavailable";
       const momentumText = hasMomentum ? momentum + " / 100 idx" : "Pending";
       const velocityHourly = formatCompact(Math.round((v.views || 1000) / Math.max(1, v.hoursAgo || 6)));
+      const ageText = v.hoursAgo != null && Number.isFinite(Number(v.hoursAgo))
+        ? (Number(v.hoursAgo) >= 48 ? `${Math.floor(Number(v.hoursAgo) / 24)}d ago` : `${v.hoursAgo}h ago`)
+        : "—";
+
+      const hasSentiment = v.sentiment != null && Number.isFinite(Number(v.sentiment));
+      const sentimentPct = hasSentiment ? Math.max(0, Math.min(100, Math.round(v.sentiment))) : null;
+      const sentimentLabel = hasSentiment ? `${sentimentPct}% Positive` : "—";
+      const sentimentSub = hasSentiment ? "Sampled" : "Unavailable";
+      const barWidth = hasSentiment ? `${sentimentPct}%` : "0%";
+      const barBg = hasSentiment ? "bg-[#006C49]" : "bg-[#C5C6D0]";
 
       return `
       <div class="p-3.5 sm:p-4 rounded-xl bg-[#F2F3FF]/60 hover:bg-[#F2F3FF] border border-[#EAEDFF] transition-all flex flex-col lg:grid lg:grid-cols-12 gap-3.5 items-start lg:items-center pulsecheck-row">
         <!-- Col 1: Video details & Thumbnail (5 cols) -->
         <div class="col-span-5 flex items-start gap-3 w-full min-w-0">
           <div class="relative w-28 h-16 sm:w-32 sm:h-20 rounded-xl overflow-hidden shrink-0 shadow-sm bg-[#EAEDFF] flex items-center justify-center">
-            ${v.thumbnail ? `<img src="${escapeAttr(thumbUrl)}" alt="${escapeAttr(v.title)}" class="w-full h-full object-cover" loading="lazy" />` : `
+            ${thumbUrl ? `<img src="${escapeAttr(thumbUrl)}" alt="${escapeAttr(v.title)}" class="w-full h-full object-cover" loading="lazy" />` : `
               <div class="w-full h-full flex items-center justify-center bg-[#6063EE]/15">
                 <span class="material-symbols-outlined text-[#4648D4] text-[24px]">play_circle</span>
               </div>
@@ -862,7 +949,7 @@ function renderTrendingList(videos, query) {
               <span class="px-2 py-0.5 rounded-full bg-[#EADDFF] text-[#25005A] text-[10px] font-bold truncate">
                 ${escapeHtml(v.category || "Trending")}
               </span>
-              <span class="text-[11px] text-[#767586]">${v.hoursAgo}h ago</span>
+              <span class="text-[11px] text-[#767586]">${ageText}</span>
             </div>
             <h3 class="text-xs sm:text-sm font-bold text-[#131B2E] truncate leading-snug hover:text-[#4648D4] transition-colors" title="${escapeAttr(v.title)}">
               ${escapeHtml(v.title)}
@@ -898,12 +985,11 @@ function renderTrendingList(videos, query) {
         <!-- Col 4: Sentiment (2 cols) -->
         <div class="col-span-2 flex flex-col gap-1 w-full">
           <div class="flex items-center justify-between text-[11px]">
-            <span class="text-[#006C49] font-bold">84% Positive</span>
-            <span class="text-[#767586]">Sampled</span>
+            <span class="${hasSentiment ? "text-[#006C49] font-bold" : "text-[#767586] font-medium"}">${sentimentLabel}</span>
+            <span class="text-[#767586]">${sentimentSub}</span>
           </div>
           <div class="w-full h-2 rounded-full bg-[#E2E7FF] overflow-hidden flex">
-            <div class="h-full bg-[#006C49]" style="width: 84%"></div>
-            <div class="h-full bg-[#DAE2FD]" style="width: 16%"></div>
+            <div class="h-full ${barBg}" style="width: ${barWidth}"></div>
           </div>
         </div>
 
@@ -920,6 +1006,62 @@ function renderTrendingList(videos, query) {
     .join("");
 }
 
+
+// ── Video Filtering Tabs (All / Breakout / Under 100k / Shorts) ──────────────
+function updateVideoTabStates() {
+  if (typeof document === "undefined" || !document.querySelectorAll) return;
+  const hasSubscribers = currentVideos.some(v => v.subscribers != null || v.subscriber_count != null);
+  const tabs = document.querySelectorAll("#videoFilterTabs button, .video-tab-btn");
+  if (!tabs || !tabs.forEach) return;
+  tabs.forEach(btn => {
+    if (!btn || !btn.getAttribute) return;
+    const f = btn.getAttribute("data-filter") || (btn.getAttribute("onclick") || "").match(/'([^']+)'/)?.[1];
+    if (f === "breakout" || f === "under100k") {
+      if (!hasSubscribers) {
+        if (btn.classList && typeof btn.classList.add === "function") btn.classList.add("opacity-50", "cursor-not-allowed");
+        if (typeof btn.setAttribute === "function") btn.setAttribute("title", "Data not available: YouTube Public API does not provide subscriber counts in video searches");
+      } else {
+        if (btn.classList && typeof btn.classList.remove === "function") btn.classList.remove("opacity-50", "cursor-not-allowed");
+        if (typeof btn.removeAttribute === "function") btn.removeAttribute("title");
+      }
+    }
+  });
+}
+
+function filterVideoTab(filter) {
+  activeVideoTab = filter || "all";
+  const hasSubscribers = currentVideos.some(v => v.subscribers != null || v.subscriber_count != null);
+  if ((filter === "breakout" || filter === "under100k") && !hasSubscribers) {
+    const statusLine = document.getElementById("statusLine");
+    if (typeof showStatusBar === "function" && statusLine) {
+      showStatusBar(statusLine, "Data not available: YouTube Public Data API does not expose subscriber counts in video searches", false);
+    }
+    return;
+  }
+
+  const btns = document.querySelectorAll("#videoFilterTabs button, .video-tab-btn");
+  btns.forEach(btn => {
+    const f = btn.getAttribute("data-filter") || (btn.getAttribute("onclick") || "").match(/'([^']+)'/)?.[1];
+    if (f === filter) {
+      btn.className = "video-tab-btn px-3 py-1.5 rounded-lg bg-[#4648D4] text-white text-xs font-semibold shrink-0";
+    } else {
+      const isDimmed = (f === "breakout" || f === "under100k") && !hasSubscribers;
+      btn.className = "video-tab-btn px-3 py-1.5 rounded-lg text-[#464554] hover:text-[#131B2E] text-xs font-medium shrink-0" + (isDimmed ? " opacity-50 cursor-not-allowed" : "");
+    }
+  });
+
+  let filtered = currentVideos;
+  if (filter === "shorts") {
+    filtered = currentVideos.filter(v => (v.duration_sec ? v.duration_sec <= 60 : (v.is_short || /#shorts/i.test(v.title || ""))));
+  } else if (filter === "breakout" && hasSubscribers) {
+    filtered = currentVideos.filter(v => (v.momentumScore || 0) > 60);
+  } else if (filter === "under100k" && hasSubscribers) {
+    filtered = currentVideos.filter(v => (v.subscriber_count || v.subscribers || 0) < 100000);
+  }
+  renderTrendingList(filtered, activeQuery);
+}
+if (typeof window !== "undefined") window.filterVideoTab = filterVideoTab;
+
 // ── Render Deep Intelligence (Velocity, Virality, Sentiment, Tags) ──────────
 function renderDeepIntelligence(ytData) {
   const resultsArea = document.getElementById("resultsArea");
@@ -927,6 +1069,27 @@ function renderDeepIntelligence(ytData) {
 
   currentTrendId = ytData.trend_id || null;
   currentKeyword = ytData.keyword || activeQuery || "";
+  updateExportButtons();
+
+  const oppBadge = document.getElementById("opportunityScoreBadge");
+  if (oppBadge) {
+    const intelObj = ytData.trend_intelligence || {};
+    const oppVal = intelObj.opportunity_score != null ? intelObj.opportunity_score : (ytData.opportunity_score != null ? ytData.opportunity_score : null);
+    if (oppVal != null && Number.isFinite(Number(oppVal))) {
+      oppBadge.textContent = `Opportunity Score: ${Math.round(oppVal)}/100`;
+      if (oppBadge.classList && typeof oppBadge.classList.remove === "function") {
+        oppBadge.classList.remove("hidden");
+      } else {
+        oppBadge.style.display = "inline-flex";
+      }
+    } else {
+      if (oppBadge.classList && typeof oppBadge.classList.add === "function") {
+        oppBadge.classList.add("hidden");
+      } else {
+        oppBadge.style.display = "none";
+      }
+    }
+  }
 
   // 1. First Scan / Educational Banner
   const trendBanner = document.getElementById("trendBanner");
@@ -1255,7 +1418,7 @@ function renderLowerChart(dataPoints, range = "all") {
   if (isBaseline) {
     // ── Single Point Baseline Experience ──
     const pt = dataPoints[0];
-    const val = Number(pt.views || 0);
+    const val = Number((currentKpis && currentKpis.totalViews != null) ? currentKpis.totalViews : (pt.views || 0));
     const dateStr = pt.date ? pt.date.split(" ")[0] : "Today";
     const timeStr = pt.date ? (pt.date.split(" ")[1] || "") : "";
 
@@ -1496,6 +1659,30 @@ function initTimeframeTabs() {
 
 
 // ── Connected Actions & Exports ─────────────────────────────────────────────
+function updateExportButtons() {
+  const expCsv = document.getElementById("exportCsvBtn");
+  const expPdf = document.getElementById("exportPdfBtn");
+  const enabled = Boolean(currentTrendId);
+  for (const btn of [expCsv, expPdf]) {
+    if (!btn) continue;
+    btn.disabled = !enabled;
+    if (btn.classList && typeof btn.classList.add === "function") {
+      if (!enabled) {
+        btn.classList.add("opacity-50", "cursor-not-allowed");
+      } else {
+        btn.classList.remove("opacity-50", "cursor-not-allowed");
+      }
+    }
+    if (typeof btn.setAttribute === "function") {
+      if (!enabled) {
+        btn.setAttribute("title", "Run a topic search first to generate export data");
+      } else if (typeof btn.removeAttribute === "function") {
+        btn.removeAttribute("title");
+      }
+    }
+  }
+}
+
 function initConnectedActions() {
   const ctaStrat = document.getElementById("ctaStrategistBtn");
   if (ctaStrat) {
@@ -1515,7 +1702,13 @@ function initConnectedActions() {
   const expPdf = document.getElementById("exportPdfBtn");
   if (expPdf) {
     expPdf.addEventListener("click", () => {
-      if (!currentTrendId) return;
+      if (!currentTrendId) {
+        const statusLine = document.getElementById("statusLine");
+        if (typeof showStatusBar === "function" && statusLine) {
+          showStatusBar(statusLine, "Export unavailable: please run a topic search first", false);
+        }
+        return;
+      }
       window.location.href = `/api/report/${currentTrendId}`;
     });
   }
@@ -1523,10 +1716,18 @@ function initConnectedActions() {
   const expCsv = document.getElementById("exportCsvBtn");
   if (expCsv) {
     expCsv.addEventListener("click", () => {
-      if (!currentTrendId) return;
+      if (!currentTrendId) {
+        const statusLine = document.getElementById("statusLine");
+        if (typeof showStatusBar === "function" && statusLine) {
+          showStatusBar(statusLine, "Export unavailable: please run a topic search first", false);
+        }
+        return;
+      }
       window.location.href = `/api/export-csv/${currentTrendId}`;
     });
   }
+
+  updateExportButtons();
 }
 
 // Delegated click listener for tags and titles clipboard copying

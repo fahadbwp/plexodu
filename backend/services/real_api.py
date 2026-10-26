@@ -354,7 +354,7 @@ def fetch_youtube_data(keyword: str, region: str = "Pakistan", category: str = "
     if is_trending_mode:
         try:
             params = {
-                "part": "snippet,statistics",
+                "part": "snippet,statistics,contentDetails",
                 "chart": "mostPopular",
                 "regionCode": region_code,
                 "maxResults": 18,
@@ -425,7 +425,7 @@ def fetch_youtube_data(keyword: str, region: str = "Pakistan", category: str = "
             try:
                 quota_tracker.record_call("videos.list", 1)
                 stats_res = requests.get(VIDEOS_URL, params={
-                    "part": "snippet,statistics",
+                    "part": "snippet,statistics,contentDetails",
                     "id": ",".join(video_ids[:18]),
                     "key": api_key,
                 }, timeout=8)
@@ -479,6 +479,25 @@ def fetch_youtube_data(keyword: str, region: str = "Pakistan", category: str = "
         # Distinguish estimated lifetime-average views/hour from observed multi-point velocity
         estimated_views_per_hour = round(v_views / max(1, hours_ago), 1)
 
+        content_details = it.get("contentDetails", {})
+        dur_iso = content_details.get("duration", "")
+        dur_sec = _parse_duration(dur_iso) if dur_iso else 0
+        if dur_sec > 0:
+            dur_h = dur_sec // 3600
+            dur_m = (dur_sec % 3600) // 60
+            dur_s = dur_sec % 60
+            v_duration = f"{dur_h}:{dur_m:02d}:{dur_s:02d}" if dur_h > 0 else f"{dur_m:02d}:{dur_s:02d}"
+        else:
+            v_duration = None
+
+        thumbnails = snip.get("thumbnails", {})
+        v_thumb = (
+            thumbnails.get("high", {}).get("url")
+            or thumbnails.get("medium", {}).get("url")
+            or thumbnails.get("default", {}).get("url")
+            or (f"https://i.ytimg.com/vi/{v_id}/hqdefault.jpg" if v_id and not str(v_id).startswith("yt-") else None)
+        )
+
         raw_videos.append({
             "id": v_id,
             "title": v_title,
@@ -494,6 +513,9 @@ def fetch_youtube_data(keyword: str, region: str = "Pakistan", category: str = "
             "engagement": v_eng,
             "estimated_views_per_hour": estimated_views_per_hour,
             "velocity": estimated_views_per_hour,
+            "duration": v_duration,
+            "duration_sec": dur_sec,
+            "thumbnail": v_thumb,
             "published_at": v_published[:10] if v_published else "—",
         })
 

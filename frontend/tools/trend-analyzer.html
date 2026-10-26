@@ -327,7 +327,7 @@ tailwind.config = {
           <!-- Search Bar -->
           <div class="relative flex-1 min-w-[240px]">
             <span class="absolute left-3.5 top-1/2 -translate-y-1/2 material-symbols-outlined text-[#4648D4] text-[20px]">search_insights</span>
-            <input type="text" id="pulseSearchInput" class="w-full h-11 pl-11 pr-4 rounded-xl bg-[#F2F3FF] text-[#131B2E] text-sm font-medium border border-transparent focus:outline-none focus:bg-white focus:border-[#6063EE] shadow-sm transition-all placeholder:text-[#767586]" placeholder="Search keywords, niche topics, or creators..." autocomplete="off" aria-label="Search trending topics" />
+            <input type="text" id="pulseSearchInput" class="w-full h-11 pl-11 pr-4 rounded-xl bg-[#F2F3FF] text-[#131B2E] text-sm font-medium border border-transparent focus:outline-none focus:bg-white focus:border-[#6063EE] shadow-sm transition-all placeholder:text-[#767586]" placeholder="Search topics, keywords, creators..." autocomplete="off" aria-label="Search trending topics" />
             <div id="suggestionsDropdown" class="suggestions-dropdown" style="display:none;"></div>
           </div>
 
@@ -495,7 +495,7 @@ tailwind.config = {
             </div>
           </div>
           <div class="flex items-center justify-between text-[11px] text-[#767586] font-label">
-            <span>0 (Stagnant)</span>
+            <span>Scale: 0–100</span>
             <span id="kpiTopCatDeltaText">Leader</span>
           </div>
           <!-- Contract compatibility anchors -->
@@ -551,7 +551,7 @@ tailwind.config = {
                 <h2 id="viewsTrendTitle" class="text-base sm:text-lg font-bold text-[#131B2E] tracking-tight font-headline">
                   Topic Velocity vs Historical Baseline
                 </h2>
-                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-[#EEF2FF] text-[#4F46E5] border border-[#C7D2FE]/70">
+                <span id="viewsTrendCatBadge" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-[#EEF2FF] text-[#4F46E5] border border-[#C7D2FE]/70">
                   Sampled Age Brackets
                 </span>
               </div>
@@ -697,7 +697,7 @@ tailwind.config = {
                   <span class="font-semibold text-[#131B2E]">YouTube Shorts</span>
                 </div>
                 <div class="flex items-center gap-2">
-                  <span class="text-[#006C49] font-bold">+68% velocity</span>
+                  <span id="formatShortsVelocity" class="text-[#767586] font-medium">—</span>
                   <span id="formatShortsStat" class="text-[#131B2E] font-semibold">52%</span>
                 </div>
               </div>
@@ -729,24 +729,24 @@ tailwind.config = {
             </div>
           </div>
 
-          <!-- Audience Retention Velocity Indicator -->
+          <!-- Audience Retention Indicator (Not Exposed in Public API) -->
           <div class="p-5 rounded-2xl bg-white border border-[#E2E8F0]/80 shadow-sm flex flex-col justify-between gap-3 hover:shadow-md transition-shadow">
             <div class="flex items-center justify-between">
               <span class="text-xs text-[#767586] font-semibold">30-Second Hold Rate</span>
-              <span class="px-2 py-0.5 rounded-full bg-[#6FFBBE] text-[#002113] text-[11px] font-bold">Above Average</span>
+              <span class="px-2 py-0.5 rounded-full bg-[#EAEDFF] text-[#464554] text-[11px] font-bold">Unavailable</span>
             </div>
             <div class="flex items-baseline gap-2">
-              <span class="text-2xl font-extrabold text-[#131B2E] font-headline">64.5%</span>
+              <span class="text-2xl font-extrabold text-[#767586] font-headline">—</span>
               <span class="text-xs text-[#767586]">first 30s viewer retention</span>
             </div>
             <!-- Multi-tier Bar Progress -->
             <div class="w-full flex flex-col gap-1.5 mt-1">
               <div class="w-full h-3 rounded-full bg-[#EAEDFF] flex overflow-hidden">
-                <div class="bg-[#4648D4] h-full" style="width: 64.5%;"></div>
+                <div class="bg-[#C5C6D0] h-full" style="width: 0%;"></div>
               </div>
               <div class="flex items-center justify-between text-[11px] text-[#767586] font-label">
-                <span>Category Benchmark: 48%</span>
-                <span class="text-[#006C49] font-bold">+16.5% Advantage</span>
+                <span>Category Benchmark: Unavailable</span>
+                <span class="text-[#767586]">Private to YouTube Studio</span>
               </div>
             </div>
           </div>
@@ -768,11 +768,11 @@ tailwind.config = {
               Videos driving current topic velocity, tracked across public YouTube Data API uploads.
             </p>
           </div>
-          <div class="flex items-center gap-1 p-1 bg-white rounded-xl border border-[#E2E8F0] shadow-sm self-start sm:self-auto overflow-x-auto max-w-full">
-            <button type="button" class="px-3 py-1.5 rounded-lg bg-[#4648D4] text-white text-xs font-semibold shrink-0" onclick="filterVideoTab('all')">Highest Velocity</button>
-            <button type="button" class="px-3 py-1.5 rounded-lg text-[#464554] hover:text-[#131B2E] text-xs font-medium shrink-0" onclick="filterVideoTab('breakout')">Breakout Creators</button>
-            <button type="button" class="px-3 py-1.5 rounded-lg text-[#464554] hover:text-[#131B2E] text-xs font-medium shrink-0" onclick="filterVideoTab('under100k')">Under 100k Subs</button>
-            <button type="button" class="px-3 py-1.5 rounded-lg text-[#464554] hover:text-[#131B2E] text-xs font-medium shrink-0" onclick="filterVideoTab('shorts')">Shorts Only</button>
+          <div id="videoFilterTabs" class="flex items-center gap-1 p-1 bg-white rounded-xl border border-[#E2E8F0] shadow-sm self-start sm:self-auto overflow-x-auto max-w-full">
+            <button type="button" class="video-tab-btn px-3 py-1.5 rounded-lg bg-[#4648D4] text-white text-xs font-semibold shrink-0" data-filter="all" onclick="filterVideoTab('all')">Highest Velocity</button>
+            <button type="button" class="video-tab-btn px-3 py-1.5 rounded-lg text-[#464554] hover:text-[#131B2E] text-xs font-medium shrink-0" data-filter="breakout" onclick="filterVideoTab('breakout')">Breakout Creators</button>
+            <button type="button" class="video-tab-btn px-3 py-1.5 rounded-lg text-[#464554] hover:text-[#131B2E] text-xs font-medium shrink-0" data-filter="under100k" onclick="filterVideoTab('under100k')">Under 100k Subs</button>
+            <button type="button" class="video-tab-btn px-3 py-1.5 rounded-lg text-[#464554] hover:text-[#131B2E] text-xs font-medium shrink-0" data-filter="shorts" onclick="filterVideoTab('shorts')">Shorts Only</button>
           </div>
         </div>
 
@@ -804,13 +804,25 @@ tailwind.config = {
       <div id="resultsArea" style="display:none;" class="flex flex-col gap-5">
         
         <!-- Educational Baseline Notification Banner -->
-        <div id="trendBanner" class="p-4 rounded-xl bg-[#EFF4FF] border border-[#C7D2FE] flex items-start gap-3">
-          <span class="material-symbols-outlined text-[22px] text-[#4648D4] shrink-0" aria-hidden="true">info</span>
-          <div>
-            <h3 class="text-sm font-bold text-[#4648D4] mb-0.5">Baseline Established</h3>
-            <p id="trendBannerText" class="text-xs text-[#131B2E] leading-relaxed">
-              Baseline observation established. Scan again in 24–48 hours to measure real-world growth velocity, momentum, and curve progression.
-            </p>
+        <div id="trendBanner" class="p-4 rounded-xl bg-[#EFF4FF] border border-[#C7D2FE] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3" style="display:none;">
+          <div class="flex items-start gap-3 flex-1 min-w-0">
+            <span class="material-symbols-outlined text-[22px] text-[#4648D4] shrink-0" aria-hidden="true">info</span>
+            <div>
+              <h3 class="text-sm font-bold text-[#4648D4] mb-0.5">Baseline Established</h3>
+              <p id="trendBannerText" class="text-xs text-[#131B2E] leading-relaxed">
+                Baseline observation established. Scan again in 24–48 hours to measure real-world growth velocity, momentum, and curve progression.
+              </p>
+            </div>
+          </div>
+          <div class="flex items-center gap-2 shrink-0 self-end sm:self-auto">
+            <button type="button" id="ctaStrategistBtn" class="px-3 py-1.5 rounded-lg bg-[#4648D4] text-white text-xs font-semibold hover:bg-[#3B3DB8] transition-colors flex items-center gap-1 shadow-sm">
+              <span class="material-symbols-outlined text-[15px]">psychology</span>
+              <span>AI Strategist</span>
+            </button>
+            <button type="button" id="ctaCompetitorBtn" class="px-3 py-1.5 rounded-lg bg-white border border-[#C7D2FE] text-[#4338CA] text-xs font-semibold hover:bg-[#EEF2FF] transition-colors flex items-center gap-1 shadow-sm">
+              <span class="material-symbols-outlined text-[15px]">compare_arrows</span>
+              <span>Competitors</span>
+            </button>
           </div>
         </div>
 
@@ -826,6 +838,9 @@ tailwind.config = {
               </div>
               <div id="tagsList" class="flex flex-wrap gap-1.5">
                 <!-- Dynamically populated -->
+              </div>
+              <div id="hashtagsList" class="flex flex-wrap gap-1.5 mt-2">
+                <!-- High-CTR hashtags populated dynamically -->
               </div>
             </div>
             <span class="text-[11px] text-[#767586] pt-2 border-t border-[#F1F5F9]">
@@ -845,7 +860,7 @@ tailwind.config = {
               </div>
             </div>
             <div class="flex items-center gap-2 pt-2 border-t border-[#F1F5F9]">
-              <span class="px-2 py-0.5 rounded-full bg-[#6FFBBE] text-[#002113] text-[11px] font-bold">Opportunity Score: 92/100</span>
+              <span id="opportunityScoreBadge" class="hidden px-2 py-0.5 rounded-full bg-[#6FFBBE] text-[#002113] text-[11px] font-bold"></span>
             </div>
           </div>
 
@@ -898,6 +913,7 @@ tailwind.config = {
                 <canvas id="viewsChart" role="img" aria-label="Time-series view trajectory over repeated scans"></canvas>
                 <div id="viewsChartEmpty" class="chart-empty-placeholder" style="display:none;"></div>
                 <div id="viewsTrajectoryA11y" class="sr-only" aria-live="polite"></div>
+                <div id="chartBaselineNote" class="text-xs text-[#767586] pt-1" style="display:none;"></div>
               </div>
 
               <!-- Summary Indicators -->
