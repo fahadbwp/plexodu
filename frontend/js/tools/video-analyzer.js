@@ -121,7 +121,8 @@ function decodeHtmlEntities(str) {
 }
 
 function createVideoTag(tag) {
-  const el = document.createElement("span");
+  const el = document.createElement("button");
+  el.type = "button";
   el.className = "panel-badge";
   el.style.cssText = "background:#f1f5f9; color:#0f172a; padding:6px 12px; border-radius:8px; font-size:13px; cursor:pointer;";
   el.title = "Click to copy";
@@ -208,7 +209,7 @@ function renderVideoResults(data) {
     tagsContainer.replaceChildren();
     if (currentVideoTags.length === 0) {
       const empty = document.createElement("span");
-      empty.style.cssText = "font-size:13px; color:#94a3b8;";
+      empty.className = "tool-empty-note";
       empty.textContent = "No tags provided for this upload";
       tagsContainer.appendChild(empty);
     } else {
@@ -221,7 +222,7 @@ function renderVideoResults(data) {
     const comments = Array.isArray(data.comments) ? data.comments : [];
     if (comments.length === 0) {
       const empty = document.createElement("div");
-      empty.style.cssText = "font-size:13px; color:#94a3b8;";
+      empty.className = "tool-empty-note";
       empty.textContent = "No public comments available.";
       commentsList.appendChild(empty);
     } else {

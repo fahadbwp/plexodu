@@ -41,14 +41,15 @@ def chat_with_groq(user_message: str, trend_context: dict = None, history: list 
     groq_key = settings.GROQ_API_KEY or os.environ.get("GROQ_API_KEY", "").strip()
 
     if not groq_key:
+        missing_msg = (
+            "⚠️ **AI service configuration is incomplete.**\n\n"
+            "The `GROQ_API_KEY` environment variable is not configured for this deployment environment. "
+            "Please configure `GROQ_API_KEY` in Vercel project environment settings."
+        )
         return {
-            "reply": (
-                "⚠️ **Groq API key is missing.**\n\n"
-                "1. Go to: **https://console.groq.com/keys**\n"
-                "2. Click **Create API Key** and copy it.\n"
-                "3. Paste it in `.env` as `GROQ_API_KEY=gsk_...`"
-            ),
-            "error": True,
+            "reply": missing_msg,
+            "message": missing_msg,
+            "error": "GROQ_API_KEY is not configured for this deployment environment.",
         }
 
     system_prompt = (

@@ -59,7 +59,11 @@ async function fetchWithTimeout(resource, options = {}, timeoutMs = 20000) {
           ? trimmed.slice(0, 240)
           : response.status >= 500
             ? "Server error. Please try again in a moment."
-            : "Server returned an unexpected response.";
+            : response.status === 404
+              ? "The requested service endpoint was not found (HTTP 404)."
+              : response.status === 429
+                ? "API rate limit reached. Please wait a moment and try again."
+                : `Unexpected server response (HTTP ${response.status}).`;
         return { error: message };
       }
     };
@@ -117,7 +121,108 @@ function copyToClipboard(text, btn) {
   });
 }
 
+let drawerLastFocusedElement = null;
+let drawerInertState = [];
+let drawerBodyOverflow = "";
+
 function toggleMobileMenu() {
-  const drawer = document.getElementById("mobileDrawer");
-  if (drawer) drawer.classList.toggle("active");
+  toggleSidebarDrawer();
 }
+
+function openSidebarDrawer() {
+  const drawer = document.getElementById("stitchMobileDrawer") || document.getElementById("mobileDrawer");
+  const backdrop = document.getElementById("stitchDrawerBackdrop");
+  if (!drawer || drawer.classList.contains("active")) return;
+  drawerLastFocusedElement = document.activeElement;
+  drawerBodyOverflow = document.body.style.overflow;
+  drawerInertState = [...document.querySelectorAll(".stitch-main-canvas, .stitch-mobile-topbar, .stitch-topbar, .stitch-sidebar, footer")]
+    .map((element) => [element, element.inert]);
+  drawerInertState.forEach(([element]) => { element.inert = true; });
+  if (drawer) {
+    drawer.inert = false;
+    drawer.setAttribute("role", "dialog");
+    drawer.setAttribute("aria-modal", "true");
+    drawer.classList.add("active");
+    drawer.setAttribute("aria-hidden", "false");
+    const focusable = drawer.querySelector("button, [href], input, select, textarea, [tabindex]:not([tabindex='-1'])");
+    if (focusable) {
+      focusable.focus();
+    }
+  }
+  if (backdrop) {
+    backdrop.classList.add("active");
+    backdrop.setAttribute("aria-hidden", "false");
+  }
+  document.body.style.overflow = "hidden";
+  document.querySelectorAll(".stitch-hamburger-btn").forEach((button) => button.setAttribute("aria-expanded", "true"));
+}
+
+function closeSidebarDrawer() {
+  const drawer = document.getElementById("stitchMobileDrawer") || document.getElementById("mobileDrawer");
+  const backdrop = document.getElementById("stitchDrawerBackdrop");
+  if (!drawer || !drawer.classList.contains("active")) return;
+  if (drawer) {
+    drawer.classList.remove("active");
+    drawer.setAttribute("aria-hidden", "true");
+    drawer.inert = true;
+    drawer.removeAttribute("aria-modal");
+  }
+  if (backdrop) {
+    backdrop.classList.remove("active");
+    backdrop.setAttribute("aria-hidden", "true");
+  }
+  drawerInertState.forEach(([element, previous]) => { element.inert = previous; });
+  drawerInertState = [];
+  document.body.style.overflow = drawerBodyOverflow;
+  document.querySelectorAll(".stitch-hamburger-btn").forEach((button) => button.setAttribute("aria-expanded", "false"));
+  if (drawerLastFocusedElement && typeof drawerLastFocusedElement.focus === "function") {
+    try {
+      drawerLastFocusedElement.focus();
+    } catch (_) {}
+  }
+}
+
+function toggleSidebarDrawer() {
+  const drawer = document.getElementById("stitchMobileDrawer") || document.getElementById("mobileDrawer");
+  if (drawer && drawer.classList.contains("active")) {
+    closeSidebarDrawer();
+  } else {
+    openSidebarDrawer();
+  }
+}
+
+// Global dismiss listeners for accessibility
+document.addEventListener("keydown", (e) => {
+  const drawer = document.getElementById("stitchMobileDrawer") || document.getElementById("mobileDrawer");
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k" && !drawer?.classList.contains("active")) {
+    const input = document.querySelector("#pulseSearchInput, #videoUrlInput, #channelInput, #chatInput, [data-focus-tool-input]");
+    if (input) { e.preventDefault(); input.focus(); }
+  }
+  if (e.key === "Tab" && drawer?.classList.contains("active")) {
+    const items = [...drawer.querySelectorAll("button, a[href], input, select, textarea, [tabindex]:not([tabindex='-1'])")]
+      .filter((element) => !element.disabled && element.getClientRects().length);
+    if (!items.length) { e.preventDefault(); return; }
+    if (e.shiftKey && (document.activeElement === items[0] || !drawer.contains(document.activeElement))) {
+      e.preventDefault(); items[items.length - 1].focus();
+    } else if (!e.shiftKey && (document.activeElement === items[items.length - 1] || !drawer.contains(document.activeElement))) {
+      e.preventDefault(); items[0].focus();
+    }
+  }
+  if (e.key === "Escape") {
+    closeSidebarDrawer();
+  }
+});
+
+document.addEventListener("DOMContentLoaded", () => {
+  document.querySelectorAll("[data-focus-tool-input]").forEach((button) => button.addEventListener("click", () => {
+    const input = document.querySelector("#pulseSearchInput, #videoUrlInput, #channelInput, #chatInput");
+    if (input) input.focus();
+    else window.location.href = "/tools/trend-analyzer";
+  }));
+  const drawer = document.getElementById("stitchMobileDrawer");
+  if (drawer) drawer.inert = !drawer.classList.contains("active");
+  document.querySelectorAll(".stitch-hamburger-btn").forEach((button) => {
+    button.setAttribute("aria-controls", "stitchMobileDrawer");
+    button.setAttribute("aria-expanded", "false");
+  });
+});

@@ -87,14 +87,14 @@ function renderAuditResults(data) {
   if (topVideosBody) {
     const vids = data.top_videos || [];
     if (vids.length === 0) {
-      topVideosBody.innerHTML = `<tr><td colspan="4" style="padding:16px; text-align:center; color:#94a3b8;">No recent upload data found.</td></tr>`;
+      topVideosBody.innerHTML = `<tr><td colspan="4" class="audit-empty tool-empty-note">No recent upload data found.</td></tr>`;
     } else {
       topVideosBody.innerHTML = vids.map(v => `
         <tr style="border-bottom:1px solid #f1f5f9;">
           <td style="padding:12px; font-weight:700; color:#0f172a; max-width:320px;">${escapeHtml(v.title)}</td>
           <td style="padding:12px; color:#475569;">${Number(v.views || 0).toLocaleString()}</td>
           <td style="padding:12px; color:#475569;">${v.likes != null ? Number(v.likes).toLocaleString() : "Unavailable"}</td>
-          <td style="padding:12px; color:#94a3b8;">${(v.published_at || v.upload_date || '—').slice(0, 10)}</td>
+          <td class="audit-published">${(v.published_at || v.upload_date || '—').slice(0, 10)}</td>
         </tr>
       `).join("");
     }

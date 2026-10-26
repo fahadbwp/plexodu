@@ -11,7 +11,8 @@ vm.runInContext(fs.readFileSync('frontend/js/tools/trend-analyzer.js','utf8'),co
 const video={rank:1,title:'A "quoted" <title>',channel:'Creator',category:'Gaming',views:300,comments:2,engagement:4,hoursAgo:3,momentumScore:42};
 context.renderTrendingList([video],'');
 assert(!elements.get('pulseList').innerHTML.includes('NaN'));
-assert(elements.get('pulseList').innerHTML.includes('+42 idx'));
+assert(elements.get('pulseList').innerHTML.includes('42 / 100 idx'));
+assert(!elements.get('pulseList').innerHTML.includes('+42')); 
 assert(elements.get('pulseList').innerHTML.includes('&quot;quoted&quot;'));
 assert(elements.get('pulseList').innerHTML.includes('4.0%'));
 delete video.momentumScore;

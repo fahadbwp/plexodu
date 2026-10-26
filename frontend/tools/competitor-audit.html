@@ -4,140 +4,423 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="index, follow">
-<title>Competitor Channel Audit — Plexudo</title>
-<meta name="description" content="Audit any competitor channel by @handle or URL. Inspect subscriber count, lifetime views, estimated monthly earnings, video count, and top upload performance.">
+<title>Competitor Channel Audit &amp; Benchmarking — Plexudo</title>
+<meta name="description" content="Audit any competitor YouTube channel by @handle or URL. Inspect subscriber count, lifetime views, estimated monthly earnings, video count, and top upload performance. 100% anonymous &amp; free.">
 <link rel="canonical" href="https://plexudo.vercel.app/tools/competitor-audit">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=3">
 <link rel="icon" type="image/png" sizes="64x64" href="/favicon.png?v=3">
-<link rel="stylesheet" href="/css/style.css?v=27.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+<link rel="stylesheet" href="/css/style.css?v=28.4">
 <script defer src="/js/analytics.js"></script>
 </head>
-<body>
+<body class="stitch-tools">
 
-<header>
-  <nav class="navbar">
-    <div class="container nav-wrap">
-      <a href="/" class="brand-logo">
-        <svg width="30" height="30" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <rect x="2" y="42" width="14" height="14" rx="2.5" fill="#0B192C"/>
-          <rect x="16" y="28" width="14" height="14" rx="2.5" fill="#0B192C"/>
-          <path d="M30 14 H40 C44 14 46 16 46 20 V56 H36 V28 H30 V14 Z" fill="#0B192C"/>
-          <path d="M26 14 C26 7.5 30.5 3 36 3 H46 C55.941 3 64 11.059 64 21 C64 30.941 55.941 39 46 39 H40 C34.477 39 30 43.477 30 49 V56" stroke="#0B192C" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        <span>PLEXUDO</span>
-      </a>
-
-      <ul class="nav-menu">
-        <li><a href="/" class="nav-link">Home</a></li>
-        <li><a href="/tools" class="nav-link active">Tools</a></li>
-        <li><a href="/blog/" class="nav-link">Blog</a></li>
-      </ul>
-
-      <div class="nav-actions">
-        <a href="/tools" class="btn-primary" style="text-decoration:none;">Explore Tools ➔</a>
-        <button class="hamburger-btn" onclick="toggleMobileMenu()" aria-label="Toggle navigation">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
-        </button>
+<div class="stitch-app-shell">
+  <!-- Desktop Fixed Sidebar -->
+  <aside class="stitch-sidebar" aria-label="Sidebar Navigation">
+    <div class="stitch-sidebar-top">
+      <div class="stitch-sidebar-brand">
+        <a href="/" class="stitch-brand-link">
+          <div class="stitch-brand-logo-icon">
+            <span class="material-symbols-outlined" style="font-size:22px;" aria-hidden="true">play_shapes</span>
+          </div>
+          <div>
+            <div class="stitch-brand-title">PLEXUDO</div>
+            <div class="stitch-brand-subtitle">Creator Suite</div>
+          </div>
+        </a>
       </div>
-    </div>
 
-    <div class="mobile-drawer" id="mobileDrawer">
-      <ul class="mobile-drawer-links">
-        <li><a href="/" class="nav-link" onclick="toggleMobileMenu()">Home</a></li>
-        <li><a href="/tools" class="nav-link" onclick="toggleMobileMenu()">Tools</a></li>
-        <li><a href="/blog/" class="nav-link" onclick="toggleMobileMenu()">Blog</a></li>
-      </ul>
-      <div>
-        <a href="/tools" class="btn-primary" class="nav-mobile-cta">Explore Tools ➔</a>
-      </div>
-    </div>
-  </nav>
-</header>
-
-<main class="tool-page-main">
-  <div class="tool-hero">
-    <div class="tool-badge">📊 Channel Benchmarking</div>
-    <h1 class="tool-title">Competitor Channel Audit</h1>
-    <p class="tool-desc">
-      Audit any competitor channel by @handle or URL. Inspect subscriber count, lifetime views, estimated monthly earnings, video count, and top upload performance.
-    </p>
-  </div>
-
-  <div class="tool-input-card">
-    <div class="tool-input-row">
-      <div class="tool-input-wrapper">
-        <input type="text" id="channelInput" class="tool-input-field"
-          placeholder="e.g. @mrbeast, @mkbhd, or https://youtube.com/@channel">
-      </div>
-      <button id="auditBtn" class="tool-primary-btn">Audit Channel 🔍</button>
-    </div>
-    <div class="tool-input-hint">
-      Supports @handle, channel ID, and custom channel URLs. No channel connection needed.
-    </div>
-  </div>
-
-  <div id="statusLine" class="tool-status-bar" style="display:none;"></div>
-
-  <div id="loadingArea" class="tool-loading" style="display:none;">
-    <div class="tool-spinner"></div>
-    <p>Connecting to YouTube Data API v3 and auditing channel analytics…</p>
-  </div>
-
-  <div id="resultsArea" style="display:none;">
-    <!-- Channel Overview Card -->
-    <div class="tool-results-panel channel-overview-panel">
-      <img id="channelAvatar" src="" alt="Avatar" class="channel-avatar-img">
-      <div class="channel-overview-info">
-        <h2 id="channelName" style="font-size:1.35rem; font-weight:800; color:#0f172a; margin-bottom:4px;">Channel Name</h2>
-        <div style="font-size:0.88rem; color:#64748b;">
-          Handle: <span id="channelHandle" style="color:#0f172a; font-weight:700;">—</span> &bull;
-          Channel Age: <span id="channelAge">—</span>
+      <div class="stitch-public-badge">
+        <span class="material-symbols-outlined stitch-public-badge-icon" style="font-size:18px;" aria-hidden="true">public</span>
+        <div>
+          <div class="stitch-public-badge-title">Public Workspace</div>
+          <div class="stitch-public-badge-sub">Free &amp; Instant Access</div>
         </div>
       </div>
+
+      <div class="stitch-nav-group">
+        <span class="stitch-nav-heading">Analytics Engine</span>
+        <nav class="stitch-nav-list">
+          <a href="/tools/trend-analyzer" class="stitch-nav-link">
+            <span class="material-symbols-outlined stitch-nav-icon" style="font-size:20px;" aria-hidden="true">trending_up</span>
+            <span>Trend Analyzer</span>
+          </a>
+          <a href="/tools/video-analyzer" class="stitch-nav-link">
+            <span class="material-symbols-outlined stitch-nav-icon" style="font-size:20px;" aria-hidden="true">analytics</span>
+            <span>Video Analyzer</span>
+          </a>
+          <a href="/tools/competitor-audit" class="stitch-nav-link active" aria-current="page">
+            <span class="material-symbols-outlined stitch-nav-icon" style="font-size:20px;" aria-hidden="true">compare_arrows</span>
+            <span>Competitor Audit</span>
+          </a>
+          <a href="/tools/ai-strategist" class="stitch-nav-link">
+            <span class="material-symbols-outlined stitch-nav-icon" style="font-size:20px;" aria-hidden="true">smart_toy</span>
+            <span>AI Strategist</span>
+          </a>
+        </nav>
+      </div>
+
+      <div class="stitch-nav-group">
+        <span class="stitch-nav-heading">Resources &amp; Hub</span>
+        <nav class="stitch-nav-list">
+          <a href="/tools" class="stitch-nav-link">
+            <span class="material-symbols-outlined stitch-nav-icon" style="font-size:18px;" aria-hidden="true">apps</span>
+            <span>All Tools Directory</span>
+          </a>
+          <a href="/blog/" class="stitch-nav-link">
+            <span class="material-symbols-outlined stitch-nav-icon" style="font-size:18px;" aria-hidden="true">menu_book</span>
+            <span>Guides &amp; Articles</span>
+          </a>
+          <a href="/privacy" class="stitch-nav-link">
+            <span class="material-symbols-outlined stitch-nav-icon" style="font-size:18px;" aria-hidden="true">security</span>
+            <span>Privacy Policy</span>
+          </a>
+          <a href="/terms" class="stitch-nav-link">
+            <span class="material-symbols-outlined stitch-nav-icon" style="font-size:18px;" aria-hidden="true">description</span>
+            <span>Terms of Service</span>
+          </a>
+        </nav>
+      </div>
     </div>
 
-    <!-- 4 Metrics Row -->
-    <div class="tool-grid-4col">
-      <div class="tool-metric-box">
-        <div id="subCountVal" class="tool-metric-val">0</div>
-        <div class="tool-metric-label">Subscribers</div>
+    <div class="stitch-sidebar-footer-card">
+      <div class="stitch-footer-card-header">
+        <span class="material-symbols-outlined" style="font-size:18px; color:var(--stitch-secondary);" aria-hidden="true">rocket_launch</span>
+        <span>Automated Tracking</span>
       </div>
-      <div class="tool-metric-box">
-        <div id="viewsCountVal" class="tool-metric-val">0</div>
-        <div class="tool-metric-label">Total Views</div>
+      <p class="stitch-footer-card-desc">Continuous 24/7 channel surveillance and automated alerts are scheduled for a future release.</p>
+      <div class="stitch-footer-card-pill" aria-label="Planned Feature">
+        <span class="material-symbols-outlined" style="font-size:13px;" aria-hidden="true">schedule</span>
+        <span>Planned Feature &bull; 100% Free Suite</span>
       </div>
-      <div class="tool-metric-box">
-        <div id="videoCountVal" class="tool-metric-val">0</div>
-        <div class="tool-metric-label">Video Count</div>
-      </div>
-      <div class="tool-metric-box">
-        <div id="earningsVal" class="tool-metric-val">$0</div>
-        <div class="tool-metric-label">Est. Monthly Earnings</div>
+    </div>
+  </aside>
+
+  <!-- Desktop Fixed Topbar -->
+  <header class="stitch-topbar" aria-label="Desktop Topbar">
+    <div class="stitch-topbar-left">
+      <div class="stitch-topbar-search-box">
+        <span class="material-symbols-outlined stitch-topbar-search-icon" style="font-size:18px;" aria-hidden="true">search</span>
+        <button type="button" class="stitch-topbar-search-input" data-focus-tool-input>Jump to tool input</button>
+        <span class="stitch-topbar-search-shortcut">⌘K</span>
       </div>
     </div>
 
-    <!-- Top Uploads Table -->
-    <div class="tool-results-panel">
-      <h3 style="margin-bottom:16px; font-size:1.1rem;">🎬 Top Performing Uploads</h3>
-      <div class="history-table-wrap" style="overflow-x:auto;">
-        <table class="history-table table-full-width">
-
-          <thead>
-            <tr style="border-bottom:2px solid #e2e8f0; color:#64748b;">
-              <th style="padding:10px;">Video Title</th>
-              <th style="padding:10px;">Views</th>
-              <th style="padding:10px;">Likes</th>
-              <th style="padding:10px;">Published</th>
-            </tr>
-          </thead>
-          <tbody id="topVideosBody"></tbody>
-        </table>
+    <div class="stitch-topbar-right">
+      <div class="stitch-badge-pill">
+        <span class="stitch-live-dot"></span>
+        <span>Public channel snapshots</span>
+      </div>
+      <a href="/tools" class="stitch-btn-secondary" style="height:36px; padding:0 14px; font-size:0.75rem;">
+        <span class="material-symbols-outlined" style="font-size:16px;" aria-hidden="true">explore</span>
+        <span>Tools Hub</span>
+      </a>
+      <div class="stitch-user-chip">
+        <div class="stitch-user-avatar">GC</div>
       </div>
     </div>
-  </div>
-</main>
+  </header>
 
-<footer class="footer">
+  <!-- Mobile Sticky Topbar -->
+  <header class="stitch-mobile-topbar" aria-label="Mobile Navigation Bar">
+    <div class="stitch-flex-row stitch-gap-xs">
+      <button class="stitch-hamburger-btn" onclick="toggleSidebarDrawer()" aria-label="Open navigation menu">
+        <span class="material-symbols-outlined" style="font-size:24px;" aria-hidden="true">menu</span>
+      </button>
+      <a href="/" class="stitch-brand-link" style="gap:8px;">
+        <div class="stitch-brand-logo-icon" style="width:32px; height:32px; border-radius:8px;">
+          <span class="material-symbols-outlined" style="font-size:18px;" aria-hidden="true">play_shapes</span>
+        </div>
+        <span class="stitch-brand-title" style="font-size:1rem;">PLEXUDO</span>
+      </a>
+    </div>
+    <div class="stitch-flex-row stitch-gap-xs">
+      <span class="stitch-badge-pill" style="padding:3px 8px; font-size:0.6875rem;">
+        <span class="stitch-live-dot"></span> Free Tool
+      </span>
+      <div class="stitch-user-avatar" style="width:28px; height:28px; font-size:0.75rem;">GC</div>
+    </div>
+  </header>
+
+  <!-- Mobile Drawer Backdrop & Menu -->
+  <div class="stitch-drawer-backdrop" id="stitchDrawerBackdrop" onclick="closeSidebarDrawer()" aria-hidden="true"></div>
+  <aside class="stitch-drawer" id="stitchMobileDrawer" inert aria-hidden="true" aria-label="Mobile Drawer">
+    <div>
+      <div class="stitch-drawer-header">
+        <div class="stitch-flex-row stitch-gap-xs">
+          <div class="stitch-brand-logo-icon" style="width:32px; height:32px; border-radius:8px;">
+            <span class="material-symbols-outlined" style="font-size:18px;" aria-hidden="true">play_shapes</span>
+          </div>
+          <span class="stitch-brand-title" style="font-size:1.05rem;">PLEXUDO</span>
+        </div>
+        <button class="stitch-drawer-close-btn" onclick="closeSidebarDrawer()" aria-label="Close navigation menu">
+          <span class="material-symbols-outlined" style="font-size:20px;" aria-hidden="true">close</span>
+        </button>
+      </div>
+
+      <div class="stitch-nav-group">
+        <span class="stitch-nav-heading">Creator Utilities</span>
+        <nav class="stitch-nav-list">
+          <a href="/tools/trend-analyzer" class="stitch-nav-link" onclick="closeSidebarDrawer()">
+            <span class="material-symbols-outlined" style="font-size:20px;" aria-hidden="true">trending_up</span>
+            <span>Trend Analyzer</span>
+          </a>
+          <a href="/tools/video-analyzer" class="stitch-nav-link" onclick="closeSidebarDrawer()">
+            <span class="material-symbols-outlined" style="font-size:20px;" aria-hidden="true">analytics</span>
+            <span>Video Analyzer</span>
+          </a>
+          <a href="/tools/competitor-audit" class="stitch-nav-link active" onclick="closeSidebarDrawer()">
+            <span class="material-symbols-outlined" style="font-size:20px;" aria-hidden="true">compare_arrows</span>
+            <span>Competitor Audit</span>
+          </a>
+          <a href="/tools/ai-strategist" class="stitch-nav-link" onclick="closeSidebarDrawer()">
+            <span class="material-symbols-outlined" style="font-size:20px;" aria-hidden="true">smart_toy</span>
+            <span>AI Strategist</span>
+          </a>
+          <a href="/tools" class="stitch-nav-link" onclick="closeSidebarDrawer()">
+            <span class="material-symbols-outlined" style="font-size:20px;" aria-hidden="true">apps</span>
+            <span>All Tools Hub</span>
+          </a>
+        </nav>
+      </div>
+
+      <div class="stitch-nav-group">
+        <span class="stitch-nav-heading">Platform &amp; Legal</span>
+        <nav class="stitch-nav-list">
+          <a href="/" class="stitch-nav-link" onclick="closeSidebarDrawer()">
+            <span class="material-symbols-outlined" style="font-size:18px;" aria-hidden="true">home</span>
+            <span>Homepage</span>
+          </a>
+          <a href="/blog/" class="stitch-nav-link" onclick="closeSidebarDrawer()">
+            <span class="material-symbols-outlined" style="font-size:18px;" aria-hidden="true">menu_book</span>
+            <span>Blog &amp; Guides</span>
+          </a>
+          <a href="/privacy" class="stitch-nav-link" onclick="closeSidebarDrawer()">
+            <span class="material-symbols-outlined" style="font-size:18px;" aria-hidden="true">security</span>
+            <span>Privacy Policy</span>
+          </a>
+          <a href="/terms" class="stitch-nav-link" onclick="closeSidebarDrawer()">
+            <span class="material-symbols-outlined" style="font-size:18px;" aria-hidden="true">description</span>
+            <span>Terms of Service</span>
+          </a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="stitch-sidebar-footer-card">
+      <div class="stitch-footer-card-header">
+        <span class="material-symbols-outlined" style="font-size:18px; color:var(--stitch-secondary);" aria-hidden="true">rocket_launch</span>
+        <span>Automated Tracking</span>
+      </div>
+      <p class="stitch-footer-card-desc">Continuous 24/7 channel surveillance and automated alerts are scheduled for a future release.</p>
+      <div class="stitch-footer-card-pill" aria-label="Planned Feature">
+        <span class="material-symbols-outlined" style="font-size:13px;" aria-hidden="true">schedule</span>
+        <span>Planned Feature &bull; 100% Free Suite</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Canvas -->
+  <main class="stitch-main-canvas">
+    <div class="stitch-content-container">
+
+      <!-- Breadcrumb & Page Header -->
+      <section class="stitch-page-header">
+        <div class="stitch-breadcrumb-bar">
+          <a href="/tools" class="stitch-breadcrumb-link">Tools</a>
+          <span class="material-symbols-outlined" style="font-size:14px;" aria-hidden="true">chevron_right</span>
+          <span class="stitch-breadcrumb-current">Competitor Audit</span>
+          <span class="stitch-badge-pill" style="margin-left:6px; font-size:0.6875rem; padding:2px 8px;">
+            <span class="material-symbols-outlined" style="font-size:12px; color:var(--stitch-tertiary);" aria-hidden="true">check_circle</span>
+            <span>Public channel benchmark</span>
+          </span>
+        </div>
+
+        <div class="stitch-page-title-row">
+          <h1 class="stitch-page-title">YouTube Competitor Channel Audit</h1>
+          <p class="stitch-page-desc">
+            Audit any competitor YouTube channel by @handle, channel ID, or URL. Inspect subscriber counts, total views, estimated monthly earnings, video catalog size, and top upload performance.
+          </p>
+        </div>
+      </section>
+
+      <!-- Input Bar -->
+      <section class="stitch-controls-surface">
+        <div class="stitch-controls-row">
+          <div class="stitch-search-input-group">
+            <span class="material-symbols-outlined stitch-search-icon-inside" style="font-size:22px;" aria-hidden="true">search</span>
+            <input type="text" id="channelInput" class="stitch-search-input tool-input-field" placeholder="e.g. @mrbeast, @mkbhd, or https://youtube.com/@channel" aria-label="Competitor channel identifier" />
+          </div>
+
+          <div class="stitch-filter-cluster">
+            <button id="auditBtn" class="stitch-btn-primary tool-primary-btn" type="button">
+              <span class="material-symbols-outlined" style="font-size:20px;" aria-hidden="true">troubleshoot</span>
+              <span>Audit Channel</span>
+            </button>
+            <button class="stitch-btn-secondary" type="button" onclick="document.getElementById('channelInput').value='@mkbhd'; document.getElementById('auditBtn').click();">
+              <span class="material-symbols-outlined" style="font-size:16px;" aria-hidden="true">auto_fix_high</span>
+              <span>Sample</span>
+            </button>
+          </div>
+        </div>
+        <div style="font-size:0.75rem; color:var(--stitch-on-surface-variant); padding-left:4px;">
+          Supports @handle, channel ID, and custom channel URLs. No channel connection or OAuth needed.
+        </div>
+      </section>
+
+      <!-- Status Bar and Loading Area -->
+      <div id="statusLine" class="tool-status-bar" style="display:none;"></div>
+
+      <div id="loadingArea" class="tool-loading" style="display:none; padding:32px 16px;">
+        <div class="tool-spinner"></div>
+        <p style="color:var(--stitch-on-surface-variant); margin-top:8px; font-weight:500;">
+          Connecting to YouTube Data API v3 and auditing channel analytics…
+        </p>
+      </div>
+
+      <!-- Results Area (Revealed after audit) -->
+      <div id="resultsArea" class="stitch-flex-col stitch-gap-lg" style="display:none;">
+
+        <!-- Channel Overview Panel -->
+        <section class="stitch-card stitch-channel-card">
+          <img id="channelAvatar" src="" alt="Avatar" style="width:72px; height:72px; border-radius:9999px; object-fit:cover; background:var(--stitch-surface-high); box-shadow:var(--stitch-shadow-card);">
+          <div class="stitch-channel-info">
+            <div class="stitch-flex-row stitch-gap-xs">
+              <h2 id="channelName" style="font-size:1.35rem; font-weight:800; color:var(--stitch-on-surface); margin:0;">Channel Name</h2>
+              <span class="stitch-kpi-badge mint">Public snapshot</span>
+            </div>
+            <div style="font-size:0.875rem; color:var(--stitch-on-surface-variant);">
+              Handle: <span id="channelHandle" style="color:var(--stitch-on-surface); font-weight:700;">—</span> &bull;
+              Channel Age: <span id="channelAge" style="color:var(--stitch-on-surface); font-weight:600;">—</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- 4 KPI Metrics Row -->
+        <section class="tool-grid-4col stitch-kpi-grid">
+          <!-- Subscribers -->
+          <div class="stitch-kpi-card">
+            <div class="stitch-kpi-header">
+              <span class="stitch-kpi-label">Subscribers</span>
+              <span class="stitch-kpi-badge mint">Total</span>
+            </div>
+            <div>
+              <div id="subCountVal" class="stitch-kpi-value">0</div>
+              <div class="stitch-kpi-sub">Audience base</div>
+            </div>
+          </div>
+
+          <!-- Total Views -->
+          <div class="stitch-kpi-card">
+            <div class="stitch-kpi-header">
+              <span class="stitch-kpi-label">Lifetime Views</span>
+              <span class="stitch-kpi-badge violet">Views</span>
+            </div>
+            <div>
+              <div id="viewsCountVal" class="stitch-kpi-value">0</div>
+              <div class="stitch-kpi-sub">Total catalog views</div>
+            </div>
+          </div>
+
+          <!-- Video Count -->
+          <div class="stitch-kpi-card">
+            <div class="stitch-kpi-header">
+              <span class="stitch-kpi-label">Video Count</span>
+              <span class="stitch-kpi-badge amber">Videos</span>
+            </div>
+            <div>
+              <div id="videoCountVal" class="stitch-kpi-value">0</div>
+              <div class="stitch-kpi-sub">Published video count</div>
+            </div>
+          </div>
+
+          <!-- Est Monthly Earnings -->
+          <div class="stitch-kpi-card">
+            <div class="stitch-kpi-header">
+              <span class="stitch-kpi-label">Est. Monthly Earnings</span>
+              <span class="stitch-kpi-badge mint">RPM Estimate</span>
+            </div>
+            <div>
+              <div id="earningsVal" class="stitch-kpi-value" style="font-size:1.25rem;">$0</div>
+              <div class="stitch-kpi-sub">Based on standard RPM range ($1.50 – $4.00)</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Top Uploads Table -->
+        <section class="stitch-card">
+          <div class="stitch-flex-between">
+            <div>
+              <h3 style="font-size:1.15rem; font-weight:800; color:var(--stitch-on-surface); margin:0;">
+                Recent &amp; Top Performing Uploads
+              </h3>
+              <p style="font-size:0.8125rem; color:var(--stitch-on-surface-variant); margin:2px 0 0;">
+                Analyzed performance of public videos from this channel
+              </p>
+            </div>
+          </div>
+
+          <div class="stitch-table-scroll" tabindex="0" role="region" aria-label="Recent uploads table">
+            <table style="width:100%; border-collapse:collapse; font-size:0.875rem;">
+              <thead>
+                <tr style="border-bottom:1px solid var(--stitch-border); text-align:left;">
+                  <th style="padding:12px; font-weight:700; color:var(--stitch-outline);">Video Title</th>
+                  <th style="padding:12px; font-weight:700; color:var(--stitch-outline);">Views</th>
+                  <th style="padding:12px; font-weight:700; color:var(--stitch-outline);">Likes</th>
+                  <th style="padding:12px; font-weight:700; color:var(--stitch-outline);">Published</th>
+                </tr>
+              </thead>
+              <tbody id="topVideosBody">
+                <tr><td colspan="4" style="padding:20px; text-align:center; color:var(--stitch-on-surface-variant);">No recent upload data found.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+
+      <!-- Public SEO FAQ & Methodology Section -->
+      <section class="stitch-methodology-card" id="methodology">
+        <div>
+          <span style="font-size:0.75rem; font-weight:800; color:var(--stitch-primary); text-transform:uppercase; letter-spacing:0.06em;">Public Intelligence &amp; FAQ</span>
+          <h2 style="font-size:1.375rem; font-weight:800; color:var(--stitch-on-surface); margin:4px 0 8px;">How Channel Audits &amp; Earnings Are Calculated</h2>
+          <p style="font-size:0.875rem; color:var(--stitch-on-surface-variant); line-height:1.6; max-width:850px; margin:0;">
+            All metrics represent authentic public data queried directly from the YouTube Data API v3.
+          </p>
+        </div>
+
+        <div class="stitch-faq-grid">
+          <div class="stitch-faq-item">
+            <div class="stitch-faq-title">
+              <span class="material-symbols-outlined" style="font-size:18px; color:var(--stitch-primary);" aria-hidden="true">analytics</span>
+              <span>Subscriber &amp; View Counts</span>
+            </div>
+            <p class="stitch-faq-desc">
+              YouTube rounds subscriber figures for channels exceeding 1,000 subscribers. Exact public view counts and publication dates are refreshed continuously.
+            </p>
+          </div>
+
+          <div class="stitch-faq-item">
+            <div class="stitch-faq-title">
+              <span class="material-symbols-outlined" style="font-size:18px; color:var(--stitch-secondary);" aria-hidden="true">payments</span>
+              <span>Estimated Monthly Earnings</span>
+            </div>
+            <p class="stitch-faq-desc">
+              Computed using an industry-standard RPM range ($1.50 to $4.00 per 1,000 views) applied against recent publication velocity. Actual channel earnings depend on geography, niche, and monetization status.
+            </p>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+</div>
+
+<!-- Modern Footer -->
+<footer class="footer" style="margin-left:0;">
   <div class="container">
     <div class="footer-grid">
       <div>
@@ -181,8 +464,8 @@
       <div>
         <div class="footer-col-title">Legal</div>
         <ul class="footer-links">
-          <li><a href="/privacy.html">Privacy Policy</a></li>
-          <li><a href="/terms.html">Terms of Service</a></li>
+          <li><a href="/privacy">Privacy Policy</a></li>
+          <li><a href="/terms">Terms of Service</a></li>
         </ul>
       </div>
 
@@ -206,7 +489,7 @@
   </div>
 </footer>
 
-<script src="/js/tools/common.js?v=10.0"></script>
-<script src="/js/tools/competitor-audit.js?v=12.0"></script>
+<script src="/js/tools/common.js?v=28.4"></script>
+<script src="/js/tools/competitor-audit.js?v=28.4"></script>
 </body>
 </html>
