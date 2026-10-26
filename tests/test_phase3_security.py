@@ -146,7 +146,11 @@ def test_youtube_caching_prevents_duplicate_requests():
         # Second call for the same keyword
         res2 = fetch_youtube_data("cache_test")
         assert call_count == initial_calls, "Expected second call to be served from cache without new HTTP request"
-        assert res1 == res2
+        assert res1["cached"] is False
+        assert res2["cached"] is True
+        assert res2["fetched_at"] == res1["fetched_at"]
+        assert res2["cache_served_at"] >= res1["fetched_at"]
+        assert {k: v for k, v in res2.items() if k not in {"cached", "cache_served_at"}} == {k: v for k, v in res1.items() if k != "cached"}
 
 
 # ─── 4. YOUTUBE URL AND IDENTIFIER VALIDATION ───────────────────────────────

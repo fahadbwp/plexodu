@@ -21,7 +21,7 @@ context.renderTrendingList([video],'');
 assert(elements.get('pulseList').innerHTML.includes('Pending'));
 assert(elements.get('pulseList').innerHTML.includes('Unavailable'));
 context.updateLowerChartWithRange=()=>{};
-context.renderDeepIntelligence({keyword:'Minecraft',youtube_tags:['Minecraft'],seo_title_ideas:['Minecraft: A Guide'],sentiment:{positive_score:0.5,neutral_score:99.5},trend_intelligence:{status:'baseline',forecast:{available:false,reason:'Need history'}}});
+context.renderDeepIntelligence({keyword:'Minecraft',youtube_tags:['Minecraft'],seo_title_ideas:['Minecraft: A Guide'],sentiment:{positive_score:0.5,neutral_score:99.5,negative_score:0},trend_intelligence:{status:'baseline',forecast:{available:false,reason:'Need history'}}});
 assert(elements.get('tagsList').innerHTML.includes('Minecraft'));
 assert(elements.get('aiTitlesList').innerHTML.includes('Minecraft: A Guide'));
 assert(elements.get('sentimentBreakdown').innerHTML.includes('Positive: 1%'));

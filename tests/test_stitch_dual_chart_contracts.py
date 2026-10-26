@@ -153,7 +153,8 @@ def test_chart_b_state_machine_and_baseline_integrity():
     assert "One observation recorded" in chart_b_code
     
     # State C: Multi-point trajectory
-    assert "Smoothed Trajectory" in chart_b_code
+    assert "Smoothed Trajectory" not in chart_b_code
+    assert "tension: 0.35" not in chart_b_code
     assert "Raw Observations" in chart_b_code
     
     # Accessible table container

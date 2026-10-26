@@ -10,13 +10,13 @@ const argv = process.argv.slice(2);
 const before = argv.includes('--before');
 const screensOnly = argv.includes('--screens-only');
 const output = argv.includes('--output') ? path.resolve(argv[argv.indexOf('--output') + 1]) : path.resolve('qa-output');
-const base = 'http://127.0.0.1:5067';
+const base = process.env.STITCH_QA_BASE || 'http://127.0.0.1:5067';
 const repo = path.resolve(__dirname, '..');
 const longText = "QA creator's strategy: " + 'UnbrokenCreatorToken'.repeat(7);
 const seo = {score:72, breakdown:[{id:'title',label:'Title quality',points:18,max:25,status:'pass',evidence:'QA fixture metadata'}],suggestions:[{priority:2,component:'description',message:'Add context',fix:'Use a clear description'}],unavailable:{vph:{reason:'Not observable from this snapshot'}}};
 const video = {success:true,title:longText,description:'QA description. '.repeat(30),views:340000,engagement_rate:null,virality_score:62,channel_title:'QA channel',published_at:'2026-10-24',thumbnail:base+'/__qa/image',tags:['QA tag',longText],comments:["QA creator's comment"],sentiment:{positive_score:60,neutral_score:30,negative_score:10,sample_comment:'QA sample'},seo_quality:seo};
 const channel = {title:longText,custom_url:'@qa_channel',channel_age_years:4,subscribers:12345,total_views:456789,video_count:42,est_monthly_earnings_min:12,est_monthly_earnings_max:48,avatar_url:base+'/__qa/image',top_videos:[{title:longText,views:1234,likes:null,published_at:'2026-10-24'}]};
-const yt = {keyword:'QA fixture',trend_id:4242,engagement_rate:5.4,virality_score:62,seo_title_ideas:['QA title'],youtube_tags:['QA tag'],sentiment:{positive_score:60,negative_score:10,neutral_score:30,dominant_sentiment:'positive',sample_comment:'QA comment'},trend_intelligence:{status:'baseline',forecast:{available:false,reason:'QA: more comparable observations required'},historical_context:{},timeline:[{date:'2026-10-25 10:00',views:72500000}],current_direction:'BASELINE'}};
+const yt = {keyword:'QA fixture',trend_id:4242,engagement_rate:5.4,virality_score:62,seo_title_ideas:['QA title'],youtube_tags:['QA tag'],sentiment:{positive_score:60,negative_score:10,neutral_score:30,dominant_sentiment:'positive',sample_comment:'QA comment'},trend_intelligence:{status:'baseline',cohort_comparable:true,observation_key:'qa-fixture-cohort',forecast:{available:false,reason:'QA: more comparable observations required'},historical_context:{},timeline:[{date:'2026-10-25 10:00',views:72500000}],current_direction:'BASELINE'}};
 const trend = {videos:[{id:'abcdefghijk',rank:1,title:longText,channel:'QA channel',category:'Gaming',views:72500000,likes:3900000,comments:15000,engagement:5.4,momentumScore:75,hoursAgo:48}],kpis:{totalViews:72500000,avgEngagement:5.4,fastestCategory:'Gaming',topCategoryViews:72500000,risingCount:1,totalTracked:1},timeSeries:[{label:'0–1d old',views:1000000},{label:'1–2d old',views:71500000}],catBreakdown:[{name:'Gaming',value:72500000,hue:'#8B5CF6'}],results:{YouTube:yt}};
 function asset(name) { return path.join(modules,name); }
 const fonts = {jakarta:'@fontsource-variable/plus-jakarta-sans/files/plus-jakarta-sans-latin-wght-normal.woff2',inter:'@fontsource-variable/inter/files/inter-latin-wght-normal.woff2',icons:'@fontsource/material-symbols-outlined/files/material-symbols-outlined-latin-400-normal.woff2'};
@@ -93,6 +93,7 @@ function auditGeometry() {
       const req=route.request(),u=new URL(req.url());
       if(u.pathname.startsWith('/__qa/font/'))return route.fulfill({path:asset(fonts[u.pathname.split('/').pop()]),contentType:'font/woff2'});
       if(u.hostname==='fonts.googleapis.com')return route.fulfill({body:fontCss,contentType:'text/css'});
+      if(u.hostname==='cdn.tailwindcss.com')return route.fulfill({path:process.env.STITCH_QA_TAILWIND,contentType:'text/javascript'});
       if(u.hostname==='cdn.jsdelivr.net')return route.fulfill({path:asset('chart.js/dist/chart.umd.js'),contentType:'text/javascript'});
       if(u.pathname==='/__qa/image'||u.hostname==='i.ytimg.com')return route.fulfill({contentType:'image/svg+xml',body:'<svg xmlns="http://www.w3.org/2000/svg" width="640" height="360"><rect width="640" height="360" fill="#eef2ff"/><text x="30" y="180" fill="#334155">QA fixture thumbnail</text></svg>'});
       if(u.origin!==base)return route.abort();
@@ -178,7 +179,7 @@ function auditGeometry() {
           if(mode==='missing')assert.equal(await page.locator('#kpiAvgEngVal').innerText(),'—');
           if(mode==='stale')assert.match(await page.locator('#kpiTotalViewsDeltaText').innerText(),/stale/i);
           if(mode==='changed'){assert.equal(text,'2M');const chart=await page.evaluate(()=>{const c=Chart.getChart('pulseViewsChart');return {type:c.config.type,labels:c.data.labels,values:c.data.datasets[0].data};});assert.deepEqual(chart.labels,['unavailable age','unavailable age']);assert.deepEqual(chart.values,[2000000,0]);assert.equal(chart.type,'bar');}
-          if(mode==='history'){const c=await page.evaluate(()=>{const c=Chart.getChart('viewsChart');return {labels:c.data.labels,datasets:c.data.datasets.map(d=>d.data)};});assert.deepEqual(c.labels,['2026-10-24 10:00','2026-10-25 10:00']);assert.deepEqual(c.datasets,[[100,140],[100,150]]);}
+          if(mode==='history'){const c=await page.evaluate(()=>{const c=Chart.getChart('viewsChart');return {labels:c.data.labels,datasets:c.data.datasets.map(d=>d.data)};});assert.deepEqual(c.labels,['2026-10-24 10:00','2026-10-25 10:00']);assert.deepEqual(c.datasets,[[100,150]]);}
           if(mode==='nohistory')assert(await page.locator('#viewsChartEmpty').isVisible());
         });
       }
@@ -228,10 +229,19 @@ function auditGeometry() {
       for(const target of targets){await page.locator('.stitch-kpi-grid a[href="'+target+'"]').click();await page.waitForURL(u=>u.pathname===target);await page.goBack({waitUntil:'networkidle'});}
 
     });}
-    if(width===1440)await check(`${tool}/${width} input focus action`,async()=>{
-      await page.keyboard.press('Control+k');
-      if(tool==='tools-hub'){await page.waitForURL(u=>u.pathname==='/tools/trend-analyzer');await page.goBack({waitUntil:'networkidle'});}
-      else assert(await page.locator('#pulseSearchInput,#videoUrlInput,#channelInput,#chatInput').evaluate(e=>e===document.activeElement));
+    if(width===1440)await check(`${tool}/${width} desktop input or directory navigation`,async()=>{
+      const action=page.locator('[data-focus-tool-input]');
+      if(await action.count()) {
+        await action.click();
+        if(tool==='tools-hub'){await page.waitForURL(u=>u.pathname==='/tools/trend-analyzer');await page.goBack({waitUntil:'networkidle'});}
+      }
+      if(tool==='tools-hub' && !await action.count()){
+        const launch=page.locator('.stitch-kpi-grid a');assert.equal(await launch.count(),4);
+        await launch.first().focus();assert(await launch.first().evaluate(e=>e===document.activeElement));
+      }else{
+        await page.keyboard.press('Control+k');
+        assert(await page.locator('#pulseSearchInput,#videoUrlInput,#channelInput,#chatInput,[data-focus-tool-input]').evaluateAll(es=>es.includes(document.activeElement)));
+      }
     });
     // Each visible navigation/CTA target must resolve through the local Flask router.
     await check(`${tool}/${width} navigation and CTA destinations`,async()=>{

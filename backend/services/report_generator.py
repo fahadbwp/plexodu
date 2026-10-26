@@ -38,7 +38,7 @@ def _build_pdf_elements(trend, sentiment, growth_rate, virality_score, stage, us
         ["Metric", "Value"],
         ["Total Views", f"{trend['total_views']:,}"],
         ["Observed Change", "Pending" if growth_rate is None else f"{growth_rate}%"],
-        ["Virality Index", f"{virality_score}/100"],
+        ["Virality Index (Heuristic)", "Unavailable" if virality_score is None else f"{virality_score}/100"],
         ["Trend Stage", stage],
     ]
     summary_table = Table(summary_data, colWidths=[8 * cm, 8 * cm])

@@ -84,9 +84,11 @@ jobs:
         run: |
           node tests/trend-rendering.cjs
           node tests/analytics-hook.cjs
+          node tests/stitch-truth.cjs
+          node tests/trend-data-truth.cjs
       - name: Run full test suite
         run: |
-          python -m pytest tests/ -v \
+          python -m pytest tests/ backend/test_seo_schema.py -v \
             --tb=short \
             --junit-xml=test-results.xml \
             -p no:cacheprovider
