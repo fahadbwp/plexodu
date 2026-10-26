@@ -4439,21 +4439,7 @@ footer {
 
 /* Fixed Desktop Topbar */
 .stitch-topbar {
-  position: fixed;
-  top: 0;
-  left: 270px;
-  right: 0;
-  height: 64px;
-  background: rgba(250, 248, 255, 0.88);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  border-bottom: 1px solid var(--stitch-border);
-  z-index: 40;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 28px;
-  gap: 16px;
+  display: none !important;
 }
 
 .stitch-topbar-left {
@@ -4653,7 +4639,7 @@ footer {
 /* Main Canvas Content Area */
 .stitch-main-canvas {
   margin-left: 270px;
-  padding-top: 64px;
+  padding-top: 0;
   min-height: 100vh;
   width: calc(100% - 270px);
   background: var(--stitch-bg);
