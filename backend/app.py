@@ -1663,15 +1663,17 @@ def export_csv(trend_id):
 
     if sentiment:
 
+        classified_sentiment = sum(v or 0 for v in (sentiment.positive_score, sentiment.negative_score, sentiment.neutral_score)) > 0 and (sentiment.dominant_sentiment or "").lower() != "unavailable"
+
         writer.writerow(["Sentiment Analysis"])
 
         writer.writerow(["Positive (%)", "Negative (%)", "Neutral (%)", "Dominant"])
 
         writer.writerow([
 
-            sentiment.positive_score, sentiment.negative_score,
+            sentiment.positive_score if classified_sentiment else "Unavailable", sentiment.negative_score if classified_sentiment else "Unavailable",
 
-            sentiment.neutral_score, sentiment.dominant_sentiment
+            sentiment.neutral_score if classified_sentiment else "Unavailable", sentiment.dominant_sentiment
 
         ])
 

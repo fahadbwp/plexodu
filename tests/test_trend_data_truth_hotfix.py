@@ -70,6 +70,8 @@ def test_pdf_discloses_heuristic_score_and_pending_observed_change():
     assert ["Observed Change", "Pending"] in table._cellvalues
     assert ["Virality Index (Heuristic)", "Unavailable"] in table._cellvalues
     assert "&lt;b&gt;fixture&lt;/b&gt;" in elements[0].text
+    sentiment_table = [e for e in elements if hasattr(e, "_cellvalues")][1]
+    assert ["Positive", "Unavailable"] in sentiment_table._cellvalues
 
 
 def test_csv_unavailable_and_lifetime_snapshot_labels():
