@@ -273,6 +273,7 @@ class TestNoSuspiciousAdScripts:
         "cdn.jsdelivr.net",       # Chart.js and other OSS libraries
         "cdnjs.cloudflare.com",   # OSS libraries
         "unpkg.com",              # OSS libraries
+        "cdn.tailwindcss.com",    # Tailwind CSS
     }
 
     def test_no_suspect_ad_networks(self):

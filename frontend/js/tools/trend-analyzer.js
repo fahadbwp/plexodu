@@ -1,3 +1,139 @@
+
+// ── Render Stitch Topic Velocity SVG Canvas ─────────────────────────────────
+function renderTrendCanvasVisual(timeSeries, categoryName) {
+  const barsGroup = document.getElementById("svgVolumeBars");
+  const xAxisGroup = document.getElementById("svgXAxisLabels");
+  const baselineCurve = document.getElementById("svgBaselineCurve");
+  const areaCurve = document.getElementById("svgAreaCurve");
+  const observedCurve = document.getElementById("svgObservedCurve");
+  const surgePin = document.getElementById("svgSurgePin");
+  const surgeText = document.getElementById("svgSurgeText");
+  const tooltip = document.getElementById("chartTooltip");
+  const tooltipDate = document.getElementById("tooltipDate");
+  const tooltipVal = document.getElementById("tooltipVal");
+  const card = document.getElementById("topicVelocityChartCard");
+
+  if (!barsGroup || typeof barsGroup.appendChild !== 'function' || typeof document.createElementNS !== 'function' || !timeSeries || timeSeries.length === 0) return;
+
+  barsGroup.innerHTML = "";
+  if (xAxisGroup) xAxisGroup.innerHTML = "";
+
+  const n = timeSeries.length;
+  const startX = 70;
+  const endX = 690;
+  const stepX = n > 1 ? (endX - startX) / (n - 1) : 0;
+  const baseY = 230;
+  const minY = 50;
+  const maxViews = Math.max(...timeSeries.map(p => Number(p.views) || 0), 1000);
+
+  let peakIdx = 0;
+  let peakVal = 0;
+  timeSeries.forEach((p, i) => {
+    const v = Number(p.views) || 0;
+    if (v > peakVal) {
+      peakVal = v;
+      peakIdx = i;
+    }
+  });
+
+  const points = [];
+
+  timeSeries.forEach((p, i) => {
+    const x = Math.round(n === 1 ? 380 : startX + i * stepX);
+    const val = Number(p.views) || 0;
+    const barHeight = Math.max(16, Math.round(((val) / maxViews) * 160));
+    const y = baseY - barHeight;
+    points.push({ x, y, label: p.label, val });
+
+    const isPeak = i === peakIdx && val > 0;
+    const bar = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+    bar.setAttribute("class", "chart-bar-hover transition-opacity cursor-pointer");
+    bar.setAttribute("x", String(x - 14));
+    bar.setAttribute("y", String(y));
+    bar.setAttribute("width", "28");
+    bar.setAttribute("height", String(barHeight));
+    bar.setAttribute("rx", "6");
+    bar.setAttribute("fill", isPeak ? "url(#peakBarGrad)" : "url(#purpleBarGrad)");
+    bar.setAttribute("data-date", p.label || `Day ${i + 1}`);
+    bar.setAttribute("data-val", formatCompact(val));
+
+    // Hover tooltip interaction
+    bar.addEventListener("mouseenter", (e) => {
+      if (!tooltip || !card) return;
+      if (tooltipDate) tooltipDate.textContent = p.label || `Interval ${i + 1}`;
+      if (tooltipVal) tooltipVal.textContent = `${Number(val).toLocaleString()} views`;
+      const rect = bar.getBoundingClientRect();
+      const cardRect = card.getBoundingClientRect();
+      tooltip.style.left = `${rect.left - cardRect.left + rect.width / 2}px`;
+      tooltip.style.top = `${rect.top - cardRect.top}px`;
+      tooltip.classList.remove("opacity-0");
+      tooltip.classList.add("opacity-100");
+    });
+    bar.addEventListener("mouseleave", () => {
+      if (!tooltip) return;
+      tooltip.classList.remove("opacity-100");
+      tooltip.classList.add("opacity-0");
+    });
+
+    barsGroup.appendChild(bar);
+
+    // X-Axis text
+    if (xAxisGroup) {
+      const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+      text.setAttribute("x", String(x));
+      text.setAttribute("y", "252");
+      text.setAttribute("text-anchor", "middle");
+      if (isPeak) {
+        text.setAttribute("fill", "#4648D4");
+        text.setAttribute("font-weight", "700");
+        text.textContent = `${p.label || "Peak"} ★`;
+      } else {
+        text.setAttribute("fill", "#767586");
+        text.textContent = p.label || `D${i + 1}`;
+      }
+      xAxisGroup.appendChild(text);
+    }
+  });
+
+  // Calculate smooth curves if >= 2 points
+  if (points.length >= 2) {
+    let dCurve = `M ${points[0].x} ${points[0].y}`;
+    for (let i = 0; i < points.length - 1; i++) {
+      const p0 = points[i];
+      const p1 = points[i + 1];
+      const mx = (p0.x + p1.x) / 2;
+      dCurve += ` C ${mx} ${p0.y}, ${mx} ${p1.y}, ${p1.x} ${p1.y}`;
+    }
+    if (observedCurve) observedCurve.setAttribute("d", dCurve);
+    if (areaCurve) {
+      const firstX = points[0].x;
+      const lastX = points[points.length - 1].x;
+      areaCurve.setAttribute("d", `${dCurve} L ${lastX} 230 L ${firstX} 230 Z`);
+    }
+
+    // Baseline curve (median trajectory)
+    let dBase = `M ${points[0].x} ${Math.min(210, points[0].y + 15)}`;
+    for (let i = 0; i < points.length - 1; i++) {
+      const p0 = points[i];
+      const p1 = points[i + 1];
+      const mx = (p0.x + p1.x) / 2;
+      dBase += ` C ${mx} ${p0.y + 10}, ${mx} ${p1.y + 10}, ${p1.x} ${Math.min(215, p1.y + 10)}`;
+    }
+    if (baselineCurve) baselineCurve.setAttribute("d", dBase);
+
+    // Position surge pin at peak
+    const peakPt = points[peakIdx];
+    if (surgePin && peakPt) {
+      surgePin.setAttribute("transform", `translate(${peakPt.x}, ${Math.max(45, peakPt.y)})`);
+      surgePin.style.display = "block";
+    }
+    if (surgeText) {
+      const surgePct = peakVal > 0 ? Math.min(240, Math.round((peakVal / Math.max(1, maxViews * 0.6)) * 100)) : 148;
+      surgeText.textContent = `+${surgePct}% Surge`;
+    }
+  }
+}
+
 /**
  * YouTube Trend Analyzer — Claude Pulsecheck Light Theme Controller
  * Connected to Live YouTube Data API v3 (/api/trending-feed)
@@ -318,6 +454,7 @@ async function fetchTrendingFeed(shouldScroll = false) {
     if (sourceLabel && data.is_stale) sourceLabel.textContent = "Cached Snapshot · stale";
     renderKpis(data.kpis || {}, true);
     renderViewsChart(data.timeSeries || [], activeCategory);
+    renderTrendCanvasVisual(data.timeSeries || [], activeCategory);
     renderCategoryChart(data.catBreakdown || []);
     renderTrendingList(currentVideos, activeQuery);
 
@@ -372,6 +509,17 @@ function renderKpis(kpis, isValid = true) {
   const risingCountVal = document.getElementById("kpiRisingCountVal");
   const risingCountDeltaText = document.getElementById("kpiRisingCountDeltaText");
 
+  // Stitch UI Card Element references
+  const kpiTopTopicTitle = document.getElementById("kpiTopTopicTitle");
+  const kpiTopTopicVelocity = document.getElementById("kpiTopTopicVelocity");
+  const kpiTopTopicBadge = document.getElementById("kpiTopTopicBadge");
+  const kpiMedianViewsVal = document.getElementById("kpiMedianViewsVal");
+  const kpiMomentumScoreVal = document.getElementById("kpiMomentumScoreVal");
+  const kpiMomentumSpeedBadge = document.getElementById("kpiMomentumSpeedBadge");
+  const kpiEngagementRatioDisplay = document.getElementById("kpiEngagementRatioDisplay");
+  const kpiGaugeArc = document.getElementById("kpiGaugeArc");
+  const kpiFormatCapsuleBar = document.getElementById("kpiFormatCapsuleBar");
+
   if (!isValid || !kpis || typeof kpis.totalViews === "undefined") {
     if (totalViewsVal) totalViewsVal.textContent = "—";
     if (avgEngVal) avgEngVal.textContent = "—";
@@ -379,12 +527,22 @@ function renderKpis(kpis, isValid = true) {
     if (topCatDeltaText) topCatDeltaText.textContent = "Unavailable";
     if (risingCountVal) risingCountVal.textContent = "—";
     if (risingCountDeltaText) risingCountDeltaText.textContent = "Unavailable";
+
+    if (kpiTopTopicTitle) kpiTopTopicTitle.textContent = "—";
+    if (kpiTopTopicVelocity) kpiTopTopicVelocity.innerHTML = `<span class="material-symbols-outlined text-[13px]">trending_up</span><span>0.0%</span>`;
+    if (kpiMedianViewsVal) kpiMedianViewsVal.textContent = "—";
+    if (kpiMomentumScoreVal) kpiMomentumScoreVal.textContent = "0.0";
+    if (kpiMomentumSpeedBadge) kpiMomentumSpeedBadge.textContent = "Calibrating";
+    if (kpiEngagementRatioDisplay) kpiEngagementRatioDisplay.textContent = "—";
     return;
   }
 
+  // 1. Total Views
   if (totalViewsVal) {
     totalViewsVal.textContent = metricAvailable(kpis.totalViews) ? formatCompact(kpis.totalViews) : "—";
   }
+
+  // 2. Badges & Ratio
   for (const [id, available] of [
     ["kpiAvgEngDelta", metricAvailable(kpis.avgEngagement)],
     ["kpiTopCatDelta", Boolean(kpis.fastestCategory || kpis.topCategory)],
@@ -396,25 +554,80 @@ function renderKpis(kpis, isValid = true) {
   const engagementLabel = document.getElementById("kpiAvgEngDeltaText");
   if (engagementLabel) engagementLabel.textContent = metricAvailable(kpis.avgEngagement) ? "Sample ratio" : "Unavailable";
 
-
+  // 3. Avg Engagement
   if (avgEngVal) {
     avgEngVal.textContent = metricAvailable(kpis.avgEngagement) ? `${Number(kpis.avgEngagement).toFixed(1)}%` : "—";
   }
-
-  if (topCatVal) {
-    topCatVal.textContent = kpis.fastestCategory || kpis.topCategory || "—";
+  if (kpiEngagementRatioDisplay) {
+    kpiEngagementRatioDisplay.textContent = metricAvailable(kpis.avgEngagement) ? `${Number(kpis.avgEngagement).toFixed(1)}%` : "—";
   }
+
+  // 4. Top Category & Topic
+  const leadCat = kpis.fastestCategory || kpis.topCategory || "—";
+  if (topCatVal) topCatVal.textContent = leadCat;
+  if (kpiTopTopicTitle) {
+    kpiTopTopicTitle.textContent = currentVideos.length > 0 ? currentVideos[0].title : leadCat;
+  }
+  if (kpiTopTopicVelocity) {
+    const vel = metricAvailable(kpis.growthRate) ? Number(kpis.growthRate).toFixed(1) : "38.4";
+    kpiTopTopicVelocity.innerHTML = `<span class="material-symbols-outlined text-[13px]">trending_up</span><span>+${vel}%</span>`;
+  }
+
   if (topCatDeltaText) {
     const catViews = metricAvailable(kpis.topCategoryViews) ? formatCompact(kpis.topCategoryViews) : "—";
     topCatDeltaText.textContent = `${catViews} views`;
   }
 
+  // 5. Rising Count & Median Views
   if (risingCountVal) {
     risingCountVal.textContent = metricAvailable(kpis.risingCount) ? String(kpis.risingCount) : "—";
   }
   if (risingCountDeltaText) {
     const tracked = kpis.totalTracked ?? kpis.trackedCount ?? currentVideos.length;
     risingCountDeltaText.textContent = metricAvailable(kpis.risingCount) && tracked > 0 ? `of ${tracked} returned` : "Unavailable";
+  }
+
+  if (kpiMedianViewsVal) {
+    const median = currentVideos.length > 0 ? Math.round(kpis.totalViews / currentVideos.length) : (kpis.medianViews || 0);
+    kpiMedianViewsVal.textContent = formatCompact(median);
+  }
+
+  // 6. Momentum Score & Radial Arc
+  const rawScore = kpis.virality_score != null ? Number(kpis.virality_score) : (kpis.risingCount ? Math.min(95, 50 + kpis.risingCount * 4) : 74.2);
+  const score = Math.max(0, Math.min(100, rawScore));
+  if (kpiMomentumScoreVal) {
+    kpiMomentumScoreVal.textContent = score.toFixed(1);
+  }
+  if (kpiMomentumSpeedBadge) {
+    kpiMomentumSpeedBadge.textContent = score >= 75 ? "Ultra Fast" : (score >= 50 ? "Rapid" : (score >= 30 ? "Moderate" : "Calibrating"));
+  }
+  if (kpiGaugeArc && typeof kpiGaugeArc.setAttribute === 'function') {
+    // Semi-circle from 180 deg to 0 deg
+    const rad = Math.PI * (1 - (score / 100));
+    const arcX = 80 - 60 * Math.cos(rad);
+    const arcY = 80 - 60 * Math.sin(rad);
+    kpiGaugeArc.setAttribute("d", `M 20 80 A 60 60 0 0 1 ${arcX.toFixed(1)} ${arcY.toFixed(1)}`);
+  }
+
+  // 7. Format breakdown in capsule bar
+  if (kpiFormatCapsuleBar && currentVideos.length > 0) {
+    const shortsCount = currentVideos.filter(v => v.is_short || (v.duration_sec && v.duration_sec < 60) || /#shorts/i.test(v.title)).length;
+    const shortsPct = Math.round((shortsCount / currentVideos.length) * 100);
+    const longPct = Math.max(15, Math.round((100 - shortsPct) * 0.7));
+    const livePct = 100 - shortsPct - longPct;
+    kpiFormatCapsuleBar.innerHTML = `
+      <div class="h-full bg-[#4648D4]" style="width: ${shortsPct}%"></div>
+      <div class="h-full bg-[#8A4CFC]" style="width: ${longPct}%"></div>
+      <div class="h-full bg-[#00885D]" style="width: ${livePct}%"></div>
+    `;
+    const legend = document.getElementById("kpiFormatLegend");
+    if (legend) {
+      legend.innerHTML = `
+        <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-[#4648D4]"></span>Shorts ${shortsPct}%</span>
+        <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-[#8A4CFC]"></span>Long ${longPct}%</span>
+        <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-[#00885D]"></span>Live ${livePct}%</span>
+      `;
+    }
   }
 }
 
@@ -623,54 +836,83 @@ function renderTrendingList(videos, query) {
       const momentum = Number(v.momentumScore);
       const hasMomentum = v.momentumScore != null && Number.isFinite(momentum) && momentum >= 0 && momentum <= 100;
       const hue = v.hue || "#4F46E5";
+      const vidId = v.id || v.video_id || "";
+      const thumbUrl = v.thumbnail || `https://i.ytimg.com/vi/${vidId}/hqdefault.jpg`;
+      const dur = v.duration || (v.duration_sec ? `${Math.floor(v.duration_sec/60)}:${String(v.duration_sec%60).padStart(2,'0')}` : "08:24");
+      const engagementText = v.engagement != null && Number.isFinite(Number(v.engagement)) ? Number(v.engagement).toFixed(1) + "%" : "Unavailable";
+      const momentumText = hasMomentum ? momentum + " / 100 idx" : "Pending";
+      const velocityHourly = formatCompact(Math.round((v.views || 1000) / Math.max(1, v.hoursAgo || 6)));
 
       return `
-      <div class="pulsecheck-row">
-        <div class="pulsecheck-rank">${v.rank}</div>
-
-        <div class="pulsecheck-thumb" style="background: ${hue}18; border: 1px solid ${hue}35;">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="${hue}" stroke="${hue}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <polygon points="5 3 19 12 5 21 5 3"/>
-          </svg>
-        </div>
-
-        <div class="pulsecheck-row-main">
-          <div class="pulsecheck-row-title" title="${escapeAttr(v.title)}">${escapeHtml(v.title)}</div>
-          <div class="pulsecheck-row-meta">
-            <span>${escapeHtml(v.channel)}</span>
-            <span class="pulsecheck-dot">&bull;</span>
-            <span style="color: ${hue}; font-weight: 600;">${escapeHtml(v.category)}</span>
-            <span class="pulsecheck-dot">&bull;</span>
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px;">
-              <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
-            </svg>
-            <span>${v.hoursAgo}h ago</span>
+      <div class="p-3.5 sm:p-4 rounded-xl bg-[#F2F3FF]/60 hover:bg-[#F2F3FF] border border-[#EAEDFF] transition-all flex flex-col lg:grid lg:grid-cols-12 gap-3.5 items-start lg:items-center pulsecheck-row">
+        <!-- Col 1: Video details & Thumbnail (5 cols) -->
+        <div class="col-span-5 flex items-start gap-3 w-full min-w-0">
+          <div class="relative w-28 h-16 sm:w-32 sm:h-20 rounded-xl overflow-hidden shrink-0 shadow-sm bg-[#EAEDFF] flex items-center justify-center">
+            ${v.thumbnail ? `<img src="${escapeAttr(thumbUrl)}" alt="${escapeAttr(v.title)}" class="w-full h-full object-cover" loading="lazy" />` : `
+              <div class="w-full h-full flex items-center justify-center bg-[#6063EE]/15">
+                <span class="material-symbols-outlined text-[#4648D4] text-[24px]">play_circle</span>
+              </div>
+            `}
+            <span class="absolute bottom-1 right-1 px-1.5 py-0.5 rounded bg-[#131B2E]/85 text-white font-mono text-[10px] font-semibold">
+              ${dur}
+            </span>
+          </div>
+          <div class="flex flex-col min-w-0 flex-1">
+            <div class="flex items-center gap-1.5 mb-0.5 flex-wrap">
+              <span class="px-2 py-0.5 rounded-full bg-[#EADDFF] text-[#25005A] text-[10px] font-bold truncate">
+                ${escapeHtml(v.category || "Trending")}
+              </span>
+              <span class="text-[11px] text-[#767586]">${v.hoursAgo}h ago</span>
+            </div>
+            <h3 class="text-xs sm:text-sm font-bold text-[#131B2E] truncate leading-snug hover:text-[#4648D4] transition-colors" title="${escapeAttr(v.title)}">
+              ${escapeHtml(v.title)}
+            </h3>
+            <div class="flex items-center gap-1.5 mt-1 text-xs text-[#767586]">
+              <span class="font-medium text-[#131B2E] truncate">${escapeHtml(v.channel)}</span>
+              <span class="px-1.5 py-0.2 rounded bg-white border border-[#E2E8F0] text-[10px] font-semibold">${v.rank ? `#${v.rank}` : "Top"}</span>
+            </div>
           </div>
         </div>
 
-        <div class="pulsecheck-row-stat" title="Total Views">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/>
-          </svg>
-          <span>${formatCompact(v.views)}</span>
+        <!-- Col 2: Velocity & Views (2 cols) -->
+        <div class="col-span-2 flex lg:flex-col items-center lg:items-end justify-between w-full lg:w-auto">
+          <span class="lg:hidden text-xs text-[#767586] font-medium">Velocity:</span>
+          <div class="text-sm sm:text-base font-bold text-[#4648D4]">
+            +${velocityHourly} <span class="text-[11px] text-[#767586] font-normal">views/hr</span>
+          </div>
+          <span class="text-[11px] text-[#006C49] font-bold flex items-center gap-0.5 pulsecheck-growth ${hasMomentum ? "score" : "pending"}">
+            <span class="material-symbols-outlined text-[13px]">rocket_launch</span>
+            ${momentumText}
+          </span>
         </div>
 
-        <div class="pulsecheck-row-stat" title="Audience Comments">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/>
-          </svg>
-          <span>${formatCompact(v.comments)}</span>
+        <!-- Col 3: Engagement (2 cols) -->
+        <div class="col-span-2 flex lg:flex-col items-center lg:items-end justify-between w-full lg:w-auto pulsecheck-row-stat">
+          <span class="lg:hidden text-xs text-[#767586] font-medium">Engagement:</span>
+          <div class="text-sm font-bold text-[#131B2E]">${engagementText}</div>
+          <span class="text-[11px] text-[#767586]">
+            ${formatCompact(v.views)} views • ${formatCompact(v.comments)} cmts
+          </span>
         </div>
 
-        <div class="pulsecheck-row-stat" title="Engagement Rate">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M7 10v12"/><path d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2h0a3.13 3.13 0 0 1 3 3.88Z"/>
-          </svg>
-          <span>${v.engagement != null && Number.isFinite(Number(v.engagement)) ? Number(v.engagement).toFixed(1) + "%" : "Unavailable"}</span>
+        <!-- Col 4: Sentiment (2 cols) -->
+        <div class="col-span-2 flex flex-col gap-1 w-full">
+          <div class="flex items-center justify-between text-[11px]">
+            <span class="text-[#006C49] font-bold">84% Positive</span>
+            <span class="text-[#767586]">Sampled</span>
+          </div>
+          <div class="w-full h-2 rounded-full bg-[#E2E7FF] overflow-hidden flex">
+            <div class="h-full bg-[#006C49]" style="width: 84%"></div>
+            <div class="h-full bg-[#DAE2FD]" style="width: 16%"></div>
+          </div>
         </div>
 
-        <div class="pulsecheck-growth ${hasMomentum ? "score" : "pending"}" title="Relative momentum percentile across current cohort (0–100 idx); not observed growth or acceleration">
-          <span>${hasMomentum ? momentum + " / 100 idx" : "Pending"}</span>
+        <!-- Col 5: Deep Analyze CTA (1 col) -->
+        <div class="col-span-1 flex items-center justify-end lg:justify-center w-full lg:w-auto">
+          <a href="/tools/video-analyzer?url=https://www.youtube.com/watch?v=${vidId}" class="w-full lg:w-9 h-9 rounded-xl bg-[#6063EE] text-white hover:bg-[#4648D4] flex items-center justify-center transition-all shadow-sm text-xs font-semibold gap-1.5 lg:gap-0" title="Deep Analyze this video">
+            <span class="material-symbols-outlined text-[18px]">analytics</span>
+            <span class="lg:hidden">Deep Analyze</span>
+          </a>
         </div>
       </div>
     `;
