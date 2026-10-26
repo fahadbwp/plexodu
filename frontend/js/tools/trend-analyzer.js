@@ -350,7 +350,7 @@ async function fetchTrendingFeed(shouldScroll = false) {
     if (listEl && currentVideos.length === 0) {
       listEl.innerHTML = `
         <div class="pulsecheck-empty-state">
-          Unable to connect to live YouTube feed right now. Please verify your connection or try again.
+          ${escapeHtml(err.message || "Unable to connect to live YouTube feed right now. Please verify your connection or try again.")}
         </div>
       `;
     }

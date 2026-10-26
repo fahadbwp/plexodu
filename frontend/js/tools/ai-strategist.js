@@ -119,12 +119,30 @@ async function handleSendMessage() {
     const data = await res.json();
     removeTypingBubble(typingId);
 
+    // Extract text safely without ever accepting boolean or non-string values as advice
+    const extractText = (val) => (typeof val === "string" && val.trim() ? val.trim() : null);
+
     if (!res.ok || data.error) {
-      appendBubble("ai", data.error || "Sorry, could not process your request. Please try again.");
+      const errorMsg =
+        extractText(data.message) ||
+        extractText(data.reply) ||
+        extractText(data.error) ||
+        (res.status === 429
+          ? "AI request limit reached. Please wait a moment and try again."
+          : res.status >= 500
+            ? "AI service is temporarily unavailable. Please try again later."
+            : "Sorry, could not process your request. Please try again.");
+
+      appendBubble("ai", errorMsg);
       return;
     }
 
-    const reply = data.reply || data.response || "No response received.";
+    const reply =
+      extractText(data.reply) ||
+      extractText(data.response) ||
+      extractText(data.message) ||
+      "Unexpected response format received from AI service. Please try again.";
+
     appendBubble("ai", reply);
 
     // Save to multi-turn memory
@@ -140,13 +158,17 @@ async function handleSendMessage() {
 
 function appendBubble(role, content) {
   if (!chatMessages) return;
+  // Guard against boolean or unexpected non-string content
+  const safeContent = typeof content === "string"
+    ? content
+    : (content && typeof content.message === "string" ? content.message : "Sorry, could not process your request. Please try again.");
   const isAi = role === "ai";
   const now = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 
   const bubbleDiv = document.createElement("div");
   bubbleDiv.className = `chat-message stitch-chat-row ${isAi ? "ai" : "user"}`;
 
-  const formattedContent = isAi ? formatMarkdown(content) : escapeHtml(content).replace(/\n/g, "<br>");
+  const formattedContent = isAi ? formatMarkdown(safeContent) : escapeHtml(safeContent).replace(/\n/g, "<br>");
 
   // Quick Action Buttons for AI responses
   let actionButtonsHtml = "";
@@ -176,7 +198,7 @@ function appendBubble(role, content) {
   `;
 
   if (isAi) {
-    bubbleDiv.querySelector('[data-chat-action="copy"]').addEventListener("click", (event) => copyToClipboard(content, event.currentTarget));
+    bubbleDiv.querySelector('[data-chat-action="copy"]').addEventListener("click", (event) => copyToClipboard(safeContent, event.currentTarget));
     bubbleDiv.querySelector('[data-chat-action="shorts"]').addEventListener("click", () => sendChipPrompt("Write a 60-second YouTube Shorts script for these ideas."));
     bubbleDiv.querySelector('[data-chat-action="tags"]').addEventListener("click", () => sendChipPrompt("Suggest YouTube tags and an SEO description for these ideas."));
   }
