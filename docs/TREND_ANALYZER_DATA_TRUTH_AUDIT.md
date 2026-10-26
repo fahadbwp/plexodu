@@ -125,6 +125,8 @@ Changed test contracts are explicit: cache payload content stays equal while cac
 
 ## Files and reproduction
 
+- `.gitleaksignore`: exact historical checksum false-positive fingerprint, documented above.
+
 - `.github/workflows/ci.yml`
 - `backend/app.py`
 - `backend/services/real_api.py`
@@ -159,6 +161,15 @@ node tests/stitch-browser-qa.cjs --output <absolute-shared-tools-directory>
 ```
 
 The CI workflow now runs all four Node unit suites and includes backend SEO tests. The existing full Python suite includes API/schema/security/SEO contracts. No npm build exists; verification includes frontend JS syntax, Python compilation/import, actual browser assets and Flask routes.
+
+## Remote CI and Preview verification
+
+- Draft PR: [#18](https://github.com/fahadbwp/plexodu/pull/18).
+- First exact-HEAD CI run: [40312388443](https://github.com/fahadbwp/plexodu/actions/runs/40312388443). Tests, dependencies, startup and SEO passed. Static Ruff/Bandit passed; Gitleaks found a SHA-256 source checksum on `evidence.json:9266`.
+- The flagged value was recomputed and verified as the digest of `backend/services/real_api.py`. Source digests now use a [standard checksum manifest](qa/trend-data-truth/source-checksums.sha256). An exact commit/path/rule/line fingerprint in `.gitleaksignore` covers that historical checksum finding; future secret findings remain scanned. A follow-up CI run verifies the resolution; the final PR checks are authoritative.
+- Preview [plexudo-kprbjac8s-bwp2.vercel.app](https://plexudo-kprbjac8s-bwp2.vercel.app/tools/trend-analyzer), deployment `dpl_7F8jQSrEvksrAuHj2ZiKEYcmXAm5`, was READY for `5dbd77c991f5481c7bb4ae53adc360aacc4f1f62`.
+- **Actual Preview browser testing: UNVERIFIED / ACCESS BLOCKED.** The Vercel connector returned 403 while obtaining authorized protected-page access; direct HTTP confirmed a 302 to Vercel SSO. No authenticated local CLI session was available. No protection settings were changed and no long-lived bypass secret was requested. Build READY is not an end-to-end application pass.
+- Production was rechecked after branch push and remained at `4a00f46`; no production promotion occurred.
 
 ## Remaining limits and release gate
 
