@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="index, follow">
 <title>YouTube Trend Analyzer & Topic Momentum — Plexudo</title>
-<meta name="description" content="Free YouTube Trend Analyzer. Query YouTube Data API v3 for view velocity, virality scores, tags, and audience sentiment. 100% anonymous & no login required.">
+<meta name="description" content="Free YouTube Trend Analyzer. Compare YouTube Data API v3 public snapshots, lifetime view totals, relative momentum estimates, tags, and sampled sentiment. 100% anonymous & no login required.">
 <link rel="canonical" href="https://plexudo.vercel.app/tools/trend-analyzer">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=3">
 <link rel="icon" type="image/png" sizes="64x64" href="/favicon.png?v=3">
@@ -13,7 +13,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
-<link rel="stylesheet" href="/css/style.css?v=28.2">
+<link rel="stylesheet" href="/css/style.css?v=28.3">
 <link rel="stylesheet" href="/css/trend-analyzer.css?v=28.0">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
 <script defer src="/js/analytics.js"></script>
@@ -649,7 +649,7 @@
               <span>View Velocity (views/hr)</span>
             </div>
             <p class="stitch-faq-desc">
-              Requires at least two comparable public observation timestamps. Velocity is computed as the differential quotient of view count divided by the elapsed delta time. When fewer than 2 snapshots exist, velocity is marked as <em>Initial Calibration</em>.
+              Video rankings estimate lifetime-average views per hour from total public views and upload age. Observed changes require at least two comparable saved snapshots; upload-age buckets are not a historical velocity curve.
             </p>
           </div>
 
@@ -659,7 +659,7 @@
               <span>Plexudo Momentum Index (0–100)</span>
             </div>
             <p class="stitch-faq-desc">
-              A weighted heuristic combining 24h upload acceleration in the parent category, comment-to-view ratios, and deviation from the channel's 90-day baseline performance.
+              A relative percentile rank of estimated lifetime views per hour within the current returned video sample. It is not measured acceleration, a channel baseline comparison, or a virality probability.
             </p>
           </div>
 
@@ -669,7 +669,7 @@
               <span>Comment Sentiment Sampling</span>
             </div>
             <p class="stitch-faq-desc">
-              Public sentiment parses the top 100 most relevant public comments via lightweight local transformer classifiers. Moderated, spam, or withheld comments are excluded from calculations.
+              Sentiment estimates use TextBlob polarity and Urdu/Hindi lexicon rules on up to 50 public comments requested for the leading video. This is a limited returned comment sample, not the whole audience or a verified moderation audit.
             </p>
           </div>
 
@@ -767,7 +767,7 @@
   </div>
 </footer>
 
-<script src="/js/tools/common.js?v=28.2"></script>
-<script src="/js/tools/trend-analyzer.js?v=28.2"></script>
+<script src="/js/tools/common.js?v=28.3"></script>
+<script src="/js/tools/trend-analyzer.js?v=28.3"></script>
 </body>
 </html>

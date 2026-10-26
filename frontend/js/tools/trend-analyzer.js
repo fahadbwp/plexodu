@@ -708,7 +708,7 @@ function renderDeepIntelligence(ytData) {
   // 2. Velocity, Growth Rate & Virality Breakdown
   const summaryDirection = document.getElementById("summaryDirection");
   if (summaryDirection) {
-    summaryDirection.textContent = intel.current_direction_display || ytData.stage || "Emerging";
+    summaryDirection.textContent = intel.current_direction_display || ytData.stage || "Unavailable";
   }
 
   const summaryVelocity = document.getElementById("summaryVelocity");
@@ -718,7 +718,7 @@ function renderDeepIntelligence(ytData) {
 
   const summaryAcceleration = document.getElementById("summaryAcceleration");
   if (summaryAcceleration) {
-    summaryAcceleration.textContent = intel.acceleration_display || "Normal";
+    summaryAcceleration.textContent = intel.acceleration_display || "Unavailable";
   }
 
   const summaryEngagement = document.getElementById("summaryEngagement");
@@ -860,9 +860,9 @@ function renderDeepIntelligence(ytData) {
       tagsList.innerHTML = `<span class="text-slate-400 font-0-85">Search a specific topic to generate tag suggestions.</span>`;
     } else {
       tagsList.innerHTML = tags.map((t) => `
-        <span class="tag-item-default" data-copy="${escapeAttr(t)}" title="Click to copy">
+        <button type="button" class="tag-item-default" data-copy="${escapeAttr(t)}" title="Click to copy">
           🏷️ ${escapeHtml(t)}
-        </span>
+        </button>
       `).join("");
     }
   }
@@ -873,9 +873,9 @@ function renderDeepIntelligence(ytData) {
     const htags = ytData.youtube_hashtags || [];
     if (htags.length > 0) {
       hashtagsList.innerHTML = htags.map((h) => `
-        <span class="tag-item-accent" data-copy="${escapeAttr(h)}" title="Click to copy">
+        <button type="button" class="tag-item-accent" data-copy="${escapeAttr(h)}" title="Click to copy">
           ${escapeHtml(h)}
-        </span>
+        </button>
       `).join("");
     } else {
       hashtagsList.innerHTML = "";

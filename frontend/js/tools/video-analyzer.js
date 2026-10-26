@@ -209,7 +209,7 @@ function renderVideoResults(data) {
     tagsContainer.replaceChildren();
     if (currentVideoTags.length === 0) {
       const empty = document.createElement("span");
-      empty.style.cssText = "font-size:13px; color:#94a3b8;";
+      empty.className = "tool-empty-note";
       empty.textContent = "No tags provided for this upload";
       tagsContainer.appendChild(empty);
     } else {
@@ -222,7 +222,7 @@ function renderVideoResults(data) {
     const comments = Array.isArray(data.comments) ? data.comments : [];
     if (comments.length === 0) {
       const empty = document.createElement("div");
-      empty.style.cssText = "font-size:13px; color:#94a3b8;";
+      empty.className = "tool-empty-note";
       empty.textContent = "No public comments available.";
       commentsList.appendChild(empty);
     } else {

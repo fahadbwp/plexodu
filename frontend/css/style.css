@@ -5725,3 +5725,15 @@ body.stitch-tools { overflow-x: visible; }
 .stitch-tools .pulsecheck-growth.score { background: var(--pastel-blue); color: var(--stitch-primary); }
 
 .stitch-tools [data-focus-tool-input] { text-align: left; cursor: pointer; }
+
+/* Readable tool feedback in every request state. */
+.stitch-tools .tool-status-bar.error { color: var(--stitch-on-surface); }
+.stitch-tools .tool-status-bar.success { color: var(--stitch-tertiary); }
+.stitch-tools .tool-empty-note { font-size: 13px; color: var(--stitch-on-surface-variant); }
+.stitch-tools .audit-empty { padding: 16px; text-align: center; }
+.stitch-channel-info > .stitch-flex-row { flex-wrap: wrap; }
+.stitch-channel-info .stitch-kpi-badge { flex-shrink: 0; }
+.stitch-tools .trend-tab-btn.dimmed { opacity: 1; border-style: dashed; }
+@media (max-width: 768px) {
+  .stitch-channel-info > .stitch-flex-row { justify-content: center; }
+}

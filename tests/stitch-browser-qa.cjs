@@ -8,6 +8,7 @@ if (!modules) throw new Error('Set STITCH_QA_MODULES to the isolated QA node_mod
 const {chromium} = require(path.join(modules, 'playwright'));
 const argv = process.argv.slice(2);
 const before = argv.includes('--before');
+const screensOnly = argv.includes('--screens-only');
 const output = argv.includes('--output') ? path.resolve(argv[argv.indexOf('--output') + 1]) : path.resolve('qa-output');
 const base = 'http://127.0.0.1:5067';
 const repo = path.resolve(__dirname, '..');
@@ -28,7 +29,29 @@ function auditGeometry() {
   const visible = e => e.getClientRects().length && getComputedStyle(e).visibility!=='hidden' && !e.closest('[aria-hidden="true"],[inert]');
   const selectors='h1,h2,h3,p,input,textarea,button,a,summary,.stitch-page-header,.stitch-faq-item,.stitch-kpi-card,.stitch-kpi-badge,.stitch-card,.chat-bubble,.chat-chips-wrap';
   const elements=[];const failures=[];const scrollRegions=[];
+  const assistiveOnly=[];
+  function screenReaderOnly(e){
+    for(let a=e;a;a=a.parentElement){
+      const c=getComputedStyle(a),r=a.getBoundingClientRect();
+      if(c.position==='absolute'&&r.width<=1&&r.height<=1&&c.overflow==='hidden'&&/^rect\(0px[, ]+0px[, ]+0px[, ]+0px\)$/.test(c.clip)){
+        assistiveOnly.push({element:label(e),ancestor:label(a),clip:c.clip,rect:rect(r)});return true;
+      }
+    }
+    return false;
+  }
   function check(e,r,kind){
+    // Vertical clipping must be checked too; page length itself is not a failure.
+    for(let a=e;a;a=a.parentElement){
+      const cs=getComputedStyle(a),ar=a.getBoundingClientRect();
+      if(/hidden|clip|auto|scroll/.test(cs.overflowY)){
+        const top=ar.top+a.clientTop,bottom=top+a.clientHeight;
+        if(r.top<top-2||r.bottom>bottom+2){
+          const ancestor={selector:label(a),rect:rect(ar),overflowY:cs.overflowY,scrollHeight:a.scrollHeight,clientHeight:a.clientHeight};
+          if(/auto|scroll/.test(cs.overflowY)&&a.scrollHeight>a.clientHeight+2){scrollRegions.push({element:label(e),ancestor,kind,axis:'y'});break;}
+          failures.push({element:label(e),text:e.textContent.trim().slice(0,100),kind,axis:'y',rect:rect(r),ancestor});break;
+        }
+      }
+    }
     let a=e, nearest=null, recoverable=false;
     while(a){const cs=getComputedStyle(a), ar=a.getBoundingClientRect();
       if(/hidden|clip|auto|scroll/.test(cs.overflowX)){
@@ -44,18 +67,18 @@ function auditGeometry() {
     if(!recoverable&&(r.left< -2||r.right>innerWidth+2))failures.push({element:label(e),kind,text:e.textContent.trim().slice(0,100),rect:rect(r),ancestor:{selector:'viewport',width:innerWidth}});
   }
   for(const e of document.querySelectorAll(selectors)){
-    if(!visible(e))continue;const r=e.getBoundingClientRect(),c=getComputedStyle(e);
+    if(!visible(e)||screenReaderOnly(e))continue;const r=e.getBoundingClientRect(),c=getComputedStyle(e);
     elements.push({selector:label(e),rect:rect(r),style:{overflowX:c.overflowX,overflowY:c.overflowY,width:c.width,minWidth:c.minWidth,maxWidth:c.maxWidth,whiteSpace:c.whiteSpace,transform:c.transform,display:c.display,flex:c.flex,gridTemplateColumns:c.gridTemplateColumns,padding:c.padding}});
     check(e,r,'box');
   }
   const walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);
   while(walker.nextNode()){
     const n=walker.currentNode,e=n.parentElement;
-    if(!n.textContent.trim()||!e||!visible(e)||e.closest('script,style,.material-symbols-outlined,[data-qa-label],input,textarea'))continue;
+    if(!n.textContent.trim()||!e||!visible(e)||screenReaderOnly(e)||e.closest('script,style,.material-symbols-outlined,[data-qa-label],input,textarea'))continue;
     const range=document.createRange();range.selectNodeContents(n);
     for(const r of range.getClientRects())if(r.width&&r.height)check(e,r,'text');
   }
-  return {viewport:innerWidth,documentWidth:document.documentElement.scrollWidth,elements,failures,scrollRegions};
+  return {viewport:innerWidth,documentWidth:document.documentElement.scrollWidth,elements,failures,scrollRegions,assistiveOnly};
 }
 
 (async()=>{
@@ -87,6 +110,8 @@ function auditGeometry() {
           if(mode==='stale'){data.cached=true;data.is_stale=true;}
           if(mode==='missing')data.kpis={totalViews:0,avgEngagement:null,fastestCategory:null,risingCount:null};
           if(mode==='changed'){data.kpis.totalViews=2000000;data.timeSeries=[{label:'unavailable age',views:2000000},{label:'unavailable age',views:0}];}
+          if(mode==='history')data.results.YouTube.trend_intelligence.timeline=[{date:'2026-10-24 10:00',views:100},{date:'2026-10-25 10:00',views:150,smoothed_views:140}];
+          if(mode==='nohistory')data.results.YouTube.trend_intelligence.timeline=[];
         }else if(u.pathname.includes('video-analysis')){
           data=structuredClone(video);if(mode==='empty'){data.description='';data.tags=[];data.comments=[];}
         }else if(u.pathname.includes('audit-channel')){
@@ -115,13 +140,24 @@ function auditGeometry() {
       await page.addScriptTag({path:asset('axe-core/axe.min.js')});
       item.accessibility=(await page.evaluate(async()=>await axe.run(document,{runOnly:{type:'tag',values:['wcag2a','wcag2aa','wcag21a','wcag21aa']}}))).violations.map(v=>({id:v.id,impact:v.impact,nodes:v.nodes.map(n=>({target:n.target,summary:n.failureSummary}))}));
     }
-    await page.screenshot({path:path.join(output,`${tool}-${width}-${state}.png`),fullPage:true});
+    // Keep the fixture notice at the end of full-page evidence, not over product text.
+    await page.screenshot({path:path.join(output,`${tool}-${width}-${state}.png`),fullPage:true,style:'[data-qa-label] { position: static !important; }'});
     if(state==='success'){await page.evaluate(()=>window.scrollTo(0,0));await page.screenshot({path:path.join(output,`${tool}-${width}-viewport.png`)});}
     report.cases.push(item);fs.writeFileSync(path.join(output,'measurements.json'),JSON.stringify(report,null,2));
   }
   async function check(name,fn){try{await fn();report.checks.push({name,passed:true});}catch(e){report.checks.push({name,passed:false,error:e.message.slice(0,300)});}}
-  for(const width of [320,390,1440])for(const tool of ['trend-analyzer','video-analyzer','competitor-audit','ai-strategist','tools-hub']){
+  for(const width of (screensOnly?[320,390]:[320,390,1440]))for(const tool of ['trend-analyzer','video-analyzer','competitor-audit','ai-strategist','tools-hub']){
     const {page,context}=await makePage(width);await page.goto(base+'/tools'+(tool==='tools-hub'?'':'/'+tool),{waitUntil:'networkidle'});
+    if(screensOnly){
+      if(tool==='trend-analyzer')await page.waitForFunction(()=>document.getElementById('kpiTotalViewsVal').textContent!=='—');
+      if(tool==='video-analyzer'||tool==='competitor-audit'){
+        await page.locator(tool==='video-analyzer'?'#videoUrlInput':'#channelInput').fill('QA fixture');
+        await page.locator(tool==='video-analyzer'?'#analyzeVideoBtn':'#auditBtn').click();
+        await page.locator('#resultsArea').waitFor({state:'visible'});
+      }
+      if(tool==='ai-strategist'){await page.locator('#chatInput').fill(longText);await page.locator('#chatSendBtn').click();await page.waitForTimeout(100);}
+      await record(page,tool,width,'success');await context.close();continue;
+    }
     if(width<1024){await check(`${tool}/${width} drawer keyboard`,async()=>{
       await page.locator('.stitch-hamburger-btn').click();await page.waitForTimeout(50);
       const drawer=page.locator('#stitchMobileDrawer');const count=await drawer.locator('button,a[href]').count();
@@ -133,7 +169,7 @@ function auditGeometry() {
     if(tool==='trend-analyzer'){
       await page.waitForFunction(()=>document.getElementById('kpiTotalViewsVal').textContent!=='—');
       await record(page,tool,width,'success');
-      for(const mode of ['empty','error','quota','stale','missing','changed']){
+      for(const mode of ['empty','error','quota','stale','missing','changed','history','nohistory']){
         await page.locator('#pulseSearchInput').fill(mode);await page.locator('#pulseSearchInput').press('Enter');await page.waitForTimeout(120);
         await record(page,tool,width,mode);
         await check(`${tool}/${width} ${mode}`,async()=>{
@@ -142,10 +178,16 @@ function auditGeometry() {
           if(mode==='missing')assert.equal(await page.locator('#kpiAvgEngVal').innerText(),'—');
           if(mode==='stale')assert.match(await page.locator('#kpiTotalViewsDeltaText').innerText(),/stale/i);
           if(mode==='changed'){assert.equal(text,'2M');const chart=await page.evaluate(()=>{const c=Chart.getChart('pulseViewsChart');return {type:c.config.type,labels:c.data.labels,values:c.data.datasets[0].data};});assert.deepEqual(chart.labels,['unavailable age','unavailable age']);assert.deepEqual(chart.values,[2000000,0]);assert.equal(chart.type,'bar');}
+          if(mode==='history'){const c=await page.evaluate(()=>{const c=Chart.getChart('viewsChart');return {labels:c.data.labels,datasets:c.data.datasets.map(d=>d.data)};});assert.deepEqual(c.labels,['2026-10-24 10:00','2026-10-25 10:00']);assert.deepEqual(c.datasets,[[100,140],[100,150]]);}
+          if(mode==='nohistory')assert(await page.locator('#viewsChartEmpty').isVisible());
         });
       }
       await check(`${tool}/${width} controls and exports`,async()=>{
         await page.locator('#pulseSearchInput').fill('QA fixture');await page.locator('#analyzeBtn').click();await page.waitForTimeout(120);
+        for(const chip of await page.locator('[data-copy]').all()){
+          await chip.focus();await page.keyboard.press('Enter');
+          await page.waitForFunction(()=>[...document.querySelectorAll('[data-copy]')].some(e=>e.textContent.includes('Copied')));
+        }
         await page.selectOption('#pulseRegionSelect','United States');
         for(const button of await page.locator('[data-timeframe]').all())await button.click();
         for(const button of await page.locator('#pulseCatScroller button').all())await button.click();
@@ -161,6 +203,8 @@ function auditGeometry() {
       await page.locator(button).click();await check(`${tool}/${width} empty submission`,async()=>assert(await page.locator('#statusLine').isVisible()));
       await page.locator(input).fill('QA fixture');await page.locator(input).press('Enter');await page.locator('#resultsArea').waitFor({state:'visible'});await record(page,tool,width,'success');
       if(tool==='video-analyzer')await check(`${tool}/${width} copy and draft actions`,async()=>{
+        const tag=page.locator('#tagsContainer button').first();await tag.focus();await page.keyboard.press('Enter');
+        await page.waitForFunction(()=>document.querySelector('#tagsContainer button')?.textContent.includes('Copied'));
         for(const id of ['copyTitleBtn','copyDescBtn','copyTagsBtn']){await page.locator('#'+id).click();await page.waitForFunction(id=>document.getElementById(id).textContent.includes('Copied'),id);}
         await page.locator('#toggleDraftBtn').click();await page.locator('#seoDraftTitleInput').fill('');await page.locator('#reanalyzeSeoBtn').click();assert.match(await page.locator('#seoDraftStatus').innerText(),/required/i);
         await page.locator('#seoDraftTitleInput').fill(longText);await page.locator('#reanalyzeSeoBtn').click();await page.waitForTimeout(100);assert.match(await page.locator('#seoDraftStatus').innerText(),/successfully/);await record(page,tool,width,'draft');await page.locator('#toggleDraftBtn').click();

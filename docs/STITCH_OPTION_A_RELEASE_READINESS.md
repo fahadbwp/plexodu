@@ -1,192 +1,152 @@
-# PLEXUDO — STITCH OPTION A RELEASE READINESS REPORT
+# Stitch Option A: final mobile clipping and data truth audit
 
-**Document ID:** `docs/STITCH_OPTION_A_RELEASE_READINESS.md`  
-**Date:** October 25, 2026  
-**Active Branch:** `feat/stitch-option-a-ui`  
-**Base Commit:** `4f5ee25` (`main`)  
-**Previous UI Commit:** `15b07f6`  
-**Target Release Gate:** Google Stitch Option A — Creator Analytics Dashboard Critical Stabilization  
-**Status:** STABILIZED & VERIFIED (Ready for Owner Review)  
+Date: October 26, 2026 (Asia/Karachi)
 
----
+## Decision and repository identity
 
-## 1. Executive Summary & Root Cause Audit
+**PASS for the scoped local fixture audit; ready for owner review. Live API and physical-device checks remain unverified. No merge or deployment approval is implied.**
 
-Following the visual QA audit of the initial 18 screenshots captured across standard breakpoints, 5 critical issues were identified, root causes diagnosed without speculation, and fixed across the frontend workspace.
+- Actual repository: `C:\Users\Fahad Saleem\Documents\plexodu-main\plexodu-phase0`.
+- Branch: `feat/stitch-option-a-ui`.
+- Requested baseline: `45d16454741384e15c17044774ff4b7346b3871a`.
+- Follow-up parent: `77c7e829e30f5a44cfecf31b8e71fd6524bb3d42`. Another process committed the overlapping stabilization and dual-chart work during this audit. At the owner's instruction, that commit is preserved intact; this audit is a separate follow-up, with no amend, reset, or cherry-pick.
+- Gate B remains `feat/gate-b-quota-guard` at `8cc12d2977daceae84d12f91db5f9daa148d9ad3`. No Gate B, production backend, database, CI, credentials, merge, push, or deployment changes.
+- The parent folder is a separate stale snapshot, not this Git root. An existing unreadable `pytest-cache-files-5s64s6s_/` directory is left untouched.
 
-### 1.1 Root Cause Diagnosis Matrix
+This report supersedes the earlier blanket responsive/GO claims. Document width alone is insufficient: a parent with `overflow:hidden` can conceal content while `document.scrollWidth` remains equal to viewport width.
 
-| Critical Issue | Symptom | Root Cause Diagnosis | Remediation Applied |
-|---|---|---|---|
-| **Critical Issue 1: Trend Analyzer API Error** | `"Server returned an unexpected response."` in status bar | **Category B (Test Server Configuration & Fallback Message):** Previous screenshot capture used Python `SimpleHTTPRequestHandler` to serve static files on an isolated port without running the Flask backend. When `fetchTrendingFeed()` queried `/api/trending-feed`, it received a 404 HTML response. `common.js` parsed HTML fallback and defaulted to the generic string. | 1. Built live test server harness with Flask backend routing.<br>2. Updated `common.js::fetchWithTimeout` to differentiate HTTP 404, HTTP 429, and HTTP 500 cleanly with actionable messages.<br>3. Handled error states gracefully in UI. |
-| **Critical Issue 2: Mobile Content Clipping** | Clipped headers, descriptions, search controls, and cards at 320px & 390px | **Duplicate HTML `class="..."` Attributes & Fixed Min-Widths:**<br>1. In initial conversion, replacement script emitted a second `class="..."` attribute on tags. Browsers ignore the second `class` attribute entirely, preventing `.stitch-flex-col`, `.stitch-chat-box`, `.stitch-chips-wrap`, and `.stitch-gap-md` from executing.<br>2. `.stitch-hero-info` had `min-width: 280px` which exceeded container inner width at 320px.<br>3. Search filters, breadcrumbs, and tables lacked fine-grained wrapping below 375px. | 1. Removed all duplicate `class` attributes and unified them into single valid class lists across all HTML files.<br>2. Updated `.stitch-hero-info` to `min-width: 0; width: 100%`.<br>3. Added `@media (max-width: 374px)` and `@media (max-width: 480px)` responsive layout overrides.<br>4. Wrapped tables in `.stitch-table-scroll`. |
-| **Critical Issue 3: Misleading Empty Metrics** | 0 views, 0.0% engagement, and "Live API" badges shown when API fails or returns empty | **Absence of an Explicit UI State Machine:** In `trend-analyzer.js`, the `catch` block invoked `renderKpis({})`, which parsed empty values as `formatCompact(0)` (`0 views`) and `0.0%`, while leaving the "Live API" mint badges active. | Implemented an explicit UI State Machine in `trend-analyzer.js` (`IDLE`, `LOADING`, `SUCCESS`, `EMPTY`, `ERROR_UPSTREAM`, `QUOTA_LIMITED`, `CACHED_STALE`). Under error or empty states, KPIs display `—` (unavailable) and badges transition to `amber` (`"Unavailable"`, `"No Data"`, or `"Quota Exceeded"`). Real numbers are only presented when data is valid. |
-| **Critical Issue 4: AI Strategist Mobile Layout** | Bubble clipping, chip overflow, composer button squishing | Duplicate class on chat message rows; lack of `word-break: break-word` and `min-width: 0` on bubble flex container; chips had `white-space: nowrap`. | Merged class attributes; added `.stitch-chat-bubble-wrap` with `flex: 1 1 auto; min-width: 0;`; applied `word-break: break-word; overflow-wrap: break-word;` on bubbles; set chips to `white-space: normal;`; enforced `16px` font-size on textarea to eliminate iOS Safari auto-zoom. |
-| **Critical Issue 5: Future Pro Preview** | Clickable `Preview Pro` button linking to `/#faq` implying active tracking or billing | Dead link and unclear readiness status. | Replaced clickable button with a non-interactive, clearly labeled `stitch-footer-card-pill`: `"Planned Feature • 100% Free Suite"`. No dead links, no deceptive marketing, zero auth or billing flows introduced. |
+## Supplied screenshot review and provenance
 
----
+All 17 `qa_v2` PNGs were visually inspected from the supplied Antigravity capture directory: Trend Analyzer, Video Analyzer, Competitor Audit, AI Strategist and Tools Hub at 320, 390 and 1440, plus Trend Analyzer's 320 error and empty states.
 
-## 2. Exact Files Modified
+The mobile PNGs visibly crop headings, intro text, controls, cards and chat. The capture's original DOM, asset/cache state and response recording were not supplied. Replaying exact commit `45d1645` did **not** reproduce every idle heading crop identically. Consequently, no DOM rectangle is invented for a PNG, and no unsupported assertion is made that all supplied crops came from the same cause. The measured before results below come from a controlled replay of that commit, with populated forms and long/unbroken content; its actual component clipping is independently reproducible.
 
-1. `frontend/css/style.css`:
-   - Added `.stitch-footer-card-pill` non-interactive planned feature component.
-   - Refactored `.stitch-hero-info` to `min-width: 0; width: 100%`.
-   - Added `.trend-timeframe-tabs` touch scroller and `.stitch-table-scroll` horizontal containment.
-   - Added complete mobile chat specifications (`.stitch-chat-box`, `.stitch-chat-row`, `.stitch-chat-bubble-wrap`, `.stitch-chat-bubble`, `.chat-chip-btn`).
-   - Added dedicated `@media (max-width: 374px)` breakpoint for small mobile screens (iPhone SE).
-   - Added `@media (prefers-reduced-motion: reduce)` accessibility compliance.
-2. `frontend/js/tools/common.js`:
-   - Updated `fetchWithTimeout` to produce informative HTTP 404, HTTP 429, and HTTP 500 error messages when non-JSON bodies are returned.
-   - Added accessible focus management to `openSidebarDrawer` and `closeSidebarDrawer` (captures `drawerLastFocusedElement` and restores focus on close).
-3. `frontend/js/tools/trend-analyzer.js`:
-   - Added `updateKpiBadges(state, isCached)` dynamic state badge manager.
-   - Implemented non-misleading placeholders in `renderKpis(kpis, isValid)` (renders `—` and `"Unavailable"` on error/empty, never `0` or `0.0%`).
-   - Added HTTP 429 quota handling and empty state differentiation in `fetchTrendingFeed()`.
-4. `frontend/tools/trend-analyzer.html`:
-   - Fixed all duplicate `class="..."` attributes.
-   - Updated sidebar and drawer footer cards to Planned Feature pill.
-   - Bumped cache-busting version parameter to `v=28.1`.
-5. `frontend/tools/video-analyzer.html`:
-   - Fixed all duplicate `class="..."` attributes.
-   - Fixed `shrink:0` to valid CSS.
-   - Updated sidebar and drawer footer cards to Planned Feature pill.
-   - Bumped cache-busting version parameter to `v=28.1`.
-6. `frontend/tools/competitor-audit.html`:
-   - Fixed duplicate `class="..."` attributes.
-   - Converted channel banner to `.stitch-channel-card` and `.stitch-channel-info`.
-   - Updated sidebar and drawer footer cards to Planned Feature pill.
-   - Bumped cache-busting version parameter to `v=28.1`.
-7. `frontend/tools/ai-strategist.html`:
-   - Fixed all duplicate `class="..."` attributes.
-   - Added `.stitch-chat-bubble-wrap` and `.stitch-chat-bubble`.
-   - Updated sidebar and drawer footer cards to Planned Feature pill.
-   - Bumped cache-busting version parameter to `v=28.1`.
-8. `frontend/tools/index.html`:
-   - Fixed duplicate `class="..."` attributes across all 4 tool cards.
-   - Updated sidebar and drawer footer cards to Planned Feature pill.
-   - Bumped cache-busting version parameter to `v=28.1`.
-9. `tests/test_stitch_option_a_critical_fixes.py`:
-   - 10 new automated regression tests covering zero duplicate classes, planned feature pills, mobile 320px safety, UI state machine, API error handling, and cache-busting consistency.
+The 72.5M/5.4% figures in the supplied PNGs cannot be certified as live observations from an image. Production HTML/JS does not hardcode those numeric metrics. They are API-response bindings; our repeatable QA explicitly injects these values as labelled fixtures. The original screenshot capture's numeric provenance remains unverified.
 
----
+## Measurement method and fixes
 
-## 3. Responsive Verification Across 7 Viewports
+`tests/stitch-browser-qa.cjs` uses local Flask on `127.0.0.1:5067`, real locally installed web fonts/Chart.js, Edge headless, device scale 1, and widths 320, 390 and 1440. Every API request is fulfilled with deterministic fixtures; external traffic is blocked or fulfilled locally. Every evidence screenshot carries a fixture banner.
 
-Tested with headless Chromium/Edge and programmatic DOM measurements:
+It records element rectangles and computed overflow, width/min/max-width, white-space, transform, flex/grid and padding; text ranges are measured separately. H1/H2/H3, paragraphs, searches, FAQ content, cards, badges, chat, links and buttons are inspected against clipping ancestors and the horizontal viewport. The final audit checks **both horizontal and vertical ancestor clipping**, not just document overflow. Before totals reflect the earlier horizontal measurement pass and are not represented as a vertical baseline.
 
-| Viewport | Device Profile | Horizontal Scroll (scrollWidth vs clientWidth) | Content Clipping | Navigation / Drawer Status |
-|---|---|---|---|---|
-| **320px** | iPhone SE (Small Mobile) | `scrollWidth == clientWidth` (0px overflow) | 0 clipped elements | Drawer active; Hamburger accessible |
-| **375px** | iPhone Mini / Standard | `scrollWidth == clientWidth` (0px overflow) | 0 clipped elements | Drawer active; Tap targets >= 44px |
-| **390px** | iPhone 14/15/16 | `scrollWidth == clientWidth` (0px overflow) | 0 clipped elements | Drawer active; Bento grid single column |
-| **430px** | iPhone 15 Pro Max | `scrollWidth == clientWidth` (0px overflow) | 0 clipped elements | Drawer active; Comfortable padding |
-| **768px** | iPad Portrait / Tablet | `scrollWidth == clientWidth` (0px overflow) | 0 clipped elements | Drawer active; 2-column KPI cards |
-| **1024px** | iPad Landscape / Small Laptop | `scrollWidth == clientWidth` (0px overflow) | 0 clipped elements | Fixed 270px Desktop Sidebar docked |
-| **1440px** | High-Res Desktop Canvas | `scrollWidth == clientWidth` (0px overflow) | 0 clipped elements | Fixed 270px Sidebar docked; High-res Bento layout |
+Intentional scroll regions (chat history, long descriptions, upload tables) are recorded separately. A clipped 1px absolute screen-reader table with computed `clip:rect(0px,0px,0px,0px)` is recorded as assistive-only, not visible content; the exemption requires those exact computed characteristics and does not suppress arbitrary hidden content. Axe still checks these accessible tables.
 
-**Note on GEMINI.md Anti-Overflow Rule:**  
-Zero horizontal overflow was achieved by fixing layout flex constraints, wrapping, and padding, **WITHOUT relying on `overflow-x: hidden` to truncate clipped text**.
-
----
-
-## 4. Visual Review Evidence & Artifacts
-
-Newly captured verification screenshots with the live Flask test backend:
-
-1. **`qa_v2_trend_analyzer_320_small_mobile.png`:** Verified 320px mobile layout with live mock data. 0 clipping, clean Bento cards.
-2. **`qa_v2_trend_analyzer_320_error_state.png`:** Verified UI State Machine under upstream error. KPIs display `—`, badge shows `"Unavailable"`, clean error state in list.
-3. **`qa_v2_trend_analyzer_320_empty_state.png`:** Verified UI State Machine under valid empty results. KPIs display `—`, badge shows `"No Data"`, empty query message rendered.
-4. **`qa_v2_trend_analyzer_390_mobile.png`:** Verified 390px mobile layout with live mock data.
-5. **`qa_v2_trend_analyzer_1440_desktop.png`:** Verified 1440px desktop workspace with fixed sidebar, dual Chart.js graphs, and Bento cards.
-6. **`qa_v2_video_analyzer_320_small_mobile.png`:** Verified 320px video hero banner, metric cards, and radial score dial.
-7. **`qa_v2_video_analyzer_390_mobile.png`:** Verified 390px video analysis layout.
-8. **`qa_v2_video_analyzer_1440_desktop.png`:** Verified 1440px video analysis layout.
-9. **`qa_v2_competitor_audit_320_small_mobile.png`:** Verified 320px competitor audit banner and 4-metric grid (`tool-grid-4col`).
-10. **`qa_v2_competitor_audit_390_mobile.png`:** Verified 390px competitor audit layout.
-11. **`qa_v2_competitor_audit_1440_desktop.png`:** Verified 1440px competitor audit layout.
-12. **`qa_v2_ai_strategist_320_small_mobile.png`:** Verified 320px AI chat canvas, non-clipping bubbles, and flexible composer input.
-13. **`qa_v2_ai_strategist_390_mobile.png`:** Verified 390px AI chat canvas.
-14. **`qa_v2_ai_strategist_1440_desktop.png`:** Verified 1440px AI chat canvas.
-15. **`qa_v2_tools_hub_320_small_mobile.png`:** Verified 320px 4-card Bento utility showcase.
-16. **`qa_v2_tools_hub_390_mobile.png`:** Verified 390px tools hub layout.
-17. **`qa_v2_tools_hub_1440_desktop.png`:** Verified 1440px tools hub layout.
-
-All screenshot artifacts are stored in:  
-`C:\Users\Fahad Saleem\.gemini\antigravity\brain\1ac42a66-16c6-4e13-8225-cdbb7013769f\qa_v2_*`
-
----
-
-## 5. Automated Test Suite Results
-
-```
-Command: python -m pytest tests/ -q
-Result: 324 passed, 0 failed in 21.98s
-Status: 100% PASS
-```
-
-- **`tests/test_stitch_dual_chart_contracts.py`:** **7 passed, 0 failed** (Dual-chart separation, upload age bucket tooltips, .sr-only accessible table fallbacks, baseline single-point integrity, multi-point trajectory delta, zero synthetic curves).
-- **`tests/test_stitch_option_a_critical_fixes.py`:** **10 passed, 0 failed** (Zero duplicate classes, Planned Feature non-interactive preview, 320px mobile layout safety, explicit UI state machine, safe 500 error handling, 429 quota handling, AI chat bubble safety, accessible drawer focus, cache-busting consistency).
-- **`tests/test_standalone_tools_architecture.py`:** **6 passed, 0 failed** (All routes return 200, clean homepage, GEMINI.md responsive layout rules, purged auth endpoints).
-- **`tests/test_tool_contracts.py`:** **19 passed, 0 failed** (Normalized API keys, UTF-8 `🎬` emoji, `.video-description-box`, `.tool-grid-4col` with `Video Count`, CSV export branding, mobile search bar layout).
-- **Node.js Client Suites (`tests/trend-rendering.cjs` & `tests/analytics-hook.cjs`):** **PASS** (Zero regression to DOM rendering, momentum calculations, or privacy signals).
-
----
-
-## 6. Accessibility & SEO Compliance
-
-- **Semantic Headings:** Hierarchical `h1` -> `h2` -> `h3` structure preserved across all 5 tool pages.
-- **Focus Management:** Mobile navigation drawer captures active element before opening and restores keyboard focus to `#stitchHamburgerBtn` on dismissal.
-- **Escape Key Dismissal:** Verified working on mobile drawer across all pages.
-- **Screen Reader Announcements:** Dynamic state transitions and status messages announce via `role="status"` and `aria-live="polite"`.
-- **Contrast & Motion:** WCAG AA compliant contrast ratios; `@media (prefers-reduced-motion: reduce)` disables animations.
-- **SEO & Canonical Integrity:** All canonical URLs, robots directives, OpenGraph tags, JSON-LD schemas, and Google Search Console tokens remain intact.
-
----
-
-## 7. Strict Master Rules & Safety Adherence
-
-1. **Gate B Isolation:** `feat/gate-b-quota-guard` remains completely untouched at commit `8cc12d2`.
-2. **Zero Mock Production Data:** All tools interface with authentic backend routes (`/api/trending-feed`, `/api/video-analysis`, `/api/audit-channel`, `/api/chat`).
-3. **Zero Authentication UI:** All tools remain 100% public and anonymous; no login modals, auth gates, or credits.
-4. **No Premature Deployments:** No merge into `main` and no automatic deployment to Vercel production has occurred.
-
----
-
-## 8. Dual-Chart Data Integrity & UI Verification
-
-The Trend Analyzer dashboard maintains **TWO DISTINCT, STRICTLY SEPARATED analytics features** to preserve data integrity and eliminate any misleading conflation:
-
-### 8.1 Distinct Dual-Chart Architectural Matrix
-
-| Dimension | Chart A (Top 8-Col Panel) | Chart B (Deep Intelligence Panel) |
+| Component / reproduced root cause | Fix | Functional/visual verification |
 |---|---|---|
-| **Feature Title** | **Lifetime views by upload age** | **📈 Time-Series View Trajectory** |
-| **DOM Element** | `<canvas id="pulseViewsChart">` | `<canvas id="viewsChart">` |
-| **Data Source** | `data.timeSeries` (from `services.real_api.py`) | `data.results.YouTube.trend_intelligence.timeline` |
-| **Observation Model** | **Cross-sectional snapshot** of current sampled cohort | **Longitudinal multi-scan trajectory** across real timestamps |
-| **Unit / Metric** | Accumulated lifetime views grouped by video publication age (`0–2h old`, `2–4h old` ... `2–7d old`) | Audited views across repeated observations (spaced $\ge$ 24h) |
-| **Forbidden Semantics** | **NEVER** labeled as velocity, views/hr, growth rate, or surge | No fake category decay curves or imaginary past points |
-| **Tooltips** | Strictly `"Upload Age: {label}"`<br>`"Accumulated views: {val} ({raw} total)"` | Exact timestamp, observed views, and delta vs previous observation |
-| **Accessibility Fallback** | Dynamic HTML `<table>` in `#viewsChartA11y` (`.sr-only`) | Dynamic HTML `<table>` in `#viewsTrajectoryA11y` (`.sr-only`) |
-| **State Machine** | Renders buckets or empty placeholder | 5 explicit states: Empty, Baseline, Multi-point, Noncomparable, Quota limited |
+| Ranked trend titles: line clamp/hidden overflow plus 160px minimum child width; parent panel also masked overflow | Remove title clamp/mask; allow wrapping; `min-width:0`; mobile rows use `minmax(0,1fr)` and put metrics below the title | Long titles and metrics remain readable; filters and search update rows |
+| Video/channel headings and tags: intrinsic width of unbroken API content exceeded flex allocation | Container/heading minimums removed; `overflow-wrap:anywhere`; video tags wrap | Long response titles/tags visible at both mobile widths |
+| Channel status badge: flex shrink compressed its text into a vertical stack | Header flex row wraps; badge does not shrink; mobile alignment retained | Badge wraps onto its own row; misleading static “Verified” replaced with “Public snapshot” |
+| Dynamic chat used legacy wrapper classes; wide bubbles were hidden by chat viewport | Consistent responsive row/avatar/bubble wrappers, shrinking flex children, wrapping code/text and response actions | Long text, apostrophes, quick prompts, clear, copy, script/tag actions and composer exercised |
+| KPI headers, search/filter controls and tool CTAs: nowrap/flex/grid constraints | Responsive wrapping, zero minimums, bounded controls, wrapping category chips and CTA labels | Search, every timeframe/category, hub launch links and workflow CTAs exercised |
+| Drawer: hidden links remained focusable; focus could escape the open panel | `inert` closed drawer/background, dialog semantics, forward/reverse Tab trap, Escape/close restoration | Every mobile drawer exercised at 320 and 390 |
+| Search-looking topbar had no useful search behavior | Native focus action jumps to real tool input; hub opens Trend Analyzer; Ctrl+K works | All desktop topbar actions and shortcuts exercised |
+| Copy chips were clickable spans; reply text interpolated into inline handlers | Native buttons and event listeners capture reply text safely | Keyboard activation and quoted reply copy exercised |
+| Error, empty and draft-success text failed contrast; empty-history tabs were faded despite remaining interactive | Existing readable tokens for feedback; semantic empty-state classes; no opacity reduction on interactive history tabs | Axe runs on every captured state, including no-history and request failures |
 
-### 8.2 Baseline & Multi-Scan Trajectory States (Chart B)
-- **State A (Zero observations):** `#viewsChartEmpty` displays `"Historical data unavailable. Run an initial scan to establish a baseline."`
-- **State B (1 observation / Baseline):** Single observation point rendered at authentic scan timestamp with `showLine: false`. No imaginary 7-day flat lines or invented past points. Summary displays `Stage: Baseline Established`, `Velocity: Pending (Requires 2+ scans)`.
-- **State C ($\ge$ 2 comparable observations):** Multi-point curve with true observed delta ($\Delta V = V_{t2} - V_{t1}$) and smoothed trajectory.
-- **State D (Noncomparable snapshots):** Clear notification that keyword scope changed and a new baseline is being recorded.
-- **State E (API or Quota limited):** Honest error status and non-misleading placeholders (`—`), never defaulting to `0` or `0.0%`.
+The inherited fixes in `77c7e82` are retained; this follow-up adds the remaining badge/contrast/keyboard/data-copy corrections. Asset versions for the five tool pages advance to `28.3`. All original page IDs remain present; duplicate attributes and duplicate IDs are absent.
 
-### 8.3 Screen Reader Accessibility Compliance
-- Standard `.sr-only` utility added to `frontend/css/style.css` (`position: absolute; width: 1px; height: 1px; clip: rect(0, 0, 0, 0); overflow: hidden;`).
-- Dynamically rendered `<table>` fallbacks inside `#viewsChartA11y` and `#viewsTrajectoryA11y` announce accessible tabular data with proper `<caption>`, `<th scope="col">`, and `<th scope="row">` tags for assistive technology users.
+### Example measured rectangles at 320px
 
----
+Full precision, vertical coordinates, styles and ancestors are in the committed JSON. Horizontal coordinates below are rounded to two decimal places.
 
-## 9. Final Release Recommendation
+| Element | Before left / right / width (px) | Visible clipping ancestor before | After left / right / width (px) |
+|---|---|---|---|
+| `#videoTitle` text fragment / wrapped heading | 19 / 1703.08 / 1684.08 | `.stitch-app-shell`, 0–320, `overflow-x:hidden` | 19 / 301 / 282 |
+| `#channelName` | 19 / 1703.08 / 1684.08 | `.stitch-app-shell`, 0–320, `overflow-x:hidden` | 19 / 301 / 282 |
+| User chat bubble | -829.64 / 15.33 / 844.97 | `#chatMessages`, 19–301, `overflow-x:hidden` | 23 / 297 / 274 |
+| Assistant chat bubble | 71 / 917.47 / 846.47 | `#chatMessages`, 19–301, `overflow-x:hidden` | 69 / 297 / 228 |
 
-**RECOMMENDATION: GO (STABILIZED & VERIFIED)**  
-Both Option A Creator Analytics Dashboard design system and Dual-Chart Data Integrity contracts are fully stabilized, responsive down to 320px, accessible, and verified by 324 automated tests.
+Chat history intentionally scrolls vertically; older messages need not all be visible simultaneously. The horizontal text remains within the history viewport and the composer stays outside that scroll region. The newly captured ten mobile before images contain 49 both-axis clipping observations; their corresponding ten after images have zero. This subset is separate from the 54-state horizontal baseline (119 observations) and 60-state final audit.
 
-Execution is stopped here as instructed. Ready for repository owner review and commit.
+## Data truth findings
 
+| Display | Actual source / classification | Correct behavior |
+|---|---|---|
+| 72.5M views | `data.kpis.totalViews`; backend sums returned videos' public lifetime view counts. Original PNG provenance unverified; explicitly mocked in this audit | “Views in Returned Sample”; lifetime totals, not views earned during selected window |
+| 5.4% engagement | `data.kpis.avgEngagement`; arithmetic mean of available video `(likes + comments) / views * 100` ratios, rounded to one decimal | Sample ratio, not private YouTube Studio audience analytics. Missing likes/metric is unavailable, while an actual zero remains zero |
+| “Live YouTube RSS” / live-source badges | Unsupported source/freshness claims; implemented feed uses YouTube Data API v3, not RSS. The exact RSS text is absent from baseline source; a screenshot is not a freshness record | API snapshot; freshness unavailable. Explicit cached/stale flags are labelled when provided. Service cache TTL is 900 seconds; current response does not prove a collection timestamp |
+| Shorts 55%, Longform 30%, Live 15% | Static HTML decoration, no response binding or measured format breakdown | Removed, explicitly unavailable |
+| KPI sparkline and radial virality arc | Static decorative shapes without observation data | Removed, not presented as analytics |
+| Momentum and rising cohort | Midpoint percentile of estimated lifetime views/hour within current sample; count is number above index 40 | Neutral `score / 100 idx`, actual returned denominator; not growth %, acceleration or probability. Removed fabricated fallback of 18 |
+| Category totals | Sum of lifetime views in each category of returned sample | Labelled sample totals, not global category market share |
+| Upload-age chart | API `timeSeries` buckets lifetime totals by publication age | Bars retain exact response labels/values, including duplicate labels. No invented historical dates, velocities or synthetic historical curve |
+| Historical chart | Saved `trend_intelligence.timeline` observations; smoothed series is explicitly labelled and raw observations retained when different | Empty, one-observation baseline and multiple-observation cases exercised; authentic timestamps retained; a single baseline has no invented line |
+| FAQ momentum/sentiment | Previous copy falsely described channel baseline/acceleration inputs and transformers | Describes actual percentile calculation and TextBlob plus Urdu/Hindi lexicon rules on up to 50 requested comments from leading video; limited sample, not whole audience |
+| Missing deep-summary metrics | Previously fell back to “Emerging”/“Normal” without evidence | “Unavailable” |
+
+No production fixture response or fallback numeric sample was introduced. Fixtures exist only in the local browser test harness. API failures/empty/quota responses clear previous deep results and show unavailable metrics instead of stale success values.
+
+## Follow-up changed files
+
+- `frontend/css/style.css`: readable feedback, empty states and no-history tabs; channel heading/badge wrapping.
+- `frontend/js/tools/{trend-analyzer,video-analyzer,competitor-audit}.js`: unavailable summaries, keyboard copy chips and semantic empty states.
+- `frontend/tools/{trend-analyzer,video-analyzer,competitor-audit,ai-strategist,index}.html`: asset version 28.3; accurate trend FAQ/metadata and channel snapshot label.
+- `tests/stitch-browser-qa.cjs`: both-axis measurement, separately recorded assistive-only clipping, all-state axe checks, chart observation cases, keyboard copy checks and non-obscuring full-page fixture notice.
+- `tests/stitch-truth.cjs` and `tests/test_stitch_option_a_critical_fixes.py`: unavailable-summary regressions and updated asset-version contract.
+- This report and `docs/qa/stitch-final-audit/`: committed measurements, source fingerprints and 20 before/after mobile PNGs.
+
+The inherited `tests/test_stitch_dual_chart_contracts.py`, Google verification page and all other concurrent work are unchanged by this follow-up.
+
+## Functional, accessibility and regression results
+
+| Check | Final result |
+|---|---|
+| Browser states at 320 / 390 / 1440 | **60 passed**; 0 horizontal or vertical clipping failures |
+| Interactive assertions | **96 passed**, 0 failed |
+| Axe WCAG A/AA + 2.1 rules | 0 violations in all 60 captured states |
+| Browser script errors | 0 |
+| Full Python, SEO, frontend/security/schema contracts | **329 passed**, one existing ReportLab deprecation warning |
+| Node rendering / analytics hook / data truth regressions | All three suites passed |
+| Ruff CI correctness selectors | Passed |
+| Bandit high-severity CI gate | Passed; two existing medium findings remain |
+| Runtime `pip-audit -r requirements.txt` | No known vulnerabilities found |
+| Build/static verification | All frontend JS syntax, Python compile/import, unique attributes/IDs, original IDs retained, local Flask routes passed |
+
+Raw before replay: **119 horizontal clipping observations across 54 states**. Final after: **0 on either axis across 60 states**. All ten final mobile viewport previews were visually reviewed in addition to per-element measurement; full-page evidence is retained below.
+
+Test-count reconciliation: baseline `45d1645` collected 317 tests under `tests/` plus five in `backend/test_seo_schema.py` = 322. The initial run had 320 passes and two failures: a stale missing-key mock patched an unused module variable, and a sitemap assertion expected retired `.html` legal URLs. The retained corrections target `services.real_api.get_yt_api_key` and actual clean canonical routes; no test was removed, skipped, or weakened to conceal product failures. The concurrent commit adds seven dual-chart tests: 324 + 5 = **329**. The asset-version contract now expects `28.3` consistently.
+
+The fixture tests submit each tool rather than merely loading it. They cover empty/error/success, Trend Analyzer quota/stale/missing/changed data, history absent/baseline/multi-point, sample buttons, copy/draft controls, chart labels and values, quick prompts, reply actions, clear, workflow/launch links, all category/timeframe controls, drawer open/close/Escape, focus restoration and forward/reverse keyboard traversal. Each visible local navigation destination is checked through Flask. PDFs/CSVs are mocked downloads: this verifies the UI download action, not real export generation (covered separately by Python regressions).
+
+## Before / after evidence
+
+[Evidential summary, selected rectangles, source hashes and original screenshot inventory](qa/stitch-final-audit/evidence.json). Full per-state rectangles/styles, ancestor records, axe findings, API-request paths and functional assertions remain in the linked local raw evidence directory recorded there. Counts are observations, not counts of distinct bugs.
+
+| Screen | 320 before | 320 after | 390 before | 390 after |
+|---|---|---|---|---|
+| Trend Analyzer | [PNG](qa/stitch-final-audit/before/trend-analyzer-320.png) | [PNG](qa/stitch-final-audit/after/trend-analyzer-320.png) | [PNG](qa/stitch-final-audit/before/trend-analyzer-390.png) | [PNG](qa/stitch-final-audit/after/trend-analyzer-390.png) |
+| Video Analyzer | [PNG](qa/stitch-final-audit/before/video-analyzer-320.png) | [PNG](qa/stitch-final-audit/after/video-analyzer-320.png) | [PNG](qa/stitch-final-audit/before/video-analyzer-390.png) | [PNG](qa/stitch-final-audit/after/video-analyzer-390.png) |
+| Competitor Audit | [PNG](qa/stitch-final-audit/before/competitor-audit-320.png) | [PNG](qa/stitch-final-audit/after/competitor-audit-320.png) | [PNG](qa/stitch-final-audit/before/competitor-audit-390.png) | [PNG](qa/stitch-final-audit/after/competitor-audit-390.png) |
+| AI Strategist | [PNG](qa/stitch-final-audit/before/ai-strategist-320.png) | [PNG](qa/stitch-final-audit/after/ai-strategist-320.png) | [PNG](qa/stitch-final-audit/before/ai-strategist-390.png) | [PNG](qa/stitch-final-audit/after/ai-strategist-390.png) |
+| Tools Hub | [PNG](qa/stitch-final-audit/before/tools-hub-320.png) | [PNG](qa/stitch-final-audit/after/tools-hub-320.png) | [PNG](qa/stitch-final-audit/before/tools-hub-390.png) | [PNG](qa/stitch-final-audit/after/tools-hub-390.png) |
+
+After the 60-state run, a separate ten-case mobile capture pass also passed both-axis geometry and axe. The fixture notice is placed after the footer for full-page screenshots so it does not obscure product content.
+
+All PNGs above are full-page captures with exactly the stated image width, not cropped previews. They use the same labelled fixture dataset. Desktop and every additional state are retained in the raw evidence directory. Intentionally long API strings are wrapping stress tests, not proposed product copy.
+
+## Reproduction and limitations
+
+Use the isolated Phase 0 Python environment (`..\.venv-phase0-validation\Scripts\python.exe`, Python 3.12). Start local Flask with development/test mock keys or production-mode import smoke settings, **empty `DATABASE_URL`**, `VERCEL=1` and `DATA_DIR` pointing to a disposable QA directory; never load production credentials. Serve `api.index:app` on `127.0.0.1:5067` without debugger/reloader.
+
+The browser harness requires an isolated `STITCH_QA_MODULES` directory containing Playwright, axe-core, Chart.js 4.4.3, `@fontsource-variable/plus-jakarta-sans`, `@fontsource-variable/inter` and `@fontsource/material-symbols-outlined`. Dependencies were installed outside this repository, not added to product dependencies. It defaults to installed Edge; `STITCH_QA_BROWSER` can select a separately installed browser.
+
+```powershell
+node tests/stitch-browser-qa.cjs --output <absolute-QA-directory>
+# Full-width mobile success images only, with fixture notice below content:
+node tests/stitch-browser-qa.cjs --screens-only --output <absolute-mobile-evidence-directory>
+# Historical replay; diagnostic failures are expected:
+node tests/stitch-browser-qa.cjs --before --output <absolute-before-directory>
+node tests/trend-rendering.cjs
+node tests/analytics-hook.cjs
+node tests/stitch-truth.cjs
+..\.venv-phase0-validation\Scripts\python.exe -m pytest tests/ backend/test_seo_schema.py -q -p no:cacheprovider --basetemp=<fresh-disposable-directory>
+```
+
+- **Real YouTube/Groq smoke: UNVERIFIED.** No authorized live key was supplied. No production credentials were used. Fixture values do not constitute real-world analytics proof.
+- Tested browser: Edge 156.0.4314.42 headless on Windows, emulated widths with real local fonts. Physical devices, iOS Safari, Firefox, manual screen-reader operation, touch interaction and device zoom remain unverified. Automated axe plus keyboard checks are not a claim of complete WCAG conformance.
+- No npm/package build pipeline exists in this Flask/static repository. Build verification means Python compilation/import, syntax checking all frontend JS, HTML attribute/ID contracts, asset-backed browser rendering and local Flask routes; no deployment artifact was generated.
+- Ruff uses the repository CI selector `E9,F63,F7,F82`. Bandit's CI high-severity gate passes; existing medium-confidence findings B108 (`backend/app.py:125`, temporary directory) and B104 (`backend/app.py:2329`, development bind address) remain unchanged. No broad “zero security findings” claim.
+- `pip-audit` result is scoped to declared runtime `requirements.txt`; it does not certify all developer/browser tooling. Gitleaks is unavailable locally; its GitHub Actions job was not executed here.
+- One existing ReportLab `ast.NameConstant` deprecation warning remains. The ignored/unreadable cache directory was not changed.
+
+**Stop for owner approval. Do not merge, push, deploy or alter Gate B as part of this audit.**
