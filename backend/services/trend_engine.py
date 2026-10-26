@@ -87,7 +87,7 @@ def calculate_engagement_rate(daily_metrics):
     if not daily_metrics or not daily_metrics[-1].get("views"):
         return 0.0
     latest = daily_metrics[-1]
-    if latest.get("likes") is None:
+    if latest.get("likes") is None or latest.get("comments_count") is None:
         return None
     comments = latest.get("comments_count") or 0
     eng = ((latest["likes"] + comments) / latest["views"]) * 100
@@ -101,11 +101,14 @@ def calculate_seo_score(daily_metrics, keyword: str):
     Returns: {"score": float, "rating": str, "competition": str}
     """
     if not daily_metrics:
-        return {"score": 50.0, "rating": "MODERATE", "competition": "Medium"}
+        return {"score": None, "rating": "UNAVAILABLE", "competition": "Unavailable"}
 
     growth = calculate_growth_rate(daily_metrics)
     virality = calculate_virality_index(daily_metrics)
     engagement = calculate_engagement_rate(daily_metrics)
+
+    if engagement is None:
+        return {"score": None, "rating": "UNAVAILABLE", "competition": "Unavailable"}
 
     # Base score calculated from market demand + engagement signals
     base_score = (growth * 0.4) + (virality * 0.35) + (engagement * 5.0)
@@ -138,6 +141,8 @@ def calculate_seo_score(daily_metrics, keyword: str):
 
 def classify_trend_stage(growth_rate):
     """Classifies a trend as emerging, peaking, or fading."""
+    if growth_rate is None:
+        return "Unavailable"
     if growth_rate > 15:
         return "Rising"
     elif growth_rate >= 0:

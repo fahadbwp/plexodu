@@ -194,10 +194,12 @@ def analyze_trend_intelligence(
 
     observations = []
     for pt in past_trends:
-        ts = pt.timestamp or pt.last_seen_at or now
+        ts = pt.timestamp or pt.last_seen_at
+        if ts is None:
+            continue
         if ts.tzinfo is None:
             ts = ts.replace(tzinfo=timezone.utc)
-        if ts > now:
+        if ts > now or pt.total_views is None:
             continue
         observations.append({
             "id": pt.trend_id,
@@ -338,13 +340,15 @@ def analyze_trend_intelligence(
     trend_score = compute_trend_score(
         velocity=velocity,
         acceleration=acceleration,
-        engagement_rate=current_engagement,
+        engagement_rate=current_engagement or 0,
         scan_count=scan_count,
         direction=direction,
         positive_sentiment_score=pos_sent,
     )
 
-    trend_score_display = str(int(round(trend_score)))
+    if current_engagement is None:
+        trend_score = None
+    trend_score_display = str(int(round(trend_score))) if trend_score is not None else "Unavailable"
     velocity_display = f"{'+' if velocity > 0 else ''}{velocity}%"
     acceleration_display = f"{'+' if acceleration > 0 else ''}{acceleration}%"
 
@@ -359,7 +363,7 @@ def analyze_trend_intelligence(
             "date": obs["timestamp"].strftime("%Y-%m-%d %H:%M"),
             "views": obs["views"],
             "smoothed_views": int(round(smoothed_views[i])),
-            "engagement_rate": current_engagement if i == len(observations) - 1 else 0.0,
+            "engagement_rate": current_engagement if i == len(observations) - 1 else None,
         })
 
     events = []
@@ -393,7 +397,7 @@ def analyze_trend_intelligence(
             "type": "shift",
         })
 
-    if current_engagement >= 8.0:
+    if current_engagement is not None and current_engagement >= 8.0:
         events.append({
             "date": now.strftime("%b %d, %Y"),
             "title": "High Audience Engagement",
@@ -416,6 +420,19 @@ def analyze_trend_intelligence(
     }
 
     forecast = generate_conservative_forecast(observations, current_views, velocity)
+    if scan_count < 3:
+        acceleration = None
+        acceleration_display = "Unavailable"
+    if prev_views <= 0:
+        # A real zero counter is retained, but division by zero is not 0% growth.
+        velocity = acceleration = trend_score = None
+        velocity_display = acceleration_display = trend_score_display = "Unavailable"
+        direction = "UNAVAILABLE"
+        direction_display = "Unavailable: prior view counter is zero"
+        confidence = "Unavailable"
+        forecast = {"available": False, "reason": "Prior counter is zero; percentage growth cannot be estimated."}
+        events = [{"date": now.strftime("%b %d, %Y"), "title": "Snapshot Recorded", "description": "Prior counter is zero; observed percentage change is unavailable.", "type": "baseline"}]
+
 
     return {
         "status": status,

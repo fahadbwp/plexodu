@@ -31,3 +31,18 @@
   .trend-ui .trend-history-table { font-size: 0.8rem; }
   .trend-ui .quote-box { padding: 16px; }
 }
+
+/* Preserve the desktop SVG; use readable responsive chart labels on phones. */
+.truth-age-chart > canvas { display: none; }
+@media (max-width: 768px) {
+  .truth-age-svg { height: auto; padding-top: 0; }
+  .truth-age-svg > svg, .truth-age-svg > #chartTooltip { display: none; }
+  .truth-age-chart { position: relative; min-width: 0; height: 260px; }
+  .truth-age-chart > canvas { display: block; max-width: 100%; }
+}
+
+.trend-ui #kpiTopTopicTitle { white-space: normal; overflow: visible; overflow-wrap: anywhere; }
+.trend-ui [class~="text-[#767586]"] { color: var(--stitch-on-surface-variant); }
+.trend-ui .video-tab-btn { opacity: 1; }
+
+.trend-ui #pulseList h3 { white-space: normal; overflow: visible; overflow-wrap: anywhere; }

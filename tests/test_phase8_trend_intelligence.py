@@ -296,7 +296,9 @@ def test_division_by_zero_protection():
     # Previous views = 0
     past = [DummyTrend(1, 0, now - timedelta(days=1))]
     res = analyze_trend_intelligence("test", "YouTube", 50000, 5.0, {}, past, now)
-    assert res["velocity"] == 0.0
+    assert res["velocity"] is None
+    assert res["velocity_display"] == "Unavailable"
+    assert [point["views"] for point in res["timeline"]] == [0, 50000]
     assert res["status"] == "active"
 
 
@@ -379,3 +381,34 @@ def test_database_migration_schema_integrity(flask_mod):
         }
         for col in required_metric_cols:
             assert col in metric_cols, f"Missing column {col} in metrics table"
+
+
+def test_trending_response_preserves_cache_provenance_and_hidden_counters(client, flask_mod):
+    raw = {
+        "status": 200, "title": "Truth cache fixture", "comments": [],
+        "daily_metrics": [{"date": "2026-10-25", "views": 100, "likes": None, "shares": None, "comments_count": None}],
+        "related_keywords": [], "top_videos": [{"id": "truthvid1", "title": "Fixture", "views": 100}],
+        "kpis": {"totalViews": 100, "avgEngagement": None},
+        "time_series": [{"label": "0–1d old", "views": 100}],
+        "fetched_at": "2026-10-25T10:00:00+00:00", "cached": True, "is_stale": True,
+        "cache_served_at": "2026-10-26T10:00:00+00:00",
+    }
+    with patch.object(flask_mod, "fetch_youtube_data", return_value=raw):
+        response = client.get("/api/trending-feed?q=truthcache")
+    assert response.status_code == 200
+    body = response.get_json()
+    assert body["cached"] is True and body["is_stale"] is True
+    assert body["fetched_at"] == raw["fetched_at"]
+    assert body["cache_served_at"] == raw["cache_served_at"]
+    assert body["kpis"]["avgEngagement"] is None
+    assert body["results"]["YouTube"]["growth_rate"] is None
+    assert body["results"]["YouTube"]["engagement_rate"] is None
+    assert body["results"]["YouTube"]["trend_intelligence"]["timeline"][0]["date"] == "2026-10-25 10:00"
+
+    with flask_mod.app.app_context():
+        metric = flask_mod.Metric.query.filter_by(trend_id=body["results"]["YouTube"]["trend_id"]).first()
+        assert metric.likes is None and metric.shares is None and metric.comments_count is None
+    export = client.get("/api/export-csv/" + str(body["results"]["YouTube"]["trend_id"]))
+    assert export.status_code == 200
+    assert "Recorded Snapshots (Lifetime Counters)" in export.get_data(as_text=True)
+    assert ",Unavailable,Unavailable,Unavailable" in export.get_data(as_text=True)

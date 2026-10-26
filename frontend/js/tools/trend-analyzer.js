@@ -1,137 +1,26 @@
 
 // ── Render Stitch Topic Velocity SVG Canvas ─────────────────────────────────
-function renderTrendCanvasVisual(timeSeries, categoryName) {
-  const barsGroup = document.getElementById("svgVolumeBars");
-  const xAxisGroup = document.getElementById("svgXAxisLabels");
-  const baselineCurve = document.getElementById("svgBaselineCurve");
-  const areaCurve = document.getElementById("svgAreaCurve");
-  const observedCurve = document.getElementById("svgObservedCurve");
-  const surgePin = document.getElementById("svgSurgePin");
-  const surgeText = document.getElementById("svgSurgeText");
-  const tooltip = document.getElementById("chartTooltip");
-  const tooltipDate = document.getElementById("tooltipDate");
-  const tooltipVal = document.getElementById("tooltipVal");
-  const card = document.getElementById("topicVelocityChartCard");
-
-  if (!barsGroup || typeof barsGroup.appendChild !== 'function' || typeof document.createElementNS !== 'function' || !timeSeries || timeSeries.length === 0) return;
-
-  barsGroup.innerHTML = "";
-  if (xAxisGroup) xAxisGroup.innerHTML = "";
-
-  const n = timeSeries.length;
-  const startX = 70;
-  const endX = 690;
-  const stepX = n > 1 ? (endX - startX) / (n - 1) : 0;
-  const baseY = 230;
-  const minY = 50;
-  const maxViews = Math.max(...timeSeries.map(p => Number(p.views) || 0), 1000);
-
-  let peakIdx = 0;
-  let peakVal = 0;
-  timeSeries.forEach((p, i) => {
-    const v = Number(p.views) || 0;
-    if (v > peakVal) {
-      peakVal = v;
-      peakIdx = i;
-    }
+function renderTrendCanvasVisual(timeSeries) {
+  const bars = document.getElementById("svgVolumeBars");
+  const labels = document.getElementById("svgXAxisLabels");
+  if (!bars || !labels || typeof document.createElementNS !== "function" || typeof bars.appendChild !== "function") return;
+  bars.replaceChildren(); labels.replaceChildren();
+  const ticks = document.getElementById("svgGridLines");
+  const data = (timeSeries || []).filter(p => metricAvailable(p.views));
+  const max = Math.max(1, ...data.map(p => Number(p.views)));
+  if (ticks) [...ticks.querySelectorAll("text")].forEach((e,i) => { e.textContent = data.length ? formatCompact(max * [1,.74,.47,.21,0][i]) : "—"; });
+  const slot = 620 / Math.max(1,data.length);
+  data.forEach((p,i) => {
+    const x=70+slot*(i+.5), height=190*Number(p.views)/max;
+    const bar=document.createElementNS("http://www.w3.org/2000/svg","rect");
+    Object.entries({x:x-slot*.3,y:230-height,width:slot*.6,height,fill:"#6063ee",rx:3}).forEach(([k,v])=>bar.setAttribute(k,String(v)));
+    const title=document.createElementNS("http://www.w3.org/2000/svg","title");
+    title.textContent=`${p.label || "Upload age unavailable"}: ${Number(p.views).toLocaleString()} lifetime views`;
+    bar.appendChild(title); bars.appendChild(bar);
+    const text=document.createElementNS("http://www.w3.org/2000/svg","text");
+    Object.entries({x,y:252,"text-anchor":"middle",fill:"#464554","font-size":10}).forEach(([k,v])=>text.setAttribute(k,String(v)));
+    text.textContent=p.label || "Unknown age"; labels.appendChild(text);
   });
-
-  const points = [];
-
-  timeSeries.forEach((p, i) => {
-    const x = Math.round(n === 1 ? 380 : startX + i * stepX);
-    const val = Number(p.views) || 0;
-    const barHeight = Math.max(16, Math.round(((val) / maxViews) * 160));
-    const y = baseY - barHeight;
-    points.push({ x, y, label: p.label, val });
-
-    const isPeak = i === peakIdx && val > 0;
-    const bar = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-    bar.setAttribute("class", "chart-bar-hover transition-opacity cursor-pointer");
-    bar.setAttribute("x", String(x - 14));
-    bar.setAttribute("y", String(y));
-    bar.setAttribute("width", "28");
-    bar.setAttribute("height", String(barHeight));
-    bar.setAttribute("rx", "6");
-    bar.setAttribute("fill", isPeak ? "url(#peakBarGrad)" : "url(#purpleBarGrad)");
-    bar.setAttribute("data-date", p.label || `Day ${i + 1}`);
-    bar.setAttribute("data-val", formatCompact(val));
-
-    // Hover tooltip interaction
-    bar.addEventListener("mouseenter", (e) => {
-      if (!tooltip || !card) return;
-      if (tooltipDate) tooltipDate.textContent = p.label || `Interval ${i + 1}`;
-      if (tooltipVal) tooltipVal.textContent = `${Number(val).toLocaleString()} views`;
-      const rect = bar.getBoundingClientRect();
-      const cardRect = card.getBoundingClientRect();
-      tooltip.style.left = `${rect.left - cardRect.left + rect.width / 2}px`;
-      tooltip.style.top = `${rect.top - cardRect.top}px`;
-      tooltip.classList.remove("opacity-0");
-      tooltip.classList.add("opacity-100");
-    });
-    bar.addEventListener("mouseleave", () => {
-      if (!tooltip) return;
-      tooltip.classList.remove("opacity-100");
-      tooltip.classList.add("opacity-0");
-    });
-
-    barsGroup.appendChild(bar);
-
-    // X-Axis text
-    if (xAxisGroup) {
-      const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
-      text.setAttribute("x", String(x));
-      text.setAttribute("y", "252");
-      text.setAttribute("text-anchor", "middle");
-      if (isPeak) {
-        text.setAttribute("fill", "#4648D4");
-        text.setAttribute("font-weight", "700");
-        text.textContent = `${p.label || "Peak"} ★`;
-      } else {
-        text.setAttribute("fill", "#767586");
-        text.textContent = p.label || `D${i + 1}`;
-      }
-      xAxisGroup.appendChild(text);
-    }
-  });
-
-  // Calculate smooth curves if >= 2 points
-  if (points.length >= 2) {
-    let dCurve = `M ${points[0].x} ${points[0].y}`;
-    for (let i = 0; i < points.length - 1; i++) {
-      const p0 = points[i];
-      const p1 = points[i + 1];
-      const mx = (p0.x + p1.x) / 2;
-      dCurve += ` C ${mx} ${p0.y}, ${mx} ${p1.y}, ${p1.x} ${p1.y}`;
-    }
-    if (observedCurve) observedCurve.setAttribute("d", dCurve);
-    if (areaCurve) {
-      const firstX = points[0].x;
-      const lastX = points[points.length - 1].x;
-      areaCurve.setAttribute("d", `${dCurve} L ${lastX} 230 L ${firstX} 230 Z`);
-    }
-
-    // Baseline curve (median trajectory)
-    let dBase = `M ${points[0].x} ${Math.min(210, points[0].y + 15)}`;
-    for (let i = 0; i < points.length - 1; i++) {
-      const p0 = points[i];
-      const p1 = points[i + 1];
-      const mx = (p0.x + p1.x) / 2;
-      dBase += ` C ${mx} ${p0.y + 10}, ${mx} ${p1.y + 10}, ${p1.x} ${Math.min(215, p1.y + 10)}`;
-    }
-    if (baselineCurve) baselineCurve.setAttribute("d", dBase);
-
-    // Position surge pin at peak
-    const peakPt = points[peakIdx];
-    if (surgePin && peakPt) {
-      surgePin.setAttribute("transform", `translate(${peakPt.x}, ${Math.max(45, peakPt.y)})`);
-      surgePin.style.display = "block";
-    }
-    if (surgeText) {
-      const surgePct = peakVal > 0 ? Math.min(240, Math.round((peakVal / Math.max(1, maxViews * 0.6)) * 100)) : 148;
-      surgeText.textContent = `+${surgePct}% Surge`;
-    }
-  }
 }
 
 /**
@@ -168,7 +57,7 @@ const CATEGORIES = [
 ];
 
 function formatCompact(n) {
-  if (n == null || isNaN(n)) return "0";
+  if (!metricAvailable(n)) return "Unavailable";
   const num = Number(n);
   if (num >= 1_000_000_000) return (num / 1_000_000_000).toFixed(1).replace(/\.0$/, "") + "B";
   if (num >= 1_000_000) return (num / 1_000_000).toFixed(1).replace(/\.0$/, "") + "M";
@@ -398,6 +287,9 @@ function updateKpiBadges(state, isCached = false) {
 let feedRequestId = 0;
 async function fetchTrendingFeed(shouldScroll = false) {
   const requestId = ++feedRequestId;
+  currentVideos = []; currentTrendId = null; currentKpis = {};
+  updateExportButtons();
+  renderCategoryChart([]);
   updateKpiBadges("LOADING");
   renderKpis(null, false);
   const previousResults = document.getElementById("resultsArea");
@@ -458,7 +350,10 @@ async function fetchTrendingFeed(shouldScroll = false) {
     updateKpiBadges("SUCCESS", isCached);
     currentKpis = data.kpis || {};
     const sourceLabel = document.getElementById("kpiTotalViewsDeltaText");
-    if (sourceLabel && data.is_stale) sourceLabel.textContent = "Cached Snapshot · stale";
+    if (sourceLabel) {
+      const time=data.fetched_at && Number.isFinite(Date.parse(data.fetched_at)) ? new Date(data.fetched_at).toISOString() : null;
+      sourceLabel.textContent=(data.is_stale?"Cached Snapshot · stale":isCached?"Cached Snapshot":"API snapshot")+ (time?" · response fetched "+time:" · freshness unavailable");
+    }
     renderKpis(data.kpis || {}, true);
     updateFormatBreakdownCard(currentVideos);
     updateVideoTabStates();
@@ -539,10 +434,14 @@ function renderKpis(kpis, isValid = true) {
     if (risingCountDeltaText) risingCountDeltaText.textContent = "Unavailable";
 
     if (kpiTopTopicTitle) kpiTopTopicTitle.textContent = "—";
-    if (kpiTopTopicVelocity) kpiTopTopicVelocity.innerHTML = `<span class="material-symbols-outlined text-[13px]">trending_up</span><span>0.0%</span>`;
+    if(kpiTopTopicBadge)kpiTopTopicBadge.textContent="Unavailable";
+    renderTrendCanvasVisual([]);
+    if (kpiTopTopicVelocity) kpiTopTopicVelocity.textContent = "Unavailable";
     if (kpiMedianViewsVal) kpiMedianViewsVal.textContent = "—";
-    if (kpiMomentumScoreVal) kpiMomentumScoreVal.textContent = "0.0";
-    if (kpiMomentumSpeedBadge) kpiMomentumSpeedBadge.textContent = "Calibrating";
+    if (kpiMomentumScoreVal) kpiMomentumScoreVal.textContent = "—";
+    if (kpiMomentumSpeedBadge) kpiMomentumSpeedBadge.textContent = "Unavailable";
+    if(kpiGaugeArc?.setAttribute)kpiGaugeArc.setAttribute("d", "");
+    updateFormatBreakdownCard([]);
     if (kpiEngagementRatioDisplay) kpiEngagementRatioDisplay.textContent = "—";
     return;
   }
@@ -583,13 +482,16 @@ function renderKpis(kpis, isValid = true) {
     }
   }
   if (kpiTopTopicVelocity) {
-    const vel = metricAvailable(kpis.growthRate) ? Number(kpis.growthRate).toFixed(1) : "38.4";
-    kpiTopTopicVelocity.innerHTML = `<span class="material-symbols-outlined text-[13px]">trending_up</span><span>+${vel}%</span>`;
+    // kpis.growthRate is not supplied by this endpoint; require explicit comparable evidence.
+    const growth=Number(kpis.growthRate);
+    const valid=kpis.growthRate!=null && kpis.growthRate!=="" && Number.isFinite(growth) && kpis.growthComparable===true;
+    kpiTopTopicVelocity.textContent=valid?`${growth>0?"+":""}${growth.toFixed(1)}% observed change`:"Unavailable";
   }
+  if(kpiTopTopicBadge)kpiTopTopicBadge.textContent="Returned sample";
 
   if (topCatDeltaText) {
     const catViews = metricAvailable(kpis.topCategoryViews) ? formatCompact(kpis.topCategoryViews) : "—";
-    topCatDeltaText.textContent = `${catViews} views`;
+    topCatDeltaText.textContent = leadCat !== "—" && metricAvailable(kpis.topCategoryViews) ? `Lead category: ${catViews} lifetime views` : "Category unavailable";
   }
 
   // 5. Rising Count & Median Views
@@ -602,109 +504,42 @@ function renderKpis(kpis, isValid = true) {
   }
 
   if (kpiMedianViewsVal) {
-    const median = currentVideos.length > 0 ? Math.round(kpis.totalViews / currentVideos.length) : (kpis.medianViews || 0);
-    kpiMedianViewsVal.textContent = formatCompact(median);
+    const values=currentVideos.map(v=>v.views).filter(metricAvailable).map(Number).sort((a,b)=>a-b);
+    const mid=Math.floor(values.length/2);
+    const median=values.length?(values.length%2?values[mid]:(values[mid-1]+values[mid])/2):null;
+    kpiMedianViewsVal.textContent=median==null?"—":formatCompact(median);
   }
+  // Snapshot percentile is not a measured speed or calibrated virality probability.
+  const score=currentVideos[0]?.momentumScore;
+  const available=metricAvailable(score)&&Number(score)<=100;
+  if(kpiMomentumScoreVal)kpiMomentumScoreVal.textContent=available?Number(score).toFixed(1):"—";
+  if(kpiMomentumSpeedBadge)kpiMomentumSpeedBadge.textContent=available?"Relative cohort index":"Unavailable";
+  if(kpiGaugeArc?.setAttribute)kpiGaugeArc.setAttribute("d", "");
+  updateFormatBreakdownCard(currentVideos);
+}
 
-  // 6. Momentum Score & Radial Arc
-  const rawScore = kpis.virality_score != null ? Number(kpis.virality_score) : (kpis.risingCount ? Math.min(95, 50 + kpis.risingCount * 4) : 74.2);
-  const score = Math.max(0, Math.min(100, rawScore));
-  if (kpiMomentumScoreVal) {
-    kpiMomentumScoreVal.textContent = score.toFixed(1);
-  }
-  if (kpiMomentumSpeedBadge) {
-    kpiMomentumSpeedBadge.textContent = score >= 75 ? "Ultra Fast" : (score >= 50 ? "Rapid" : (score >= 30 ? "Moderate" : "Calibrating"));
-  }
-  if (kpiGaugeArc && typeof kpiGaugeArc.setAttribute === 'function') {
-    // Semi-circle from 180 deg to 0 deg
-    const rad = Math.PI * (1 - (score / 100));
-    const arcX = 80 - 60 * Math.cos(rad);
-    const arcY = 80 - 60 * Math.sin(rad);
-    kpiGaugeArc.setAttribute("d", `M 20 80 A 60 60 0 0 1 ${arcX.toFixed(1)} ${arcY.toFixed(1)}`);
-  }
-
-
-// ── Shared Format Breakdown Computation (Used by KPI bar & Format card) ─────
 function computeFormatBreakdown(videos) {
-  if (!videos || videos.length === 0) {
-    return { shortsPct: 0, longPct: 0, otherPct: 0 };
-  }
-  const total = videos.length;
-  let shortsCount = 0;
-  let longCount = 0;
-  let otherCount = 0;
-  for (const v of videos) {
-    const d = v.duration_sec;
-    if (d != null && d > 0) {
-      if (d <= 60 || /#shorts/i.test(v.title || "")) {
-        shortsCount++;
-      } else if (d >= 480) {
-        longCount++;
-      } else {
-        otherCount++;
-      }
-    } else {
-      if (v.is_short || /#shorts/i.test(v.title || "")) {
-        shortsCount++;
-      } else {
-        longCount++;
-      }
-    }
-  }
-  const shortsPct = Math.round((shortsCount / total) * 100);
-  const longPct = Math.round((longCount / total) * 100);
-  const otherPct = Math.max(0, 100 - shortsPct - longPct);
-  return { shortsPct, longPct, otherPct };
+  const known=(videos || []).filter(v=>metricAvailable(v.duration_sec)&&Number(v.duration_sec)>0);
+  if (!known.length || known.length !== videos.length) return null;
+  const shortsPct=Math.round(known.filter(v=>v.duration_sec<=60).length/known.length*100);
+  const longPct=Math.round(known.filter(v=>v.duration_sec>=480).length/known.length*100);
+  return {shortsPct,longPct,otherPct:100-shortsPct-longPct};
 }
-
 function updateFormatBreakdownCard(videos) {
-  const { shortsPct, longPct, otherPct } = computeFormatBreakdown(videos);
-  const donutShortsPct = document.getElementById("donutShortsPct");
-  if (donutShortsPct) donutShortsPct.textContent = `${shortsPct}%`;
-
-  const circ = 238.7;
-  const donutShortsArc = document.getElementById("donutShortsArc");
-  if (donutShortsArc && typeof donutShortsArc.setAttribute === "function") {
-    const offset = circ * (1 - shortsPct / 100);
-    donutShortsArc.setAttribute("stroke-dashoffset", offset.toFixed(1));
+  const result=computeFormatBreakdown(videos);
+  for(const [id,key] of [["donutShortsPct","shortsPct"],["formatShortsStat","shortsPct"],["formatLongStat","longPct"],["formatLiveStat","otherPct"]]) {
+    const e=document.getElementById(id); if(e)e.textContent=result?result[key]+"%":"Unavailable";
   }
-  const donutLongArc = document.getElementById("donutLongArc");
-  if (donutLongArc && typeof donutLongArc.setAttribute === "function") {
-    const offset = circ * (1 - (shortsPct + longPct) / 100);
-    donutLongArc.setAttribute("stroke-dashoffset", offset.toFixed(1));
+  for(const [id,fraction] of [["donutShortsArc",result?.shortsPct],["donutLongArc",result?result.shortsPct+result.longPct:null]]) {
+    const e=document.getElementById(id);if(e&&typeof e.setAttribute==="function")e.setAttribute("stroke-dashoffset",String(fraction==null?238.7:238.7*(1-fraction/100)));
   }
-
-  const formatShortsStat = document.getElementById("formatShortsStat");
-  if (formatShortsStat) formatShortsStat.textContent = `${shortsPct}%`;
-
-  const formatLongStat = document.getElementById("formatLongStat");
-  if (formatLongStat) formatLongStat.textContent = `${longPct}%`;
-
-  const formatLiveStat = document.getElementById("formatLiveStat");
-  if (formatLiveStat) formatLiveStat.textContent = `${otherPct}%`;
-}
-
-  // 7. Format breakdown in capsule bar (consistent computation)
-  if (kpiFormatCapsuleBar && currentVideos.length > 0) {
-    const { shortsPct, longPct, otherPct } = computeFormatBreakdown(currentVideos);
-    kpiFormatCapsuleBar.innerHTML = `
-      <div class="h-full bg-[#4648D4]" style="width: ${shortsPct}%"></div>
-      <div class="h-full bg-[#8A4CFC]" style="width: ${longPct}%"></div>
-      <div class="h-full bg-[#00885D]" style="width: ${otherPct}%"></div>
-    `;
-    const legend = document.getElementById("kpiFormatLegend");
-    if (legend) {
-      legend.innerHTML = `
-        <span class="flex items-center gap-1 shrink-0 whitespace-nowrap"><span class="w-2 h-2 rounded-full bg-[#4648D4]"></span>Shorts ${shortsPct}%</span>
-        <span class="flex items-center gap-1 shrink-0 whitespace-nowrap"><span class="w-2 h-2 rounded-full bg-[#8A4CFC]"></span>Long ${longPct}%</span>
-        <span class="flex items-center gap-1 shrink-0 whitespace-nowrap"><span class="w-2 h-2 rounded-full bg-[#00885D]"></span>Live/Other ${otherPct}%</span>
-      `;
-    }
-  }
+  const bar=document.getElementById("kpiFormatCapsuleBar");if(bar)bar.replaceChildren?.();
+  const legend=document.getElementById("kpiFormatLegend");if(legend)legend.textContent=result?`Duration buckets: ≤60s ${result.shortsPct}%, ≥8m ${result.longPct}%, 1–8m ${result.otherPct}%. Not observed YouTube formats.`:"Format classification unavailable; missing durations cannot establish Shorts or Live.";
 }
 
 // ── Render Views Trajectory Chart ────────────────────────────────────────────
 function renderViewsChart(timeSeries, categoryName) {
+  timeSeries = (Array.isArray(timeSeries) ? timeSeries : []).filter(p => metricAvailable(p.views));
   const catLabelEl = document.getElementById("viewsTrendCatBadge");
   if (catLabelEl && categoryName && categoryName !== "All") {
     catLabelEl.textContent = `${categoryName} Sample`;
@@ -728,7 +563,7 @@ function renderViewsChart(timeSeries, categoryName) {
       const rows = timeSeries
         .map(
           (p) =>
-            `<tr><th scope="row">${p.label || "Unknown"}</th><td>${formatCompact(p.views || 0)} (${Number(p.views || 0).toLocaleString()} views)</td></tr>`
+            `<tr><th scope="row">${escapeHtml(p.label || "Unknown")}</th><td>${formatCompact(p.views || 0)} (${Number(p.views || 0).toLocaleString()} views)</td></tr>`
         )
         .join("");
       a11yEl.innerHTML = `<table><caption>Lifetime views by upload age in current sample cohort</caption><thead><tr><th scope="col">Upload Age Bucket</th><th scope="col">Accumulated Views</th></tr></thead><tbody>${rows}</tbody></table>`;
@@ -922,7 +757,7 @@ function renderTrendingList(videos, query) {
       }
       const engagementText = v.engagement != null && Number.isFinite(Number(v.engagement)) ? Number(v.engagement).toFixed(1) + "%" : "Unavailable";
       const momentumText = hasMomentum ? momentum + " / 100 idx" : "Pending";
-      const velocityHourly = formatCompact(Math.round((v.views || 1000) / Math.max(1, v.hoursAgo || 6)));
+      const velocityHourly = metricAvailable(v.estimated_views_per_hour) ? formatCompact(v.estimated_views_per_hour) : (metricAvailable(v.views) && metricAvailable(v.hoursAgo) && Number(v.hoursAgo)>0 ? formatCompact(Number(v.views)/Number(v.hoursAgo)) : "Unavailable");
       const ageText = v.hoursAgo != null && Number.isFinite(Number(v.hoursAgo))
         ? (Number(v.hoursAgo) >= 48 ? `${Math.floor(Number(v.hoursAgo) / 24)}d ago` : `${v.hoursAgo}h ago`)
         : "—";
@@ -1056,11 +891,11 @@ function filterVideoTab(filter) {
 
   let filtered = currentVideos;
   if (filter === "shorts") {
-    filtered = currentVideos.filter(v => (v.duration_sec ? v.duration_sec <= 60 : (v.is_short || /#shorts/i.test(v.title || ""))));
+    filtered = currentVideos.filter(v => metricAvailable(v.duration_sec) && v.duration_sec > 0 && v.duration_sec <= 60);
   } else if (filter === "breakout" && hasSubscribers) {
     filtered = currentVideos.filter(v => (v.momentumScore || 0) > 60);
   } else if (filter === "under100k" && hasSubscribers) {
-    filtered = currentVideos.filter(v => (v.subscriber_count || v.subscribers || 0) < 100000);
+    filtered = currentVideos.filter(v => metricAvailable(v.subscriber_count ?? v.subscribers) && Number(v.subscriber_count ?? v.subscribers) < 100000);
   }
   renderTrendingList(filtered, activeQuery);
 }
@@ -1122,7 +957,7 @@ function renderDeepIntelligence(ytData) {
 
   const summaryVelocity = document.getElementById("summaryVelocity");
   if (summaryVelocity) {
-    summaryVelocity.textContent = intel.velocity_display || (ytData.growth_rate !== undefined ? `${ytData.growth_rate > 0 ? "+" : ""}${ytData.growth_rate}% / day` : "—");
+    summaryVelocity.textContent = intel.velocity_display || "Unavailable";
   }
 
   const summaryAcceleration = document.getElementById("summaryAcceleration");
@@ -1137,29 +972,31 @@ function renderDeepIntelligence(ytData) {
 
   const summaryVirality = document.getElementById("summaryVirality");
   if (summaryVirality) {
-    summaryVirality.textContent = `${ytData.virality_score != null ? Math.round(ytData.virality_score) : 0}/100`;
+    summaryVirality.textContent = metricAvailable(ytData.virality_score) ? `${Math.round(ytData.virality_score)}/100 (heuristic)` : "Unavailable";
   }
 
   // 3. Lower Time-Series Trajectory Chart
-  currentTimelineRaw = (intel.timeline && intel.timeline.length > 0) ? intel.timeline : (ytData.daily_metrics || []);
+  currentTimelineRaw = (intel.cohort_comparable === false || ((intel.timeline || []).length > 1 && intel.cohort_comparable !== true) ? [] : (intel.timeline || [])).filter(p => p.date && Number.isFinite(Date.parse(p.date)) && metricAvailable(p.views));
   updateLowerChartWithRange(currentLowerRange);
 
   // 4. Audience Sentiment Breakdown
   const sentiment = ytData.sentiment || {};
   const dominantBadge = document.getElementById("dominantSentimentBadge");
   if (dominantBadge) {
-    const dom = sentiment.dominant_sentiment || "Neutral";
+    const dom = sentiment.dominant_sentiment || "Unavailable";
     dominantBadge.textContent = dom.charAt(0).toUpperCase() + dom.slice(1);
     dominantBadge.className = "panel-badge " + (dom.toLowerCase() === "positive" ? "badge-rising" : dom.toLowerCase() === "negative" ? "badge-falling" : "badge-stable");
   }
 
   const sentimentBreakdown = document.getElementById("sentimentBreakdown");
-  if (sentimentBreakdown) {
+  if (sentimentBreakdown && ([sentiment.positive_score, sentiment.neutral_score, sentiment.negative_score].every(metricAvailable) && Number(sentiment.positive_score)+Number(sentiment.neutral_score)+Number(sentiment.negative_score)>0)) {
     const pos = Math.round((sentiment.positive_score || 0));
     const neu = Math.round((sentiment.neutral_score || 0));
     const neg = Math.round((sentiment.negative_score || 0));
     sentimentBreakdown.innerHTML = `Positive: ${pos}% &bull; Neutral: ${neu}% &bull; Negative: ${neg}%`;
   }
+
+  if (sentimentBreakdown && !([sentiment.positive_score, sentiment.neutral_score, sentiment.negative_score].every(metricAvailable) && Number(sentiment.positive_score)+Number(sentiment.neutral_score)+Number(sentiment.negative_score)>0)) sentimentBreakdown.textContent="Unavailable: no classified comment sample.";
 
   const sampleCommentText = document.getElementById("sampleCommentText");
   if (sampleCommentText) {
@@ -1389,7 +1226,7 @@ function renderLowerChart(dataPoints, range = "all") {
             <div style="font-size: 26px; margin-bottom: 8px;">⏳</div>
             <strong style="color: var(--text); font-size: 0.95rem;">No scans recorded within the ${range.toUpperCase()} window</strong>
             <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 6px; max-width: 380px;">
-              The baseline observation for this trend was recorded on <strong>${firstDate}</strong>. Select <strong>All</strong> or a wider window to view the trajectory curve.
+              The baseline observation for this trend was recorded on <strong>${escapeHtml(firstDate)}</strong>. Select <strong>All</strong> or a wider window to view the trajectory curve.
             </p>
           </div>
         `;
@@ -1410,7 +1247,7 @@ function renderLowerChart(dataPoints, range = "all") {
     const rows = dataPoints
       .map(
         (d) =>
-          `<tr><th scope="row">${d.date || "Unknown"}</th><td>${formatCompact(d.views || 0)} (${Number(d.views || 0).toLocaleString()} views)</td></tr>`
+          `<tr><th scope="row">${escapeHtml(d.date || "Unknown")}</th><td>${formatCompact(d.views || 0)} (${Number(d.views || 0).toLocaleString()} views)</td></tr>`
       )
       .join("");
     trajA11y.innerHTML = `<table><caption>Audited view trajectory over time</caption><thead><tr><th scope="col">Observation Timestamp</th><th scope="col">Observed Views</th></tr></thead><tbody>${rows}</tbody></table>`;
@@ -1422,14 +1259,14 @@ function renderLowerChart(dataPoints, range = "all") {
   if (isBaseline) {
     // ── Single Point Baseline Experience ──
     const pt = dataPoints[0];
-    const val = Number((currentKpis && currentKpis.totalViews != null) ? currentKpis.totalViews : (pt.views || 0));
+    const val = Number(pt.views);
     const dateStr = pt.date ? pt.date.split(" ")[0] : "Today";
     const timeStr = pt.date ? (pt.date.split(" ")[1] || "") : "";
 
     if (chartBaselineNote) {
       chartBaselineNote.style.display = "block";
       chartBaselineNote.innerHTML = `
-        <span class="font-600 text-slate-700">📍 Baseline: ${formatCompact(val)} views (${val.toLocaleString()}) recorded on ${dateStr}</span>
+        <span class="font-600 text-slate-700">📍 Baseline: ${formatCompact(val)} views (${val.toLocaleString()}) recorded on ${escapeHtml(dateStr)}</span>
         <span class="text-slate-400">&bull;</span>
         <span class="text-slate-500 font-0-85">One observation recorded. Run another search after at least 24 hours to collect a comparable observation.</span>
       `;
@@ -1517,19 +1354,19 @@ function renderLowerChart(dataPoints, range = "all") {
     // ── Multi-Point Trajectory Curve (2+ Observations) ──
     const rawLabels = dataPoints.map((d) => d.date || d.label || "Obs");
     const rawViews = dataPoints.map((d) => d.views || 0);
-    const smoothedViews = dataPoints.map((d) => d.smoothed_views !== undefined ? d.smoothed_views : d.views || 0);
+    const smoothedViews = dataPoints.map((d) => d.views || 0);
 
     const lastViews = rawViews[rawViews.length - 1];
     const prevViews = rawViews[rawViews.length - 2];
     const diff = lastViews - prevViews;
-    const diffPct = prevViews > 0 ? ((diff / prevViews) * 100).toFixed(1) : "0.0";
+    const diffPct = prevViews > 0 ? ((diff / prevViews) * 100).toFixed(1) : null;
     const isUp = diff >= 0;
 
     if (chartBaselineNote) {
       chartBaselineNote.style.display = "block";
       chartBaselineNote.innerHTML = `
         <span class="inline-flex-center gap-6 font-600 ${isUp ? 'text-green' : 'text-red'}">
-          ${isUp ? '📈' : '📉'} ${isUp ? '+' : ''}${formatCompact(diff)} (${isUp ? '+' : ''}${diffPct}%) vs last scan
+          ${isUp ? '📈' : '📉'} ${diff > 0 ? '+' : diff < 0 ? '-' : ''}${formatCompact(Math.abs(diff))} (${diffPct == null ? "percentage unavailable" : (diff > 0 ? "+" : "") + diffPct + "%"}) vs last scan
         </span>
         <span class="text-slate-400">&bull;</span>
         <span class="text-slate-500 font-0-85">Audited trajectory from ${dataPoints.length} observations</span>
@@ -1550,13 +1387,13 @@ function renderLowerChart(dataPoints, range = "all") {
 
     const datasets = [
       {
-        label: "Smoothed Trajectory",
+        label: "Raw Observations",
         data: smoothedViews,
         borderColor: "#4f46e5",
         borderWidth: 2.5,
         backgroundColor: grad,
         fill: true,
-        tension: 0.35,
+        tension: 0,
         pointRadius: 4,
         pointHoverRadius: 6,
         pointBackgroundColor: "#4f46e5",

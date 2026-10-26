@@ -38,7 +38,7 @@ def _build_pdf_elements(trend, sentiment, growth_rate, virality_score, stage, us
         ["Metric", "Value"],
         ["Total Views", f"{trend['total_views']:,}"],
         ["Observed Change", "Pending" if growth_rate is None else f"{growth_rate}%"],
-        ["Virality Index", f"{virality_score}/100"],
+        ["Virality Index (Heuristic)", "Unavailable" if virality_score is None else f"{virality_score}/100"],
         ["Trend Stage", stage],
     ]
     summary_table = Table(summary_data, colWidths=[8 * cm, 8 * cm])
@@ -52,11 +52,12 @@ def _build_pdf_elements(trend, sentiment, growth_rate, virality_score, stage, us
     elements.append(Spacer(1, 0.6 * cm))
 
     elements.append(Paragraph("Sentiment Breakdown", styles["Heading2"]))
+    classified = sum(sentiment.get(k) or 0 for k in ("positive_score", "negative_score", "neutral_score")) > 0 and sentiment.get("dominant_sentiment") != "unavailable"
     sentiment_data = [
         ["Sentiment", "Percentage"],
-        ["Positive", f"{sentiment['positive_score']}%"],
-        ["Negative", f"{sentiment['negative_score']}%"],
-        ["Neutral", f"{sentiment['neutral_score']}%"],
+        ["Positive", f"{sentiment['positive_score']}%" if classified else "Unavailable"],
+        ["Negative", f"{sentiment['negative_score']}%" if classified else "Unavailable"],
+        ["Neutral", f"{sentiment['neutral_score']}%" if classified else "Unavailable"],
         ["Dominant Sentiment", sentiment["dominant_sentiment"].capitalize()],
     ]
     sentiment_table = Table(sentiment_data, colWidths=[8 * cm, 8 * cm])

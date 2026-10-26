@@ -189,13 +189,16 @@ def _get_from_cache(cache_key: str):
     if cached:
         timestamp, data = cached
         quota_tracker.record_cache_hit()
-        return data
+        return dict(data, cached=True, cache_served_at=datetime.fromtimestamp(time.time(), timezone.utc).isoformat())
     return None
 
 
 def _save_to_cache(cache_key: str, data: dict):
     if isinstance(data, dict) and (data.get("status") == 200 or data.get("error") is False):
-        _YT_CACHE[cache_key] = (time.time(), data)
+        fetched = time.time()
+        data["fetched_at"] = datetime.fromtimestamp(fetched, timezone.utc).isoformat()
+        data["cached"] = False
+        _YT_CACHE[cache_key] = (fetched, dict(data))
 
 
 def _is_quota_error(res) -> bool:
@@ -226,8 +229,8 @@ def _build_authentic_snapshot(total_views: int, total_likes: int | None, total_c
         "date": today_str,
         "views": int(total_views or 0),
         "likes": int(total_likes) if total_likes is not None else None,
-        "shares": 0,
-        "comments_count": int(total_comments or 0),
+        "shares": None,
+        "comments_count": int(total_comments) if total_comments is not None else None,
     }]
 
 
@@ -455,29 +458,31 @@ def fetch_youtube_data(keyword: str, region: str = "Pakistan", category: str = "
         v_channel = snip.get("channelTitle", "YouTube Creator")
         cat_id = snip.get("categoryId", "")
         cat_info = CATEGORY_MAP.get(cat_id)
-        if category != "All":
-            cat_name = category
-            cat_hue = next((c["hue"] for c in DEFAULT_CATEGORIES if c["name"] == category), "#38BDF8")
-        else:
-            cat_name = cat_info[0] if cat_info else "Tech"
-            cat_hue = cat_info[1] if cat_info else "#38BDF8"
+        cat_name = cat_info[0] if cat_info else "Unavailable"
+        cat_hue = cat_info[1] if cat_info else "#38BDF8"
 
-        v_views = int(stat.get("viewCount", 0))
-        has_likes = "likeCount" in stat and stat["likeCount"] is not None
+        if stat.get("viewCount") is None:
+            continue  # No public counter: do not record an invented zero observation.
+        v_views = int(stat["viewCount"])
+        if v_views < 0:
+            continue
+        has_likes = stat.get("likeCount") is not None
         v_likes = int(stat["likeCount"]) if has_likes else None
-        v_comments = int(stat.get("commentCount", 0))
+        v_comments = int(stat["commentCount"]) if stat.get("commentCount") is not None else None
 
         v_published = snip.get("publishedAt", "")
         try:
             pub_dt = datetime.fromisoformat(v_published.replace("Z", "+00:00"))
+            if pub_dt > now_utc:
+                raise ValueError("Future publication time is not an observed upload age")
             hours_ago = max(1, int((now_utc - pub_dt).total_seconds() / 3600))
         except Exception:
-            hours_ago = 24
+            hours_ago = None
 
         # When creator hides likes, do not pretend engagement is 0.0%
-        v_eng = round(((v_likes + v_comments) / max(1, v_views)) * 100, 1) if has_likes else None
+        v_eng = round(((v_likes + v_comments) / v_views) * 100, 1) if has_likes and v_comments is not None and v_views > 0 else None
         # Distinguish estimated lifetime-average views/hour from observed multi-point velocity
-        estimated_views_per_hour = round(v_views / max(1, hours_ago), 1)
+        estimated_views_per_hour = round(v_views / max(1, hours_ago), 1) if hours_ago is not None else None
 
         content_details = it.get("contentDetails", {})
         dur_iso = content_details.get("duration", "")
@@ -519,20 +524,24 @@ def fetch_youtube_data(keyword: str, region: str = "Pakistan", category: str = "
             "published_at": v_published[:10] if v_published else "—",
         })
 
+    if not raw_videos:
+        return {"status": 422, "platform": "YouTube", "error": "Public view counts unavailable for this sample."}
+
     # Deterministic relative midpoint percentile rank across cohort (no artificial +950 cap)
-    cohort_n = len(raw_videos)
+    eligible = [v for v in raw_videos if v["estimated_views_per_hour"] is not None]
+    cohort_n = len(eligible)
     top_videos = []
     for i, rv in enumerate(raw_videos):
         evph = rv["estimated_views_per_hour"]
-        if cohort_n > 0:
-            less = sum(1 for o in raw_videos if o["estimated_views_per_hour"] < evph)
-            equal = sum(1 for o in raw_videos if o["estimated_views_per_hour"] == evph)
+        if cohort_n > 0 and evph is not None:
+            less = sum(1 for o in eligible if o["estimated_views_per_hour"] < evph)
+            equal = sum(1 for o in eligible if o["estimated_views_per_hour"] == evph)
             percentile = round(((less + 0.5 * equal) / cohort_n) * 100, 1)
         else:
-            percentile = 50.0
+            percentile = None
 
-        momentum_score = int(round(percentile))
-        trend_score = round(evph / 100 + percentile * 8)
+        momentum_score = int(round(percentile)) if percentile is not None else None
+        trend_score = round(evph / 100 + percentile * 8) if percentile is not None else None
 
         v_entry = dict(rv)
         v_entry["rank"] = i + 1
@@ -542,7 +551,7 @@ def fetch_youtube_data(keyword: str, region: str = "Pakistan", category: str = "
         top_videos.append(v_entry)
 
     # Sort videos by trend score
-    top_videos.sort(key=lambda x: x["trendScore"], reverse=True)
+    top_videos.sort(key=lambda x: x["trendScore"] if x["trendScore"] is not None else -1, reverse=True)
     for idx, v in enumerate(top_videos):
         v["rank"] = idx + 1
 
@@ -552,13 +561,14 @@ def fetch_youtube_data(keyword: str, region: str = "Pakistan", category: str = "
     avg_eng = round(sum(v["engagement"] for v in vids_with_eng) / max(1, len(vids_with_eng)), 1) if vids_with_eng else None
     vids_with_likes = [v for v in top_videos if v.get("likes") is not None]
     total_likes = sum(v["likes"] for v in vids_with_likes) if vids_with_likes else None
-    rising_count = len([v for v in top_videos if v["momentumScore"] > 40])
+    rising_count = len([v for v in top_videos if v["momentumScore"] is not None and v["momentumScore"] > 40])
 
     cat_breakdown = []
     for c in DEFAULT_CATEGORIES:
         c_vids = [v for v in top_videos if v["category"] == c["name"]]
         c_val = sum(v["views"] for v in c_vids)
-        cat_breakdown.append({"name": c["name"], "hue": c["hue"], "value": c_val})
+        if c_vids:
+            cat_breakdown.append({"name": c["name"], "hue": c["hue"], "value": c_val})
     known_categories = {c["name"] for c in cat_breakdown}
     for v in top_videos:
         if v["category"] not in known_categories:
@@ -566,25 +576,31 @@ def fetch_youtube_data(keyword: str, region: str = "Pakistan", category: str = "
             cat_breakdown.append({"name": name, "hue": v["hue"], "value": sum(item["views"] for item in top_videos if item["category"] == name)})
             known_categories.add(name)
     cat_breakdown.sort(key=lambda x: x["value"], reverse=True)
-    top_cat_name = cat_breakdown[0]["name"] if cat_breakdown and cat_breakdown[0]["value"] > 0 else (category if category != "All" else "Trending")
+    top_cat_name = cat_breakdown[0]["name"] if cat_breakdown else "Unavailable"
 
     # Time series points: 12 for 24h, 7 for 7d, 30 for 30d
     points_count = 12 if timeframe == "24h" else (7 if timeframe == "7d" else 30)
     time_series = []
     bucket_views = [0] * points_count
     for v in top_videos:
-        h = v.get("hoursAgo", 24)
+        h = v.get("hoursAgo")
+        if h is None:
+            continue
         b_idx = min(points_count - 1, max(0, h // 2 if timeframe == "24h" else h // 24))
         bucket_views[b_idx] += v.get("views", 0)
 
     for p_idx in range(points_count):
         lbl = f"{p_idx * 2}–{(p_idx + 1) * 2}h old" if timeframe == "24h" else f"{p_idx}–{p_idx + 1}d old"
+        if p_idx == points_count - 1:
+            lbl = f"{p_idx * 2}h+ old" if timeframe == "24h" else f"{p_idx}d+ old"
         time_series.append({"label": lbl, "views": bucket_views[p_idx]})
+    if not eligible:
+        time_series = []
 
     kpis = {
         "totalViews": total_views_sum,
         "avgEngagement": avg_eng,
-        "topCategory": top_cat_name,
+        "topCategory": None if not any(v["category"] != "Unavailable" for v in top_videos) or top_cat_name == "Unavailable" else top_cat_name,
         "risingCount": rising_count,
         "topCategoryViews": cat_breakdown[0]["value"] if cat_breakdown else 0,
         "totalTracked": len(top_videos),
@@ -599,7 +615,7 @@ def fetch_youtube_data(keyword: str, region: str = "Pakistan", category: str = "
     upload_date = v0.get("published_at") or snippet0.get("publishedAt", "")
     total_views = sum(v["views"] for v in top_videos)
     total_likes = sum(v["likes"] for v in top_videos if v.get("likes") is not None) if any(v.get("likes") is not None for v in top_videos) else None
-    total_comments = sum(v["comments"] for v in top_videos)
+    total_comments = sum(v["comments"] for v in top_videos if v.get("comments") is not None) if any(v.get("comments") is not None for v in top_videos) else None
 
     comments = []
     try:

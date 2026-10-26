@@ -15,6 +15,7 @@ import sys
 import re
 
 import csv
+from sqlalchemy import null
 
 import io
 
@@ -946,6 +947,14 @@ def get_trending_feed():
 
         "timeSeries": search_result.get("time_series", []),
 
+        "cached": bool(search_result.get("cached", False)),
+
+        "is_stale": bool(search_result.get("is_stale", False)),
+
+        "fetched_at": search_result.get("fetched_at"),
+
+        "cache_served_at": search_result.get("cache_served_at"),
+
     })
 
 
@@ -994,6 +1003,9 @@ def _process_platform(keyword, platform_name, fetch_fn, region="Global", categor
     virality = calculate_virality_index(raw["daily_metrics"])
 
     engagement = calculate_engagement_rate(raw["daily_metrics"])
+
+    if engagement is None:
+        virality = None
 
     seo_analysis = calculate_seo_score(raw["daily_metrics"], keyword)
 
@@ -1083,6 +1095,15 @@ def _process_platform(keyword, platform_name, fetch_fn, region="Global", categor
 
 
 
+    collection_time = None
+    if raw.get("fetched_at"):
+        try:
+            collection_time = datetime.fromisoformat(raw["fetched_at"])
+            if collection_time.tzinfo is None or collection_time > datetime.now(timezone.utc):
+                collection_time = None
+        except (ValueError, TypeError):
+            collection_time = None
+
     trend_intel = analyze_trend_intelligence(
 
         keyword=keyword,
@@ -1097,9 +1118,15 @@ def _process_platform(keyword, platform_name, fetch_fn, region="Global", categor
 
         past_trends=past_trends,
 
+        now=collection_time,
+
     )
 
 
+
+    stage = trend_intel["current_direction"]
+    trend_intel["cohort_comparable"] = True
+    trend_intel["observation_key"] = observation_key
 
     # Clean topic-appropriate fallback for sample comment if empty
 
@@ -1117,11 +1144,13 @@ def _process_platform(keyword, platform_name, fetch_fn, region="Global", categor
 
         observation_key=observation_key,
 
+        timestamp=datetime.fromisoformat(trend_intel["last_seen_at"]),
+
         total_views=views_sum,
 
-        growth_rate=trend_intel["velocity"] if trend_intel["velocity"] is not None else growth_rate,
+        growth_rate=trend_intel["velocity"] if trend_intel["velocity"] is not None else null(),
 
-        virality_score=virality,
+        virality_score=virality if virality is not None else null(),
 
         peak_date=datetime.now(timezone.utc),
 
@@ -1133,15 +1162,15 @@ def _process_platform(keyword, platform_name, fetch_fn, region="Global", categor
 
         scan_count=trend_intel["scan_count"],
 
-        current_trend_score=trend_intel["current_trend_score"],
+        current_trend_score=trend_intel["current_trend_score"] if trend_intel["current_trend_score"] is not None else null(),
 
         current_direction=trend_intel["current_direction"],
 
         current_confidence=trend_intel["current_confidence"],
 
-        current_velocity=trend_intel["velocity"] or 0.0,
+        current_velocity=trend_intel["velocity"] if trend_intel["velocity"] is not None else null(),
 
-        current_acceleration=trend_intel["acceleration"] or 0.0,
+        current_acceleration=trend_intel["acceleration"] if trend_intel["acceleration"] is not None else null(),
 
     )
 
@@ -1159,11 +1188,11 @@ def _process_platform(keyword, platform_name, fetch_fn, region="Global", categor
 
             views=day["views"],
 
-            likes=day["likes"],
+            likes=day["likes"] if day["likes"] is not None else null(),
 
-            shares=day["shares"],
+            shares=day["shares"] if day["shares"] is not None else null(),
 
-            comments_count=day["comments_count"],
+            comments_count=day["comments_count"] if day["comments_count"] is not None else null(),
 
             recorded_date=datetime.strptime(day["date"], "%Y-%m-%d").date(),
 
@@ -1205,11 +1234,11 @@ def _process_platform(keyword, platform_name, fetch_fn, region="Global", categor
 
         "total_views": views_sum,
 
-        "growth_rate": trend_intel["velocity"] if trend_intel["velocity"] is not None else 0.0,
+        "growth_rate": trend_intel["velocity"],
 
         "virality_score": virality,
 
-        "engagement_rate": engagement,
+        "engagement_rate": raw.get("kpis", {}).get("avgEngagement", engagement) if "avgEngagement" in raw.get("kpis", {}) else engagement,
 
         "seo_analysis": seo_analysis,
 
@@ -1278,6 +1307,11 @@ def _process_platform(keyword, platform_name, fetch_fn, region="Global", categor
         "cat_breakdown": raw.get("cat_breakdown", []),
 
         "time_series": raw.get("time_series", []),
+
+        "cached": bool(raw.get("cached", False)),
+        "is_stale": bool(raw.get("is_stale", False)),
+        "fetched_at": raw.get("fetched_at"),
+        "cache_served_at": raw.get("cache_served_at"),
 
         "region": region,
 
@@ -1607,7 +1641,7 @@ def export_csv(trend_id):
 
 
 
-    writer.writerow(["Keyword", "Platform", "Total Views", "Growth Rate (%)", "Virality Score", "Trend Stage", "Timestamp"])
+    writer.writerow(["Keyword", "Platform", "Total Views", "Observed Change (%)", "Virality Index (Heuristic)", "Trend Stage", "Timestamp"])
 
     stage = trend.current_direction or "BASELINE"
 
@@ -1617,7 +1651,7 @@ def export_csv(trend_id):
 
         safe_keyword, trend.platform, trend.total_views,
 
-        "Pending" if stage == "BASELINE" else trend.growth_rate, trend.virality_score, stage,
+        "Pending" if stage == "BASELINE" else ("Unavailable" if trend.growth_rate is None else trend.growth_rate), "Unavailable" if trend.virality_score is None else trend.virality_score, stage,
 
         trend.timestamp.strftime("%Y-%m-%d %H:%M")
 
@@ -1629,15 +1663,17 @@ def export_csv(trend_id):
 
     if sentiment:
 
+        classified_sentiment = sum(v or 0 for v in (sentiment.positive_score, sentiment.negative_score, sentiment.neutral_score)) > 0 and (sentiment.dominant_sentiment or "").lower() != "unavailable"
+
         writer.writerow(["Sentiment Analysis"])
 
         writer.writerow(["Positive (%)", "Negative (%)", "Neutral (%)", "Dominant"])
 
         writer.writerow([
 
-            sentiment.positive_score, sentiment.negative_score,
+            sentiment.positive_score if classified_sentiment else "Unavailable", sentiment.negative_score if classified_sentiment else "Unavailable",
 
-            sentiment.neutral_score, sentiment.dominant_sentiment
+            sentiment.neutral_score if classified_sentiment else "Unavailable", sentiment.dominant_sentiment
 
         ])
 
@@ -1645,7 +1681,7 @@ def export_csv(trend_id):
 
 
 
-    writer.writerow(["Daily Metrics"])
+    writer.writerow(["Recorded Snapshots (Lifetime Counters)"])
 
     writer.writerow(["Date", "Views", "Likes", "Shares", "Comments"])
 
@@ -1653,7 +1689,7 @@ def export_csv(trend_id):
 
         likes_val = m.likes if m.likes is not None else "Unavailable"
 
-        writer.writerow([m.recorded_date, m.views, likes_val, m.shares, m.comments_count])
+        writer.writerow([m.recorded_date, m.views, likes_val, "Unavailable" if m.shares is None else m.shares, "Unavailable" if m.comments_count is None else m.comments_count])
 
 
 
