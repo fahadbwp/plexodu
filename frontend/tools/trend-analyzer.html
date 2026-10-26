@@ -101,196 +101,221 @@ tailwind.config = {
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
 <script defer src="/js/analytics.js"></script>
 </head>
-<body class="bg-[#FAF8FF] font-sans text-[#131B2E] antialiased trend-ui stitch-tools">
+<body class="trend-ui stitch-tools">
 
-<!-- Sidebar Navigation (Exact Stitch Layout) -->
-<aside class="fixed left-0 top-0 h-screen w-72 bg-white z-50 hidden lg:flex flex-col justify-between overflow-y-auto border-r border-[#E2E8F0]/80 shadow-[0_1px_8px_rgba(0,0,0,0.03)]" aria-label="Sidebar Navigation">
-  <div class="flex flex-col">
-    <!-- Brand Header -->
-    <div class="h-16 px-5 flex items-center justify-between border-b border-[#F1F5F9]">
-      <a href="/" class="flex items-center gap-3">
-        <div class="w-9 h-9 rounded-xl bg-[#4648D4] flex items-center justify-center text-white shadow-sm">
-          <span class="material-symbols-outlined text-[20px]" aria-hidden="true">play_shapes</span>
-        </div>
-        <div class="flex flex-col">
-          <span class="text-base text-[#131B2E] tracking-tight font-bold leading-tight font-headline">PLEXUDO</span>
-          <span class="text-[11px] text-[#4648D4] tracking-wide uppercase font-semibold">Creator Suite</span>
-        </div>
-      </a>
-      <span class="w-8 h-8 rounded-lg flex items-center justify-center text-[#464554] hover:bg-[#F2F3FF] transition-colors">
-        <span class="material-symbols-outlined text-[20px]" aria-hidden="true">dock_to_right</span>
-      </span>
-    </div>
+<div class="stitch-app-shell">
+  <!-- Desktop Fixed Sidebar -->
+  <aside class="stitch-sidebar" aria-label="Sidebar Navigation">
+    <div class="stitch-sidebar-top">
+      <div class="stitch-sidebar-brand">
+        <a href="/" class="stitch-brand-link">
+          <div class="stitch-brand-logo-icon">
+            <span class="material-symbols-outlined" style="font-size:22px;" aria-hidden="true">play_shapes</span>
+          </div>
+          <div>
+            <div class="stitch-brand-title">PLEXUDO</div>
+            <div class="stitch-brand-subtitle">Creator Suite</div>
+          </div>
+        </a>
+      </div>
 
-    <!-- Public Workspace Chip -->
-    <div class="px-3.5 mt-3">
-      <div class="bg-[#F2F3FF] rounded-xl p-2.5 flex items-center gap-2 border border-[#EAEDFF]">
-        <span class="material-symbols-outlined text-[#4648D4] text-[18px]" aria-hidden="true">public</span>
-        <div class="flex flex-col min-w-0">
-          <span class="text-xs text-[#131B2E] font-semibold truncate">Public Workspace</span>
-          <span class="text-[11px] text-[#006C49] font-medium truncate">Free &amp; Instant Access</span>
+      <div class="stitch-public-badge">
+        <span class="material-symbols-outlined stitch-public-badge-icon" style="font-size:18px;" aria-hidden="true">public</span>
+        <div>
+          <div class="stitch-public-badge-title">Public Workspace</div>
+          <div class="stitch-public-badge-sub">Free &amp; Instant Access</div>
         </div>
+      </div>
+
+      <div class="stitch-nav-group">
+        <span class="stitch-nav-heading">Analytics Engine</span>
+        <nav class="stitch-nav-list">
+          <a href="/tools/trend-analyzer" class="stitch-nav-link active" aria-current="page">
+            <span class="material-symbols-outlined stitch-nav-icon" style="font-size:20px;" aria-hidden="true">trending_up</span>
+            <span>Trend Analyzer</span>
+          </a>
+          <a href="/tools/video-analyzer" class="stitch-nav-link">
+            <span class="material-symbols-outlined stitch-nav-icon" style="font-size:20px;" aria-hidden="true">analytics</span>
+            <span>Video Analyzer</span>
+          </a>
+          <a href="/tools/competitor-audit" class="stitch-nav-link">
+            <span class="material-symbols-outlined stitch-nav-icon" style="font-size:20px;" aria-hidden="true">compare_arrows</span>
+            <span>Competitor Audit</span>
+          </a>
+          <a href="/tools/ai-strategist" class="stitch-nav-link">
+            <span class="material-symbols-outlined stitch-nav-icon" style="font-size:20px;" aria-hidden="true">smart_toy</span>
+            <span>AI Strategist</span>
+          </a>
+        </nav>
+      </div>
+
+      <div class="stitch-nav-group">
+        <span class="stitch-nav-heading">Resources &amp; Hub</span>
+        <nav class="stitch-nav-list">
+          <a href="/tools" class="stitch-nav-link">
+            <span class="material-symbols-outlined stitch-nav-icon" style="font-size:18px;" aria-hidden="true">apps</span>
+            <span>All Tools Directory</span>
+          </a>
+          <a href="/blog/" class="stitch-nav-link">
+            <span class="material-symbols-outlined stitch-nav-icon" style="font-size:18px;" aria-hidden="true">menu_book</span>
+            <span>Guides &amp; Articles</span>
+          </a>
+          <a href="/privacy" class="stitch-nav-link">
+            <span class="material-symbols-outlined stitch-nav-icon" style="font-size:18px;" aria-hidden="true">security</span>
+            <span>Privacy Policy</span>
+          </a>
+          <a href="/terms" class="stitch-nav-link">
+            <span class="material-symbols-outlined stitch-nav-icon" style="font-size:18px;" aria-hidden="true">description</span>
+            <span>Terms of Service</span>
+          </a>
+        </nav>
       </div>
     </div>
 
-    <!-- Analytics Engine Navigation -->
-    <div class="px-3.5 mt-5">
-      <span class="px-2 text-[11px] text-[#767586] uppercase tracking-wider font-semibold block mb-2 font-label">Analytics Engine</span>
-      <nav class="flex flex-col gap-1">
-        <a href="/tools/trend-analyzer" aria-current="page" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl bg-[#6063EE] text-white font-semibold shadow-sm transition-all">
-          <span class="material-symbols-outlined text-[20px]" aria-hidden="true">trending_up</span>
-          <span class="text-sm">Trend Analyzer</span>
-        </a>
-        <a href="/tools/video-analyzer" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-[#464554] hover:bg-[#F2F3FF] hover:text-[#131B2E] font-medium text-sm transition-all">
-          <span class="material-symbols-outlined text-[20px]" aria-hidden="true">analytics</span>
-          <span class="text-sm">Video Analyzer</span>
-        </a>
-        <a href="/tools/competitor-audit" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-[#464554] hover:bg-[#F2F3FF] hover:text-[#131B2E] font-medium text-sm transition-all">
-          <span class="material-symbols-outlined text-[20px]" aria-hidden="true">compare_arrows</span>
-          <span class="text-sm">Competitor Audit</span>
-        </a>
-        <a href="/tools/ai-strategist" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-[#464554] hover:bg-[#F2F3FF] hover:text-[#131B2E] font-medium text-sm transition-all">
-          <span class="material-symbols-outlined text-[20px]" aria-hidden="true">smart_toy</span>
-          <span class="text-sm">AI Strategist</span>
-        </a>
-      </nav>
-    </div>
-
-    <!-- Hub & Resources Navigation -->
-    <div class="px-3.5 mt-5">
-      <span class="px-2 text-[11px] text-[#767586] uppercase tracking-wider font-semibold block mb-2 font-label">Resources &amp; Hub</span>
-      <nav class="flex flex-col gap-1">
-        <a href="/tools" class="flex items-center gap-3 px-3.5 py-2 rounded-xl text-[#464554] hover:bg-[#F2F3FF] hover:text-[#131B2E] text-xs font-medium transition-all">
-          <span class="material-symbols-outlined text-[18px]" aria-hidden="true">apps</span>
-          <span>All Tools Directory</span>
-        </a>
-        <a href="/blog/" class="flex items-center gap-3 px-3.5 py-2 rounded-xl text-[#464554] hover:bg-[#F2F3FF] hover:text-[#131B2E] text-xs font-medium transition-all">
-          <span class="material-symbols-outlined text-[18px]" aria-hidden="true">menu_book</span>
-          <span>Guides &amp; Articles</span>
-        </a>
-        <a href="/privacy" class="flex items-center gap-3 px-3.5 py-2 rounded-xl text-[#464554] hover:bg-[#F2F3FF] hover:text-[#131B2E] text-xs font-medium transition-all">
-          <span class="material-symbols-outlined text-[18px]" aria-hidden="true">security</span>
-          <span>Privacy Policy</span>
-        </a>
-        <a href="/terms" class="flex items-center gap-3 px-3.5 py-2 rounded-xl text-[#464554] hover:bg-[#F2F3FF] hover:text-[#131B2E] text-xs font-medium transition-all">
-          <span class="material-symbols-outlined text-[18px]" aria-hidden="true">description</span>
-          <span>Terms of Service</span>
-        </a>
-      </nav>
-    </div>
-  </div>
-
-  <!-- Sidebar Footer Card -->
-  <div class="p-3.5">
-    <div class="bg-[#EAEDFF] rounded-xl p-3.5 flex flex-col gap-1.5 border border-[#DAE2FD]">
-      <div class="flex items-center gap-1.5">
-        <span class="material-symbols-outlined text-[#712AE2] text-[18px]" aria-hidden="true">rocket_launch</span>
-        <span class="text-xs text-[#131B2E] font-semibold">Continuous Tracking</span>
+    <div class="stitch-sidebar-footer-card">
+      <div class="stitch-footer-card-header">
+        <span class="material-symbols-outlined" style="font-size:18px; color:var(--stitch-secondary);" aria-hidden="true">rocket_launch</span>
+        <span>Automated Tracking</span>
       </div>
-      <p class="text-[11px] text-[#464554] leading-relaxed">
-        Automated 24/7 channel surveillance and batch analysis in future releases.
-      </p>
-      <div class="stitch-footer-card-pill mt-1 flex items-center gap-1 text-[11px] font-bold text-[#4648D4]" aria-label="Planned Feature">
+      <p class="stitch-footer-card-desc">Continuous 24/7 channel surveillance and automated alerts are scheduled for a future release.</p>
+      <div class="stitch-footer-card-pill" aria-label="Planned Feature">
         <span class="material-symbols-outlined" style="font-size:13px;" aria-hidden="true">schedule</span>
         <span>Planned Feature &bull; 100% Free Suite</span>
       </div>
     </div>
-  </div>
-</aside>
+  </aside>
 
-<!-- Mobile Sticky Topbar -->
-<header class="lg:hidden sticky top-0 left-0 right-0 h-14 bg-white/95 backdrop-blur-md z-40 px-4 flex items-center justify-between border-b border-[#E2E8F0]">
-  <div class="flex items-center gap-2">
-    <button type="button" class="p-1.5 rounded-lg text-[#131B2E] hover:bg-[#F2F3FF]" onclick="toggleSidebarDrawer()" aria-label="Open navigation menu">
-      <span class="material-symbols-outlined text-[24px]" aria-hidden="true">menu</span>
-    </button>
-    <a href="/" class="flex items-center gap-2">
-      <div class="w-7 h-7 rounded-lg bg-[#4648D4] flex items-center justify-center text-white">
-        <span class="material-symbols-outlined text-[16px]" aria-hidden="true">play_shapes</span>
-      </div>
-      <span class="font-bold text-[#131B2E] text-sm font-headline tracking-tight">PLEXUDO</span>
-    </a>
-  </div>
-  <div class="flex items-center gap-2">
-    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#EAEDFF] text-[#4648D4] text-[10px] font-semibold">
-      <span class="w-1.5 h-1.5 rounded-full bg-[#10B981] animate-pulse"></span> Free
-    </span>
-    <a href="/tools" class="p-1.5 rounded-lg text-[#464554] hover:bg-[#F2F3FF]">
-      <span class="material-symbols-outlined text-[20px]" aria-hidden="true">apps</span>
-    </a>
-  </div>
-</header>
-
-<!-- Mobile Navigation Drawer -->
-<div id="stitchDrawerBackdrop" class="stitch-drawer-backdrop" onclick="closeSidebarDrawer()" aria-hidden="true"></div>
-<aside id="stitchMobileDrawer" class="stitch-drawer" inert aria-hidden="true" aria-label="Mobile Navigation Drawer">
-  <div class="flex items-center justify-between pb-4 border-b border-[#E2E8F0]">
-    <div class="flex items-center gap-2">
-      <div class="w-8 h-8 rounded-lg bg-[#4648D4] flex items-center justify-center text-white">
-        <span class="material-symbols-outlined text-[18px]" aria-hidden="true">play_shapes</span>
-      </div>
-      <span class="font-bold text-[#131B2E] text-base font-headline">PLEXUDO</span>
-    </div>
-    <button type="button" onclick="closeSidebarDrawer()" class="p-1.5 rounded-lg text-[#464554] hover:bg-[#F2F3FF]" aria-label="Close menu">
-      <span class="material-symbols-outlined text-[20px]" aria-hidden="true">close</span>
-    </button>
-  </div>
-  <div class="mt-4 flex flex-col gap-1">
-    <a href="/tools/trend-analyzer" onclick="closeSidebarDrawer()" class="flex items-center gap-3 px-3 py-2 rounded-xl bg-[#6063EE] text-white font-semibold text-sm">
-      <span class="material-symbols-outlined text-[20px]">trending_up</span> Trend Analyzer
-    </a>
-    <a href="/tools/video-analyzer" onclick="closeSidebarDrawer()" class="flex items-center gap-3 px-3 py-2 rounded-xl text-[#464554] hover:bg-[#F2F3FF] text-sm">
-      <span class="material-symbols-outlined text-[20px]">analytics</span> Video Analyzer
-    </a>
-    <a href="/tools/competitor-audit" onclick="closeSidebarDrawer()" class="flex items-center gap-3 px-3 py-2 rounded-xl text-[#464554] hover:bg-[#F2F3FF] text-sm">
-      <span class="material-symbols-outlined text-[20px]">compare_arrows</span> Competitor Audit
-    </a>
-    <a href="/tools/ai-strategist" onclick="closeSidebarDrawer()" class="flex items-center gap-3 px-3 py-2 rounded-xl text-[#464554] hover:bg-[#F2F3FF] text-sm">
-      <span class="material-symbols-outlined text-[20px]">smart_toy</span> AI Strategist
-    </a>
-    <a href="/tools" onclick="closeSidebarDrawer()" class="flex items-center gap-3 px-3 py-2 rounded-xl text-[#464554] hover:bg-[#F2F3FF] text-sm">
-      <span class="material-symbols-outlined text-[20px]">apps</span> All Tools Hub
-    </a>
-  </div>
-</aside>
-
-<!-- Main Wrapper -->
-<div class="lg:pl-72 flex flex-col min-h-screen">
-
-  <!-- Desktop Fixed Topbar (Exact Stitch Design) -->
-  <header class="hidden lg:flex fixed top-0 left-72 right-0 h-16 bg-[#FAF8FF]/85 backdrop-blur-xl z-40 border-b border-[#E2E8F0]/70 px-6 items-center justify-between gap-4">
-    <div class="flex items-center gap-3 flex-1 max-w-xl">
-      <div class="relative w-full">
-        <span class="absolute left-3.5 top-1/2 -translate-y-1/2 material-symbols-outlined text-[#767586] text-[20px]">search</span>
-        <button type="button" class="w-full h-10 pl-11 pr-12 rounded-xl bg-white text-[#464554] text-xs text-left border border-[#E2E8F0] shadow-sm hover:border-[#6063EE] transition-colors flex items-center" data-focus-tool-input>
-          Search YouTube channels, video URLs, or keywords...
-        </button>
-        <span class="absolute right-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded bg-[#EAEDFF] text-[#4648D4] text-[10px] font-mono font-semibold">⌘K</span>
+  <!-- Desktop Fixed Topbar -->
+  <header class="stitch-topbar" aria-label="Desktop Topbar">
+    <div class="stitch-topbar-left">
+      <div class="stitch-topbar-search-box">
+        <span class="material-symbols-outlined stitch-topbar-search-icon" style="font-size:18px;" aria-hidden="true">search</span>
+        <button type="button" class="stitch-topbar-search-input" data-focus-tool-input>Search YouTube channels, video URLs, or keywords...</button>
+        <span class="stitch-topbar-search-shortcut">⌘K</span>
       </div>
     </div>
-    <div class="flex items-center gap-3">
-      <div class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white border border-[#E2E8F0] shadow-sm">
-        <span class="w-2 h-2 rounded-full bg-[#10B981] animate-pulse"></span>
-        <span class="text-xs text-[#464554] font-medium font-label">Heuristic Engine · Live Stream</span>
+
+    <div class="stitch-topbar-right">
+      <div class="stitch-badge-pill">
+        <span class="stitch-live-dot"></span>
+        <span>Heuristic Engine · Live Stream</span>
       </div>
-      <div class="flex items-center gap-1 px-3 py-1.5 rounded-full bg-white border border-[#E2E8F0] text-xs font-semibold shadow-sm text-[#131B2E]">
+      <div class="stitch-badge-pill">
         <span>🇵🇰</span> <span>PK</span>
       </div>
-      <a href="/tools" class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white hover:bg-[#F2F3FF] text-[#131B2E] border border-[#E2E8F0] text-xs font-semibold shadow-sm transition-colors">
-        <span class="material-symbols-outlined text-[16px]">explore</span>
+      <a href="/tools" class="stitch-btn-secondary" style="height:36px; padding:0 14px; font-size:0.75rem;">
+        <span class="material-symbols-outlined" style="font-size:16px;" aria-hidden="true">explore</span>
         <span>Tools Hub</span>
       </a>
-      <div class="w-8 h-8 rounded-full bg-[#4648D4] text-white flex items-center justify-center font-bold text-xs shadow-sm">
-        GC
+      <div class="stitch-user-chip">
+        <div class="stitch-user-avatar">GC</div>
       </div>
     </div>
   </header>
 
-  <!-- Main Canvas -->
-  <main class="relative w-full pt-4 lg:pt-20 pb-16 bg-[#FAF8FF]">
-    <div class="px-4 sm:px-6 lg:px-8 py-4 flex flex-col gap-6 max-w-[1560px] mx-auto">
+  <!-- Mobile Sticky Topbar -->
+  <header class="stitch-mobile-topbar" aria-label="Mobile Navigation Bar">
+    <div class="stitch-flex-row stitch-gap-xs">
+      <button class="stitch-hamburger-btn" onclick="toggleSidebarDrawer()" aria-label="Open navigation menu">
+        <span class="material-symbols-outlined" style="font-size:24px;" aria-hidden="true">menu</span>
+      </button>
+      <a href="/" class="stitch-brand-link" style="gap:8px;">
+        <div class="stitch-brand-logo-icon" style="width:32px; height:32px; border-radius:8px;">
+          <span class="material-symbols-outlined" style="font-size:18px;" aria-hidden="true">play_shapes</span>
+        </div>
+        <span class="stitch-brand-title" style="font-size:1rem;">PLEXUDO</span>
+      </a>
+    </div>
+    <div class="stitch-flex-row stitch-gap-xs">
+      <span class="stitch-badge-pill" style="padding:3px 8px; font-size:0.6875rem;">
+        <span class="stitch-live-dot"></span> Free Tool
+      </span>
+      <div class="stitch-user-avatar" style="width:28px; height:28px; font-size:0.75rem;">GC</div>
+    </div>
+  </header>
 
-      <!-- Breadcrumb & Top Bar -->
+  <!-- Mobile Drawer Backdrop & Menu -->
+  <div class="stitch-drawer-backdrop" id="stitchDrawerBackdrop" onclick="closeSidebarDrawer()" aria-hidden="true"></div>
+  <aside class="stitch-drawer" id="stitchMobileDrawer" inert aria-hidden="true" aria-label="Mobile Navigation Drawer">
+    <div>
+      <div class="stitch-drawer-header">
+        <div class="stitch-flex-row stitch-gap-xs">
+          <div class="stitch-brand-logo-icon" style="width:32px; height:32px; border-radius:8px;">
+            <span class="material-symbols-outlined" style="font-size:18px;" aria-hidden="true">play_shapes</span>
+          </div>
+          <span class="stitch-brand-title" style="font-size:1.05rem;">PLEXUDO</span>
+        </div>
+        <button class="stitch-drawer-close-btn" onclick="closeSidebarDrawer()" aria-label="Close navigation menu">
+          <span class="material-symbols-outlined" style="font-size:20px;" aria-hidden="true">close</span>
+        </button>
+      </div>
+
+      <div class="stitch-nav-group">
+        <span class="stitch-nav-heading">Creator Utilities</span>
+        <nav class="stitch-nav-list">
+          <a href="/tools/trend-analyzer" class="stitch-nav-link active" onclick="closeSidebarDrawer()">
+            <span class="material-symbols-outlined stitch-nav-icon" style="font-size:20px;" aria-hidden="true">trending_up</span>
+            <span>Trend Analyzer</span>
+          </a>
+          <a href="/tools/video-analyzer" class="stitch-nav-link" onclick="closeSidebarDrawer()">
+            <span class="material-symbols-outlined stitch-nav-icon" style="font-size:20px;" aria-hidden="true">analytics</span>
+            <span>Video Analyzer</span>
+          </a>
+          <a href="/tools/competitor-audit" class="stitch-nav-link" onclick="closeSidebarDrawer()">
+            <span class="material-symbols-outlined stitch-nav-icon" style="font-size:20px;" aria-hidden="true">compare_arrows</span>
+            <span>Competitor Audit</span>
+          </a>
+          <a href="/tools/ai-strategist" class="stitch-nav-link" onclick="closeSidebarDrawer()">
+            <span class="material-symbols-outlined stitch-nav-icon" style="font-size:20px;" aria-hidden="true">smart_toy</span>
+            <span>AI Strategist</span>
+          </a>
+          <a href="/tools" class="stitch-nav-link" onclick="closeSidebarDrawer()">
+            <span class="material-symbols-outlined stitch-nav-icon" style="font-size:18px;" aria-hidden="true">apps</span>
+            <span>All Tools Hub</span>
+          </a>
+        </nav>
+      </div>
+
+      <div class="stitch-nav-group">
+        <span class="stitch-nav-heading">Platform &amp; Legal</span>
+        <nav class="stitch-nav-list">
+          <a href="/" class="stitch-nav-link" onclick="closeSidebarDrawer()">
+            <span class="material-symbols-outlined" style="font-size:18px;" aria-hidden="true">home</span>
+            <span>Homepage</span>
+          </a>
+          <a href="/blog/" class="stitch-nav-link" onclick="closeSidebarDrawer()">
+            <span class="material-symbols-outlined" style="font-size:18px;" aria-hidden="true">menu_book</span>
+            <span>Blog &amp; Guides</span>
+          </a>
+          <a href="/privacy" class="stitch-nav-link" onclick="closeSidebarDrawer()">
+            <span class="material-symbols-outlined" style="font-size:18px;" aria-hidden="true">security</span>
+            <span>Privacy Policy</span>
+          </a>
+          <a href="/terms" class="stitch-nav-link" onclick="closeSidebarDrawer()">
+            <span class="material-symbols-outlined" style="font-size:18px;" aria-hidden="true">description</span>
+            <span>Terms of Service</span>
+          </a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="stitch-sidebar-footer-card">
+      <div class="stitch-footer-card-header">
+        <span class="material-symbols-outlined" style="font-size:18px; color:var(--stitch-secondary);" aria-hidden="true">rocket_launch</span>
+        <span>Automated Tracking</span>
+      </div>
+      <p class="stitch-footer-card-desc">Continuous 24/7 channel surveillance and automated alerts are scheduled for a future release.</p>
+      <div class="stitch-footer-card-pill" aria-label="Planned Feature">
+        <span class="material-symbols-outlined" style="font-size:13px;" aria-hidden="true">schedule</span>
+        <span>Planned Feature &bull; 100% Free Suite</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Canvas -->
+  <main class="stitch-main-canvas">
+    <div class="stitch-content-container">
+<!-- Breadcrumb & Top Bar -->
       <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div class="flex flex-col gap-1">
           <div class="flex items-center gap-1.5 text-xs text-[#767586] font-label">
@@ -552,14 +577,14 @@ tailwind.config = {
             <div>
               <div class="flex items-center gap-2">
                 <h2 id="viewsTrendTitle" class="text-base sm:text-lg font-bold text-[#131B2E] tracking-tight font-headline">
-                  Topic Velocity vs Historical Baseline — Lifetime views by upload age
+                  Topic Velocity vs Historical Baseline
                 </h2>
                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-[#EEF2FF] text-[#4F46E5] border border-[#C7D2FE]/70">
                   Sampled Age Brackets
                 </span>
               </div>
               <p class="text-xs text-[#767586] mt-0.5">
-                Accumulated lifetime views across video age buckets in the current sampled cohort
+                Lifetime views by upload age &bull; Accumulated lifetime views across video age buckets in the current sampled cohort
               </p>
             </div>
 
@@ -1064,35 +1089,8 @@ tailwind.config = {
   </main>
 </div>
 
-<!-- Drawer toggle script -->
-<script>
-function toggleSidebarDrawer() {
-  const d = document.getElementById('stitchMobileDrawer');
-  const b = document.getElementById('stitchDrawerBackdrop');
-  if (!d || !b) return;
-  const isOpen = d.classList.contains('open');
-  if (isOpen) {
-    closeSidebarDrawer();
-  } else {
-    d.classList.add('open');
-    b.classList.add('open');
-    d.removeAttribute('inert');
-    d.setAttribute('aria-hidden', 'false');
-  }
-}
-function closeSidebarDrawer() {
-  const d = document.getElementById('stitchMobileDrawer');
-  const b = document.getElementById('stitchDrawerBackdrop');
-  if (!d || !b) return;
-  d.classList.remove('open');
-  b.classList.remove('open');
-  d.setAttribute('inert', '');
-  d.setAttribute('aria-hidden', 'true');
-}
-</script>
-
 <script src="/js/tools/common.js?v=28.4"></script>
-<script src="/js/tools/trend-analyzer.js?v=28.4"></script>
+<script src="/js/tools/trend-analyzer.js?v=28.5"></script>
 
 </body>
 </html>

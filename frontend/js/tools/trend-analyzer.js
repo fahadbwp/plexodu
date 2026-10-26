@@ -633,9 +633,9 @@ function renderKpis(kpis, isValid = true) {
 
 // ── Render Views Trajectory Chart ────────────────────────────────────────────
 function renderViewsChart(timeSeries, categoryName) {
-  const titleEl = document.getElementById("viewsTrendTitle");
-  if (titleEl) {
-    titleEl.textContent = `Lifetime views by upload age — ${categoryName === "All" ? "all categories" : categoryName.toLowerCase()}`;
+  const catLabelEl = document.getElementById("viewsTrendCatBadge");
+  if (catLabelEl && categoryName && categoryName !== "All") {
+    catLabelEl.textContent = `${categoryName} Sample`;
   }
 
   const canvas = document.getElementById("pulseViewsChart");
