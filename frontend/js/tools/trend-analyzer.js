@@ -576,7 +576,11 @@ function renderKpis(kpis, isValid = true) {
   const leadCat = kpis.fastestCategory || kpis.topCategory || "—";
   if (topCatVal) topCatVal.textContent = leadCat;
   if (kpiTopTopicTitle) {
-    kpiTopTopicTitle.textContent = currentVideos.length > 0 ? currentVideos[0].title : leadCat;
+    const topicText = currentVideos.length > 0 ? currentVideos[0].title : leadCat;
+    kpiTopTopicTitle.textContent = topicText;
+    if (typeof kpiTopTopicTitle.setAttribute === "function") {
+      kpiTopTopicTitle.setAttribute("title", topicText);
+    }
   }
   if (kpiTopTopicVelocity) {
     const vel = metricAvailable(kpis.growthRate) ? Number(kpis.growthRate).toFixed(1) : "38.4";
@@ -691,9 +695,9 @@ function updateFormatBreakdownCard(videos) {
     const legend = document.getElementById("kpiFormatLegend");
     if (legend) {
       legend.innerHTML = `
-        <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-[#4648D4]"></span>Shorts ${shortsPct}%</span>
-        <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-[#8A4CFC]"></span>Long ${longPct}%</span>
-        <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-[#00885D]"></span>Live/Other ${otherPct}%</span>
+        <span class="flex items-center gap-1 shrink-0 whitespace-nowrap"><span class="w-2 h-2 rounded-full bg-[#4648D4]"></span>Shorts ${shortsPct}%</span>
+        <span class="flex items-center gap-1 shrink-0 whitespace-nowrap"><span class="w-2 h-2 rounded-full bg-[#8A4CFC]"></span>Long ${longPct}%</span>
+        <span class="flex items-center gap-1 shrink-0 whitespace-nowrap"><span class="w-2 h-2 rounded-full bg-[#00885D]"></span>Live/Other ${otherPct}%</span>
       `;
     }
   }

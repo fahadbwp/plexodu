@@ -14,7 +14,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
 <link rel="stylesheet" href="/css/style.css?v=28.4">
-<link rel="stylesheet" href="/css/trend-analyzer.css?v=28.4">
+<link rel="stylesheet" href="/css/trend-analyzer.css?v=28.6">
 <script src="https://cdn.tailwindcss.com"></script>
 <script id="tailwind-config">
 tailwind.config = {
@@ -381,14 +381,14 @@ tailwind.config = {
       </div>
 
       <!-- Live Info Banner -->
-      <div class="px-4 py-2.5 rounded-xl bg-[#EEF2FF] border border-[#C7D2FE] flex items-center justify-between gap-3">
-        <div class="flex items-center gap-2 min-w-0">
-          <span class="material-symbols-outlined text-[#4648D4] text-[18px] shrink-0">info</span>
-          <span class="text-xs text-[#464554] truncate">
+      <div class="px-4 py-2.5 rounded-xl bg-[#EEF2FF] border border-[#C7D2FE] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5">
+        <div class="flex items-start sm:items-center gap-2 min-w-0">
+          <span class="material-symbols-outlined text-[#4648D4] text-[18px] shrink-0 mt-0.5 sm:mt-0">info</span>
+          <span class="text-xs text-[#464554] leading-relaxed">
             <strong>Live Sample Dataset:</strong> Momentum Index is a Plexudo heuristic derived from video velocity, search volume velocity, and engagement ratios.
           </span>
         </div>
-        <a href="#methodology" class="shrink-0 text-xs text-[#4648D4] font-bold hover:underline flex items-center gap-0.5">
+        <a href="#methodology" class="shrink-0 text-xs text-[#4648D4] font-bold hover:underline flex items-center gap-0.5 whitespace-nowrap self-end sm:self-auto">
           <span>Methodology</span>
           <span class="material-symbols-outlined text-[14px]">arrow_outward</span>
         </a>
@@ -404,22 +404,24 @@ tailwind.config = {
       </div>
 
       <!-- 4 KPI Metrics Row (Exact Stitch Design & Vector SVGs) -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+      <div class="grid grid-cols-1 sm:grid-cols-2 2xl:grid-cols-4 gap-4 sm:gap-5">
         
         <!-- KPI 1: Top Trending Topic -->
-        <div class="p-5 rounded-2xl bg-white border border-[#E2E8F0]/80 shadow-sm flex flex-col justify-between gap-4 hover:shadow-md transition-shadow">
-          <div class="flex items-center justify-between">
-            <span class="text-xs font-semibold text-[#767586]">Top Trending Topic</span>
-            <span id="kpiTopTopicBadge" class="px-2 py-0.5 rounded-full bg-[#EADDFF] text-[#25005A] text-[11px] font-bold">Breakout</span>
+        <div class="p-5 rounded-2xl bg-white border border-[#E2E8F0]/80 shadow-sm flex flex-col justify-between gap-4 hover:shadow-md transition-shadow min-w-0">
+          <div class="flex items-center justify-between gap-2">
+            <span class="text-xs font-semibold text-[#767586] shrink-0">Top Trending Topic</span>
+            <span id="kpiTopTopicBadge" class="px-2 py-0.5 rounded-full bg-[#EADDFF] text-[#25005A] text-[11px] font-bold shrink-0 whitespace-nowrap">Breakout</span>
           </div>
-          <div>
-            <div id="kpiTopTopicTitle" class="text-lg font-bold text-[#131B2E] truncate font-headline">—</div>
-            <div class="flex items-center gap-2 mt-1">
-              <span id="kpiTopTopicVelocity" class="px-2 py-0.5 rounded-full bg-[#6FFBBE] text-[#002113] text-[11px] font-bold flex items-center gap-0.5">
-                <span class="material-symbols-outlined text-[13px]">trending_up</span>
-                <span>+42.8%</span>
-              </span>
-              <span class="text-[11px] text-[#767586]" id="kpiTotalViewsDeltaText">API snapshot · freshness unavailable</span>
+          <div class="min-w-0">
+            <div id="kpiTopTopicTitle" class="text-base sm:text-lg font-bold text-[#131B2E] truncate font-headline" title="—">—</div>
+            <div class="flex flex-col gap-1 mt-1">
+              <div class="flex items-center gap-2">
+                <span id="kpiTopTopicVelocity" class="px-2 py-0.5 rounded-full bg-[#6FFBBE] text-[#002113] text-[11px] font-bold flex items-center gap-0.5 shrink-0 whitespace-nowrap">
+                  <span class="material-symbols-outlined text-[13px]">trending_up</span>
+                  <span>+42.8%</span>
+                </span>
+              </div>
+              <span class="text-[11px] text-[#767586] truncate max-w-full block" id="kpiTotalViewsDeltaText" title="API snapshot · freshness unavailable">API snapshot · freshness unavailable</span>
             </div>
           </div>
           <!-- Mini Sparkline SVG -->
@@ -443,19 +445,19 @@ tailwind.config = {
         </div>
 
         <!-- KPI 2: Median 24h Views (Sample) -->
-        <div class="p-5 rounded-2xl bg-white border border-[#E2E8F0]/80 shadow-sm flex flex-col justify-between gap-4 hover:shadow-md transition-shadow">
-          <div class="flex items-center justify-between">
-            <span class="text-xs font-semibold text-[#767586]">Median 24h Views (Sample)</span>
-            <span class="material-symbols-outlined text-[18px] text-[#767586]">more_vert</span>
+        <div class="p-5 rounded-2xl bg-white border border-[#E2E8F0]/80 shadow-sm flex flex-col justify-between gap-4 hover:shadow-md transition-shadow min-w-0">
+          <div class="flex items-center justify-between gap-2">
+            <span class="text-xs font-semibold text-[#767586] shrink-0">Median 24h Views (Sample)</span>
+            <span class="material-symbols-outlined text-[18px] text-[#767586] shrink-0">more_vert</span>
           </div>
-          <div>
+          <div class="min-w-0">
             <div id="kpiMedianViewsVal" class="text-2xl font-extrabold text-[#131B2E] font-headline tracking-tight">—</div>
-            <div class="flex items-center gap-2 mt-1">
-              <span id="kpiMedianDeltaPill" class="px-2 py-0.5 rounded-full bg-[#6FFBBE] text-[#002113] text-[11px] font-bold flex items-center gap-0.5">
+            <div class="flex flex-wrap items-center gap-1.5 mt-1">
+              <span id="kpiMedianDeltaPill" class="px-2 py-0.5 rounded-full bg-[#6FFBBE] text-[#002113] text-[11px] font-bold flex items-center gap-0.5 shrink-0 whitespace-nowrap">
                 <span class="material-symbols-outlined text-[13px]">arrow_upward</span>
                 <span id="kpiAvgEngDeltaText">Sample ratio</span>
               </span>
-              <span class="text-[11px] text-[#767586]">vs 7-day median</span>
+              <span class="text-[11px] text-[#767586] shrink-0 whitespace-nowrap">vs 7-day median</span>
             </div>
           </div>
           <!-- Mini Bar Spark SVG -->
@@ -476,10 +478,10 @@ tailwind.config = {
         </div>
 
         <!-- KPI 3: Momentum Index (Arch Gauge SVG) -->
-        <div class="p-5 rounded-2xl bg-white border border-[#E2E8F0]/80 shadow-sm flex flex-col justify-between gap-3 hover:shadow-md transition-shadow">
-          <div class="flex items-center justify-between">
-            <span class="text-xs font-semibold text-[#767586]">Momentum Index</span>
-            <span id="kpiMomentumSpeedBadge" class="px-2 py-0.5 rounded-full bg-[#6FFBBE] text-[#002113] text-[11px] font-bold">Ultra Fast</span>
+        <div class="p-5 rounded-2xl bg-white border border-[#E2E8F0]/80 shadow-sm flex flex-col justify-between gap-3 hover:shadow-md transition-shadow min-w-0">
+          <div class="flex items-center justify-between gap-2">
+            <span class="text-xs font-semibold text-[#767586] shrink-0">Momentum Index</span>
+            <span id="kpiMomentumSpeedBadge" class="px-2 py-0.5 rounded-full bg-[#6FFBBE] text-[#002113] text-[11px] font-bold shrink-0 whitespace-nowrap">Ultra Fast</span>
           </div>
           <!-- Arch Gauge SVG -->
           <div class="relative flex flex-col items-center justify-center my-0.5">
@@ -494,9 +496,9 @@ tailwind.config = {
               <span class="text-[10px] text-[#767586] font-medium font-label">/ 100 Score</span>
             </div>
           </div>
-          <div class="flex items-center justify-between text-[11px] text-[#767586] font-label">
-            <span>Scale: 0–100</span>
-            <span id="kpiTopCatDeltaText">Leader</span>
+          <div class="flex items-center justify-between text-[11px] text-[#767586] font-label gap-1">
+            <span class="shrink-0 whitespace-nowrap">Scale: 0–100</span>
+            <span id="kpiTopCatDeltaText" class="truncate text-right">Leader</span>
           </div>
           <!-- Contract compatibility anchors -->
           <div class="sr-only" aria-hidden="true">
@@ -506,14 +508,14 @@ tailwind.config = {
         </div>
 
         <!-- KPI 4: Avg Engagement Ratio -->
-        <div class="p-5 rounded-2xl bg-white border border-[#E2E8F0]/80 shadow-sm flex flex-col justify-between gap-4 hover:shadow-md transition-shadow">
-          <div class="flex items-center justify-between">
-            <span class="text-xs font-semibold text-[#767586]">Avg Engagement Ratio</span>
-            <span class="material-symbols-outlined text-[18px] text-[#767586]">tune</span>
+        <div class="p-5 rounded-2xl bg-white border border-[#E2E8F0]/80 shadow-sm flex flex-col justify-between gap-4 hover:shadow-md transition-shadow min-w-0">
+          <div class="flex items-center justify-between gap-2">
+            <span class="text-xs font-semibold text-[#767586] shrink-0">Avg Engagement Ratio</span>
+            <span class="material-symbols-outlined text-[18px] text-[#767586] shrink-0">tune</span>
           </div>
-          <div>
+          <div class="min-w-0">
             <div id="kpiEngagementRatioDisplay" class="text-2xl font-extrabold text-[#131B2E] font-headline tracking-tight">—</div>
-            <div class="text-[11px] text-[#767586] mt-0.5">Likes + comments per 100 views</div>
+            <div class="text-[11px] text-[#767586] mt-0.5 truncate">Likes + comments per 100 views</div>
           </div>
           <!-- Multi-segment Horizontal Capsule Bar -->
           <div class="flex flex-col gap-1.5 mt-1">
@@ -522,10 +524,10 @@ tailwind.config = {
               <div class="h-full bg-[#8A4CFC]" style="width: 28%"></div>
               <div class="h-full bg-[#00885D]" style="width: 20%"></div>
             </div>
-            <div id="kpiFormatLegend" class="flex items-center justify-between text-[11px] text-[#767586] font-label">
-              <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-[#4648D4]"></span>Shorts</span>
-              <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-[#8A4CFC]"></span>Long</span>
-              <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-[#00885D]"></span>Live</span>
+            <div id="kpiFormatLegend" class="flex items-center justify-between text-[11px] text-[#767586] font-label gap-1 flex-wrap sm:flex-nowrap">
+              <span class="flex items-center gap-1 shrink-0 whitespace-nowrap"><span class="w-2 h-2 rounded-full bg-[#4648D4]"></span>Shorts</span>
+              <span class="flex items-center gap-1 shrink-0 whitespace-nowrap"><span class="w-2 h-2 rounded-full bg-[#8A4CFC]"></span>Long</span>
+              <span class="flex items-center gap-1 shrink-0 whitespace-nowrap"><span class="w-2 h-2 rounded-full bg-[#00885D]"></span>Live</span>
             </div>
           </div>
           <!-- Contract compatibility anchors -->
@@ -547,11 +549,11 @@ tailwind.config = {
           <!-- Header Row -->
           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-[#F1F5F9]">
             <div>
-              <div class="flex items-center gap-2">
-                <h2 id="viewsTrendTitle" class="text-base sm:text-lg font-bold text-[#131B2E] tracking-tight font-headline">
+              <div class="flex flex-wrap sm:flex-nowrap items-baseline sm:items-center gap-2">
+                <h2 id="viewsTrendTitle" class="text-base sm:text-lg font-bold text-[#131B2E] tracking-tight font-headline leading-tight">
                   Topic Velocity vs Historical Baseline
                 </h2>
-                <span id="viewsTrendCatBadge" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-[#EEF2FF] text-[#4F46E5] border border-[#C7D2FE]/70">
+                <span id="viewsTrendCatBadge" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-[#EEF2FF] text-[#4F46E5] border border-[#C7D2FE]/70 shrink-0 whitespace-nowrap">
                   Sampled Age Brackets
                 </span>
               </div>
@@ -1078,7 +1080,7 @@ tailwind.config = {
 </div>
 
 <script src="/js/tools/common.js?v=28.4"></script>
-<script src="/js/tools/trend-analyzer.js?v=28.5"></script>
+<script src="/js/tools/trend-analyzer.js?v=28.6"></script>
 
 </body>
 </html>
