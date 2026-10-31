@@ -624,6 +624,25 @@ function renderKpis(kpis, isValid = true) {
   }
 
 
+  // 7. Format breakdown in capsule bar (consistent computation)
+  if (kpiFormatCapsuleBar && currentVideos.length > 0) {
+    const { shortsPct, longPct, otherPct } = computeFormatBreakdown(currentVideos);
+    kpiFormatCapsuleBar.innerHTML = `
+      <div class="h-full bg-[#4648D4]" style="width: ${shortsPct}%"></div>
+      <div class="h-full bg-[#8A4CFC]" style="width: ${longPct}%"></div>
+      <div class="h-full bg-[#00885D]" style="width: ${otherPct}%"></div>
+    `;
+    const legend = document.getElementById("kpiFormatLegend");
+    if (legend) {
+      legend.innerHTML = `
+        <span class="flex items-center gap-1 shrink-0 whitespace-nowrap"><span class="w-2 h-2 rounded-full bg-[#4648D4]"></span>Shorts ${shortsPct}%</span>
+        <span class="flex items-center gap-1 shrink-0 whitespace-nowrap"><span class="w-2 h-2 rounded-full bg-[#8A4CFC]"></span>Long ${longPct}%</span>
+        <span class="flex items-center gap-1 shrink-0 whitespace-nowrap"><span class="w-2 h-2 rounded-full bg-[#00885D]"></span>Live/Other ${otherPct}%</span>
+      `;
+    }
+  }
+}
+
 // ── Shared Format Breakdown Computation (Used by KPI bar & Format card) ─────
 function computeFormatBreakdown(videos) {
   if (!videos || videos.length === 0) {
@@ -684,24 +703,6 @@ function updateFormatBreakdownCard(videos) {
   if (formatLiveStat) formatLiveStat.textContent = `${otherPct}%`;
 }
 
-  // 7. Format breakdown in capsule bar (consistent computation)
-  if (kpiFormatCapsuleBar && currentVideos.length > 0) {
-    const { shortsPct, longPct, otherPct } = computeFormatBreakdown(currentVideos);
-    kpiFormatCapsuleBar.innerHTML = `
-      <div class="h-full bg-[#4648D4]" style="width: ${shortsPct}%"></div>
-      <div class="h-full bg-[#8A4CFC]" style="width: ${longPct}%"></div>
-      <div class="h-full bg-[#00885D]" style="width: ${otherPct}%"></div>
-    `;
-    const legend = document.getElementById("kpiFormatLegend");
-    if (legend) {
-      legend.innerHTML = `
-        <span class="flex items-center gap-1 shrink-0 whitespace-nowrap"><span class="w-2 h-2 rounded-full bg-[#4648D4]"></span>Shorts ${shortsPct}%</span>
-        <span class="flex items-center gap-1 shrink-0 whitespace-nowrap"><span class="w-2 h-2 rounded-full bg-[#8A4CFC]"></span>Long ${longPct}%</span>
-        <span class="flex items-center gap-1 shrink-0 whitespace-nowrap"><span class="w-2 h-2 rounded-full bg-[#00885D]"></span>Live/Other ${otherPct}%</span>
-      `;
-    }
-  }
-}
 
 // ── Render Views Trajectory Chart ────────────────────────────────────────────
 function renderViewsChart(timeSeries, categoryName) {
