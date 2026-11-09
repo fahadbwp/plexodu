@@ -30,15 +30,15 @@ def calculate_virality_index(daily_metrics):
     if len(daily_metrics) < 2:
         # Authentic snapshot fallback based on view volume and audience engagement
         import math
-        likes = latest.get("likes", 0)
-        comments = latest.get("comments_count", 0)
+        likes = latest.get("likes") or 0
+        comments = latest.get("comments_count", 0) or 0
         vol = min(50.0, math.log10(max(1, views)) * 7.0) if views > 0 else 0
         eng = min(40.0, (((likes + comments) / max(1, views)) * 100) * 5.0) if views > 0 else 0
         return round(min(98.0, max(10.0, vol + eng)), 1)
 
     growth_rate = calculate_growth_rate(daily_metrics)
-    like_ratio = (latest["likes"] / latest["views"]) * 100 if latest["views"] else 0
-    share_ratio = (latest["shares"] / latest["views"]) * 100 if latest["views"] else 0
+    like_ratio = ((latest.get("likes") or 0) / latest["views"]) * 100 if latest["views"] else 0
+    share_ratio = ((latest.get("shares") or 0) / latest["views"]) * 100 if latest["views"] else 0
 
     raw_index = (growth_rate * 0.6) + (like_ratio * 0.2) + (share_ratio * 0.2)
     v_index = max(0, min(100, raw_index))
@@ -82,11 +82,15 @@ def calculate_engagement_rate(daily_metrics):
     """
     Calculates YouTube Audience Engagement Rate (%):
     ((Likes + Comments) / Total Views) * 100
+    Returns None if likes are hidden/unavailable.
     """
-    if not daily_metrics or not daily_metrics[-1]["views"]:
+    if not daily_metrics or not daily_metrics[-1].get("views"):
         return 0.0
     latest = daily_metrics[-1]
-    eng = ((latest["likes"] + latest["comments_count"]) / latest["views"]) * 100
+    if latest.get("likes") is None:
+        return None
+    comments = latest.get("comments_count") or 0
+    eng = ((latest["likes"] + comments) / latest["views"]) * 100
     return round(eng, 2)
 
 

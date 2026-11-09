@@ -109,8 +109,10 @@ class TestSeoAndSchemaCompliance(unittest.TestCase):
             text = f.read()
         self.assertNotIn("dashboard.html", text)
         self.assertIn("https://plexudo.vercel.app/", text)
-        self.assertIn("https://plexudo.vercel.app/privacy.html", text)
-        self.assertIn("https://plexudo.vercel.app/terms.html", text)
+        self.assertIn("<loc>https://plexudo.vercel.app/privacy</loc>", text)
+        self.assertNotIn("<loc>https://plexudo.vercel.app/privacy.html</loc>", text)
+        self.assertIn("<loc>https://plexudo.vercel.app/terms</loc>", text)
+        self.assertNotIn("<loc>https://plexudo.vercel.app/terms.html</loc>", text)
 
 
 if __name__ == "__main__":

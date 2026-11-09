@@ -74,7 +74,7 @@ class TestNoSecretsInSource:
     def test_no_youtube_api_key_in_py(self):
         """Real YouTube API keys start with AIzaSy and are 39 chars total."""
         for f in REPO_ROOT.rglob("*.py"):
-            if ".git" in f.parts or "test_" in f.name or f.parent.name == "tests" or any(part.startswith(".venv") for part in f.parts):
+            if ".git" in f.parts or "test_" in f.name or f.parent.name == "tests":
                 continue
             content = f.read_text(encoding="utf-8", errors="ignore")
             # Detect literal AIzaSy... strings that are NOT from os.environ
@@ -87,7 +87,7 @@ class TestNoSecretsInSource:
     def test_no_groq_key_in_py(self):
         """Real Groq keys match gsk_<48 chars>."""
         for f in REPO_ROOT.rglob("*.py"):
-            if ".git" in f.parts or "test_" in f.name or f.parent.name == "tests" or any(part.startswith(".venv") for part in f.parts):
+            if ".git" in f.parts or "test_" in f.name or f.parent.name == "tests":
                 continue
             content = f.read_text(encoding="utf-8", errors="ignore")
             lines = [l for l in content.splitlines()
@@ -103,7 +103,7 @@ class TestNoSecretsInSource:
     def test_no_smtp_password_in_py(self):
         """SMTP passwords must not appear as literals in Python source."""
         for f in REPO_ROOT.rglob("*.py"):
-            if ".git" in f.parts or "test_" in f.name or f.parent.name == "tests" or any(part.startswith(".venv") for part in f.parts):
+            if ".git" in f.parts or "test_" in f.name or f.parent.name == "tests":
                 continue
             content = f.read_text(encoding="utf-8", errors="ignore")
             # Look for Gmail app-password pattern (16 lowercase chars with spaces)
@@ -273,7 +273,7 @@ class TestNoSuspiciousAdScripts:
         "cdn.jsdelivr.net",       # Chart.js and other OSS libraries
         "cdnjs.cloudflare.com",   # OSS libraries
         "unpkg.com",              # OSS libraries
-        "cdn.tailwindcss.com",    # Official Tailwind Play CDN
+        "cdn.tailwindcss.com",    # Tailwind CSS
     }
 
     def test_no_suspect_ad_networks(self):

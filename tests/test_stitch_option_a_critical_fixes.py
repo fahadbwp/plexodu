@@ -154,8 +154,8 @@ def test_all_tools_cache_busting_version_consistency():
     tool_files = list(TOOLS_DIR.glob("*.html"))
     for tf in tool_files:
         content = tf.read_text(encoding="utf-8")
-        assert "style.css?v=28.4" in content, f"{tf.name} must use style.css?v=28.4"
-        assert "common.js?v=28.4" in content, f"{tf.name} must use common.js?v=28.4"
+        assert "style.css?v=31.0" in content, f"{tf.name} must use style.css?v=31.0"
+        assert "common.js?v=31.0" in content, f"{tf.name} must use common.js?v=31.0"
 
 
 def test_trending_feed_returns_safe_error_on_missing_api_key(client, flask_mod):

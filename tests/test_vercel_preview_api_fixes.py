@@ -180,5 +180,5 @@ def test_all_tools_cache_busting_v28_4():
     """Verify all 5 tool pages use v=28.4 query parameters."""
     for html_file in TOOLS_DIR.glob("*.html"):
         content = html_file.read_text(encoding="utf-8")
-        assert "style.css?v=28.4" in content, f"{html_file.name} missing style.css?v=28.4"
-        assert "common.js?v=28.4" in content, f"{html_file.name} missing common.js?v=28.4"
+        assert "style.css?v=31.0" in content, f"{html_file.name} missing style.css?v=31.0"
+        assert "common.js?v=31.0" in content, f"{html_file.name} missing common.js?v=31.0"

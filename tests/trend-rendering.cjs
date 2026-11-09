@@ -11,11 +11,15 @@ vm.runInContext(fs.readFileSync('frontend/js/tools/trend-analyzer.js','utf8'),co
 const video={rank:1,title:'A "quoted" <title>',channel:'Creator',category:'Gaming',views:300,comments:2,engagement:4,hoursAgo:3,momentumScore:42};
 context.renderTrendingList([video],'');
 assert(!elements.get('pulseList').innerHTML.includes('NaN'));
-assert(elements.get('pulseList').innerHTML.includes('+42 idx'));
+assert(elements.get('pulseList').innerHTML.includes('42 / 100 idx'));
+assert(!elements.get('pulseList').innerHTML.includes('+42')); 
 assert(elements.get('pulseList').innerHTML.includes('&quot;quoted&quot;'));
+assert(elements.get('pulseList').innerHTML.includes('4.0%'));
 delete video.momentumScore;
+video.engagement = null;
 context.renderTrendingList([video],'');
 assert(elements.get('pulseList').innerHTML.includes('Pending'));
+assert(elements.get('pulseList').innerHTML.includes('Unavailable'));
 context.updateLowerChartWithRange=()=>{};
 context.renderDeepIntelligence({keyword:'Minecraft',youtube_tags:['Minecraft'],seo_title_ideas:['Minecraft: A Guide'],sentiment:{positive_score:0.5,neutral_score:99.5},trend_intelligence:{status:'baseline',forecast:{available:false,reason:'Need history'}}});
 assert(elements.get('tagsList').innerHTML.includes('Minecraft'));

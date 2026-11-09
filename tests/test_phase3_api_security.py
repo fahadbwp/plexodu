@@ -45,9 +45,6 @@ def test_anonymous_api_requests_succeed():
     """Verify core endpoints work without login or user sessions, and legacy session returns 404."""
     app = get_flask_app()
     app.config["TESTING"] = True
-    with app.app_context():
-        import models
-        models.db.create_all()
     with app.test_client() as client:
         # Legacy session is purged
         res = client.get("/api/session")
@@ -172,8 +169,7 @@ def test_youtube_timeout_returns_safe_json():
 def test_groq_timeout_handled_with_fallback():
     """Verify Groq timeout triggers intelligent fallback without crashing."""
     from services.groq_service import chat_with_groq
-    with patch.dict(os.environ, {"GROQ_API_KEY": "gsk_testmockkeyforvalidationonly123456789012345"}), \
-         patch("requests.post", side_effect=requests.Timeout("Connection timed out")):
+    with patch("requests.post", side_effect=requests.Timeout("Connection timed out")):
         res = chat_with_groq("How to optimize tags?", trend_context=None)
         assert res.get("error") is False
         assert "reply" in res
