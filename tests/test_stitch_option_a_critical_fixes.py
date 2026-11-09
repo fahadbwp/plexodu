@@ -200,3 +200,36 @@ def test_trending_feed_quota_rate_limit_429(client, flask_mod):
         data = res.get_json()
         assert "error" in data
         assert "Rate limit exceeded" in data["error"]
+
+
+def test_material_symbols_design_system_and_resilience():
+    """Verify Material Symbols fonts, CSS rules, sizing, and HTML link contracts adhere to GEMINI.md."""
+    css = CSS_PATH.read_text(encoding="utf-8")
+    
+    # 1. Google Fonts imports & fallback @font-face rules
+    assert "Material Symbols Outlined" in css
+    assert "Material Symbols Rounded" in css
+    assert "@font-face" in css
+    assert "font-display: block" in css
+
+    # 2. Baseline baseline properties for .material-symbols-* and .nav-icon
+    assert ".material-symbols-rounded" in css
+    assert ".material-symbols-outlined" in css
+    assert ".nav-icon" in css
+    assert "min-width: 24px" in css
+    assert "flex-shrink: 0" in css
+
+    # 3. Sidebar icon and brand icon containment
+    assert ".stitch-nav-icon" in css
+    assert ".stitch-brand-logo-icon" in css
+    assert "overflow: hidden" in css
+
+    # 4. All 5 tool pages have Material Symbols stylesheet in <head>
+    tool_files = list(TOOLS_DIR.glob("*.html"))
+    assert len(tool_files) >= 5
+    for tf in tool_files:
+        html = tf.read_text(encoding="utf-8")
+        assert "family=Material+Symbols" in html, f"{tf.name} missing Material Symbols link in head"
+        assert "style.css?v=33.0" in html, f"{tf.name} missing style.css?v=33.0"
+        assert "common.js?v=33.0" in html, f"{tf.name} missing common.js?v=33.0"
+
