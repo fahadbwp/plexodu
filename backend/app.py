@@ -151,12 +151,12 @@ def _log_action(action: str, details: str = ""):
         )
 
         db.session.add(log)
-
         db.session.commit()
-
     except Exception:
-
-        pass
+        try:
+            db.session.rollback()
+        except Exception:
+            pass
 
 
 
@@ -422,8 +422,6 @@ def handle_generic_exception(e):
 
     # Client receives generic safe message
 
-    if request.args.get("debug") == "1":
-        return jsonify({"error": "An internal system error occurred. Please try again later.", "exception": str(e), "traceback": traceback.format_exc().splitlines()}), 500
     return jsonify({"error": "An internal system error occurred. Please try again later."}), 500
 
 
@@ -1103,15 +1101,11 @@ def _process_platform(keyword, platform_name, fetch_fn, region="Global", categor
 
 
 
-    # Clean topic-appropriate fallback for sample comment if empty
-
+        # Clean topic-appropriate fallback for sample comment if empty
     if not sentiment_result.get("sample_comment"):
-
         sentiment_result["sample_comment"] = "No recent audience comments available for this topic."
 
-
-
-        saved_trend_id = None
+    saved_trend_id = int(time.time())
     try:
         trend = Trend(
             keyword=keyword,
@@ -1162,9 +1156,6 @@ def _process_platform(keyword, platform_name, fetch_fn, region="Global", categor
             db.session.rollback()
         except Exception:
             pass
-        if not saved_trend_id:
-            import time
-            saved_trend_id = int(time.time())
 
     return {
 
