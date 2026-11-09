@@ -60,3 +60,13 @@ Before reporting completion to the user:
 - [ ] Are JavaScript element IDs preserved without breakages?
 - [ ] Is horizontal scroll (`overflow-x`) completely eliminated?
 - [ ] Did you bump the asset cache version in the HTML file?
+
+---
+
+## 6. Canonical Stitch Layout Preservation
+- Ensure all 5 creator tools maintain their canonical Google Stitch shell structure:
+  - Desktop: Fixed `270px` left sidebar (`.stitch-sidebar`), canvas offset (`margin-left: 270px;`).
+  - Mobile (`<= 768px`): Hidden sidebar (`display: none;`), sticky mobile header (`.stitch-mobile-topbar`), and accessible drawer toggle with focus trapping.
+- Never strip or replace `frontend/css/style.css` with partial style fragments.
+- Before staging any CSS or HTML edits, run `git diff --stat` to verify no bulk regressions occurred.
+

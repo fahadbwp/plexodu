@@ -2248,15 +2248,15 @@ def analyze_seo():
 # --------------------------------------------------------------------------
 
 def create_tables():
+    if settings.IS_PRODUCTION or os.environ.get("VERCEL"):
+        return
+
     if database_uri.startswith("sqlite"):
         try:
             with app.app_context():
                 db.create_all()
         except Exception as e:
             app.logger.warning(f"SQLite table creation notice: {e}")
-        return
-
-    if settings.IS_PRODUCTION or os.environ.get("VERCEL"):
         return
 
     with app.app_context():

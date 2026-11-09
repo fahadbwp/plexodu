@@ -85,15 +85,15 @@ def test_blog_index_redirect_and_delivery(client):
     body = res_index.get_data(as_text=True)
     assert "Plexudo Blog" in body
     assert "/blog/how-to-write-high-ctr-youtube-titles/" in body
-    assert "/blog/how-to-find-high-search-low-competition-youtube-keywords/" in body
-    assert "/blog/youtube-competitor-channel-analysis-guide/" in body
+    assert "/blog/how-to-find-trending-youtube-keywords/" in body
+    assert "/blog/youtube-competitor-analysis-guide/" in body
     assert "/blog/google-gemini-student-offer-pakistan-2026/" in body
 
 
 @pytest.mark.parametrize("article_slug", [
     "how-to-write-high-ctr-youtube-titles",
-    "how-to-find-high-search-low-competition-youtube-keywords",
-    "youtube-competitor-channel-analysis-guide",
+    "how-to-find-trending-youtube-keywords",
+    "youtube-competitor-analysis-guide",
     "google-gemini-student-offer-pakistan-2026",
 ])
 def test_blog_articles_served_successfully(client, article_slug):
@@ -163,8 +163,8 @@ def test_sitemap_xml_contains_only_canonical_urls():
         "https://plexudo.vercel.app/blog/",
         "https://plexudo.vercel.app/blog/google-gemini-student-offer-pakistan-2026/",
         "https://plexudo.vercel.app/blog/how-to-write-high-ctr-youtube-titles/",
-        "https://plexudo.vercel.app/blog/how-to-find-high-search-low-competition-youtube-keywords/",
-        "https://plexudo.vercel.app/blog/youtube-competitor-channel-analysis-guide/",
+        "https://plexudo.vercel.app/blog/how-to-find-trending-youtube-keywords/",
+        "https://plexudo.vercel.app/blog/youtube-competitor-analysis-guide/",
         "https://plexudo.vercel.app/privacy",
         "https://plexudo.vercel.app/terms",
     }
@@ -194,8 +194,8 @@ def test_canonical_tags_in_html_files():
         "blog/index.html": 'href="https://plexudo.vercel.app/blog/"',
         "blog/google-gemini-student-offer-pakistan-2026/index.html": 'href="https://plexudo.vercel.app/blog/google-gemini-student-offer-pakistan-2026/"',
         "blog/how-to-write-high-ctr-youtube-titles/index.html": 'href="https://plexudo.vercel.app/blog/how-to-write-high-ctr-youtube-titles/"',
-        "blog/how-to-find-high-search-low-competition-youtube-keywords/index.html": 'href="https://plexudo.vercel.app/blog/how-to-find-high-search-low-competition-youtube-keywords/"',
-        "blog/youtube-competitor-channel-analysis-guide/index.html": 'href="https://plexudo.vercel.app/blog/youtube-competitor-channel-analysis-guide/"',
+        "blog/how-to-find-trending-youtube-keywords/index.html": 'href="https://plexudo.vercel.app/blog/how-to-find-trending-youtube-keywords/"',
+        "blog/youtube-competitor-analysis-guide/index.html": 'href="https://plexudo.vercel.app/blog/youtube-competitor-analysis-guide/"',
     }
 
     for rel_path, expected_canonical in files_to_check.items():
