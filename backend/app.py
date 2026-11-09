@@ -422,6 +422,8 @@ def handle_generic_exception(e):
 
     # Client receives generic safe message
 
+    if request.args.get("debug") == "1":
+        return jsonify({"error": "An internal system error occurred. Please try again later.", "exception": str(e), "traceback": traceback.format_exc().splitlines()}), 500
     return jsonify({"error": "An internal system error occurred. Please try again later."}), 500
 
 
