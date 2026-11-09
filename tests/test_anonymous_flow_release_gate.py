@@ -227,7 +227,8 @@ class TestApiAcceptance:
         """Groq failure triggers intelligent fallback without crashing or leaking keys."""
         from services.groq_service import chat_with_groq
         import requests
-        with patch("requests.post", side_effect=requests.Timeout("Connection timeout")):
+        with patch.dict(os.environ, {"GROQ_API_KEY": "gsk_testmockkeyforvalidationonly123456789012345"}), \
+             patch("requests.post", side_effect=requests.Timeout("Connection timeout")):
             res = chat_with_groq("How to optimize tags?", trend_context=None)
             assert res.get("error") is False
             assert "reply" in res
