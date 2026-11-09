@@ -11,7 +11,6 @@ import re
 import os
 import time
 import logging
-import threading
 from typing import Dict, Tuple, Optional
 from werkzeug.utils import secure_filename
 
@@ -100,87 +99,56 @@ def validate_user_role(role: str) -> str:
 # ==============================================================================
 
 class SlidingWindowRateLimiter:
-    """
-    Thread-safe sliding-window rate limiter with exponential backoff and bounded memory retention.
-    Automatically prunes stale entries to prevent memory leaks in long-running or warm serverless processes.
-
-    SERVERLESS PROCESS-LOCAL LIMITATION NOTE:
-    Under Vercel serverless, rate limiting state is PROCESS-LOCAL to each ephemeral container instance.
-    It protects individual warm lambdas against rapid-fire request flooding, but does not enforce
-    a globally coordinated rate limit across multiple concurrent serverless instances.
-    Global rate limiting requires an edge proxy (e.g. Vercel WAF) or distributed store (e.g. Upstash Redis).
-    """
-    def __init__(self, max_keys: int = 5000):
-        self._lock = threading.RLock()
-        self.max_keys = max_keys
+    def __init__(self):
         # Maps key -> list of timestamps
         self.requests: Dict[str, list] = {}
         # Maps key -> { "failures": int, "blocked_until": float }
         self.backoffs: Dict[str, dict] = {}
 
-    def _prune_if_needed(self, now: float, window_seconds: int = 60):
-        if len(self.requests) > self.max_keys:
-            # Drop empty or expired keys
-            stale_keys = [k for k, ts in self.requests.items() if not ts or ts[-1] <= now - window_seconds]
-            for k in stale_keys:
-                del self.requests[k]
-        if len(self.backoffs) > self.max_keys:
-            stale_backoffs = [k for k, info in self.backoffs.items() if info.get("blocked_until", 0) <= now]
-            for k in stale_backoffs:
-                del self.backoffs[k]
-
     def is_allowed(self, key: str, max_requests: int, window_seconds: int = 60) -> Tuple[bool, int]:
         """
-        Check rate limit and exponential backoff under thread lock.
+        Check rate limit and exponential backoff.
         Returns (allowed: bool, retry_after_seconds: int)
         """
-        with self._lock:
-            now = time.time()
-            self._prune_if_needed(now, window_seconds)
+        now = time.time()
+        
+        # Check backoff lock
+        if key in self.backoffs:
+            blocked_until = self.backoffs[key].get("blocked_until", 0)
+            if now < blocked_until:
+                return False, int(blocked_until - now)
 
-            # Check backoff lock
-            if key in self.backoffs:
-                blocked_until = self.backoffs[key].get("blocked_until", 0)
-                if now < blocked_until:
-                    return False, int(blocked_until - now)
-                del self.backoffs[key]
+        # Clean old timestamps
+        if key not in self.requests:
+            self.requests[key] = []
+        
+        self.requests[key] = [t for t in self.requests[key] if t > now - window_seconds]
 
-            # Clean old timestamps
-            if key not in self.requests:
-                self.requests[key] = []
+        if len(self.requests[key]) >= max_requests:
+            retry_after = int(window_seconds - (now - self.requests[key][0]))
+            return False, max(retry_after, 1)
 
-            self.requests[key] = [t for t in self.requests[key] if t > now - window_seconds]
-
-            if not self.requests[key] and key in self.requests:
-                pass  # Keep for append below
-
-            if len(self.requests[key]) >= max_requests:
-                retry_after = int(window_seconds - (now - self.requests[key][0]))
-                return False, max(retry_after, 1)
-
-            self.requests[key].append(now)
-            return True, 0
+        self.requests[key].append(now)
+        return True, 0
 
     def record_auth_failure(self, key: str):
         """Exponential backoff on repeated authentication failures."""
-        with self._lock:
-            now = time.time()
-            if key not in self.backoffs:
-                self.backoffs[key] = {"failures": 0, "blocked_until": 0}
-
-            self.backoffs[key]["failures"] += 1
-            fails = self.backoffs[key]["failures"]
-
-            if fails >= 5:
-                # Exponential delay: 5 fails = 30s, 6 = 60s, 7 = 120s (max 15 mins)
-                delay = min(30 * (2 ** (fails - 5)), 900)
-                self.backoffs[key]["blocked_until"] = now + delay
-                logger.warning(f"RateLimiter: Auth backoff applied to {key} for {delay}s")
+        now = time.time()
+        if key not in self.backoffs:
+            self.backoffs[key] = {"failures": 0, "blocked_until": 0}
+        
+        self.backoffs[key]["failures"] += 1
+        fails = self.backoffs[key]["failures"]
+        
+        if fails >= 5:
+            # Exponential delay: 5 fails = 30s, 6 = 60s, 7 = 120s (max 15 mins)
+            delay = min(30 * (2 ** (fails - 5)), 900)
+            self.backoffs[key]["blocked_until"] = now + delay
+            logger.warning(f"RateLimiter: Auth backoff applied to {key} for {delay}s")
 
     def reset_auth_failure(self, key: str):
-        with self._lock:
-            if key in self.backoffs:
-                del self.backoffs[key]
+        if key in self.backoffs:
+            del self.backoffs[key]
 
 rate_limiter = SlidingWindowRateLimiter()
 

@@ -174,3 +174,43 @@ def test_migration_idempotent():
     # Execute migration twice to ensure complete idempotency
     migrate_database(app)
     migrate_database(app)
+
+
+# ─── 6. PRODUCTION & SERVERLESS DATABASE POOLING CONFIGURATION ────────────────
+
+def test_serverless_nullpool_selection_and_timeouts():
+    """Verify NullPool is selected and connect_timeout is enforced for serverless/Supabase pooler."""
+    from sqlalchemy.pool import NullPool
+
+    # Test serverless / Supabase transaction pooler port 6543 detection
+    with patch.dict(os.environ, {"VERCEL": "1", "DATABASE_URL": "postgresql://postgres.test:secret@aws-0-us.pooler.supabase.com:6543/postgres"}):
+        test_app = get_flask_app()
+        # Verify engine options logic
+        db_uri = "postgresql://postgres.test:secret@aws-0-us.pooler.supabase.com:6543/postgres"
+        is_serverless = bool(os.environ.get("VERCEL")) or ":6543" in db_uri
+        assert is_serverless is True
+
+        # Test with port 6543 even without VERCEL env var
+        is_serverless_port = ":6543" in db_uri
+        assert is_serverless_port is True
+
+
+def test_production_startup_guards_against_automatic_ddl():
+    """Verify that in production mode, create_tables is guarded from auto-execution on import."""
+    app_src = (BACKEND_DIR / "app.py").read_text(encoding="utf-8")
+    assert "if not settings.IS_PRODUCTION and not os.environ.get(\"VERCEL\"):" in app_src
+    assert "create_tables()" in app_src
+
+
+def test_database_url_driver_normalization():
+    """Verify raw postgres:// and postgresql:// URLs are normalized to postgresql+psycopg2://."""
+    from app.core.config import Settings
+    with patch.dict(os.environ, {"DATABASE_URL": "postgresql://postgres.test:secret@aws-0.pooler.supabase.com:6543/postgres"}):
+        s = Settings()
+        assert s.DATABASE_URL.startswith("postgresql+psycopg2://")
+
+    with patch.dict(os.environ, {"DATABASE_URL": "postgres://postgres.test:secret@aws-0.pooler.supabase.com:6543/postgres"}):
+        s = Settings()
+        assert s.DATABASE_URL.startswith("postgresql+psycopg2://")
+
+

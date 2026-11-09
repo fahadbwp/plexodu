@@ -88,14 +88,13 @@
     {
       "src": "/dashboard(\\.html)?/?",
       "status": 301,
-      "headers": {
-        "Location": "/tools"
-      }
+      "headers": { "Location": "/tools" }
     },
     {
       "src": "/tools/?",
       "dest": "/frontend/tools/index.html"
     },
+
     {
       "src": "/tools/trend-analyzer/?",
       "dest": "/frontend/tools/trend-analyzer.html"
@@ -107,9 +106,7 @@
     {
       "src": "/tools/keyword-tool/?",
       "status": 301,
-      "headers": {
-        "Location": "/tools/trend-analyzer"
-      }
+      "headers": { "Location": "/tools/trend-analyzer" }
     },
     {
       "src": "/tools/competitor-audit/?",
@@ -124,25 +121,19 @@
       "dest": "/frontend/tools/$1.html"
     },
     {
-      "src": "/terms.html",
-      "status": 301,
-      "headers": {
-        "Location": "/terms"
-      }
-    },
-    {
-      "src": "/terms/?",
+      "src": "/terms",
       "dest": "/frontend/terms.html"
     },
     {
-      "src": "/privacy.html",
-      "status": 301,
-      "headers": {
-        "Location": "/privacy"
-      }
+      "src": "/terms.html",
+      "dest": "/frontend/terms.html"
     },
     {
-      "src": "/privacy/?",
+      "src": "/privacy",
+      "dest": "/frontend/privacy.html"
+    },
+    {
+      "src": "/privacy.html",
       "dest": "/frontend/privacy.html"
     },
     {
@@ -158,29 +149,13 @@
       "dest": "/frontend/sitemap.xml"
     },
     {
-      "src": "/blog/competitor-analysis-guide/?",
-      "status": 301,
-      "headers": {
-        "Location": "/blog/youtube-competitor-channel-analysis-guide/"
-      }
-    },
-    {
-      "src": "/blog/trending-keywords-guide/?",
-      "status": 301,
-      "headers": {
-        "Location": "/blog/how-to-find-high-search-low-competition-youtube-keywords/"
-      }
-    },
-    {
       "src": "/blog/",
       "dest": "/frontend/blog/index.html"
     },
     {
       "src": "/blog",
       "status": 301,
-      "headers": {
-        "Location": "/blog/"
-      }
+      "headers": { "Location": "/blog/" }
     },
     {
       "src": "/blog/([^/]+)/",
@@ -189,9 +164,7 @@
     {
       "src": "/blog/([^/]+)",
       "status": 301,
-      "headers": {
-        "Location": "/blog/$1/"
-      }
+      "headers": { "Location": "/blog/$1/" }
     },
     {
       "src": "/",

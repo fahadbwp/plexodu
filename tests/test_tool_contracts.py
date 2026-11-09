@@ -48,6 +48,8 @@ def flask_mod():
 def client(flask_mod):
     app = flask_mod.app
     app.config["TESTING"] = True
+    with app.app_context():
+        flask_mod.db.create_all()
     with app.test_client() as c:
         yield c
 
@@ -75,7 +77,8 @@ def test_chat_topic_detection_and_fallback(client, flask_mod, monkeypatch):
     """Verify /api/chat automatically detects trending topic and calls fallback if groq fails."""
     monkeypatch.setenv("GROQ_API_KEY", "test-groq-key")
     # When Groq request fails, fallback is called
-    with patch("backend.services.groq_service.requests.post", side_effect=Exception("API key unavailable")):
+    with patch.dict(os.environ, {"GROQ_API_KEY": "gsk_testmockkeyforvalidationonly123456789012345"}), \
+         patch("requests.post", side_effect=Exception("API key unavailable")):
         res = client.post(
             "/api/chat",
             data=json.dumps({"message": 'Help me create a content strategy and viral video ideas for the trending topic: "free fire tips"'}),

@@ -16,14 +16,6 @@ else:
     load_dotenv()
 
 
-def normalize_database_url(url: str) -> str:
-    """Select the installed synchronous driver without re-encoding credentials."""
-    for scheme in ("postgres://", "postgresql://"):
-        if url.startswith(scheme):
-            return "postgresql+psycopg2://" + url[len(scheme):]
-    return url
-
-
 class Settings:
     """Centralized runtime configuration for Plexudo."""
 
@@ -61,7 +53,10 @@ class Settings:
                 print("WARNING: SECRET_KEY is not configured with a strong production value.")
 
         db_url = os.environ.get("DATABASE_URL", "").strip()
-        db_url = normalize_database_url(db_url)
+        if db_url.startswith("postgres://"):
+            db_url = db_url.replace("postgres://", "postgresql+psycopg2://", 1)
+        elif db_url.startswith("postgresql://"):
+            db_url = db_url.replace("postgresql://", "postgresql+psycopg2://", 1)
         if "+aiosqlite" in db_url:
             db_url = db_url.replace("+aiosqlite", "")
         self.DATABASE_URL = db_url
