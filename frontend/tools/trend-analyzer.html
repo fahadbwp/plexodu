@@ -621,10 +621,10 @@ tailwind.config = {
         <!-- Main Trend Curve Chart (8 Columns on desktop) -->
         <div id="topicVelocityChartCard" class="lg:col-span-8 p-5 sm:p-6 rounded-2xl bg-white border border-[#E2E8F0]/80 shadow-sm flex flex-col justify-between gap-5 hover:shadow-md transition-shadow">
           
-          <!-- Header Row -->
-          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-[#F1F5F9]">
-            <div>
-              <div class="flex flex-wrap sm:flex-nowrap items-baseline sm:items-center gap-2">
+                    <!-- Header Row -->
+          <div class="flex flex-col xl:flex-row xl:items-center justify-between gap-3 pb-4 border-b border-[#F1F5F9]">
+            <div class="flex-1 min-w-0">
+              <div class="flex flex-wrap items-center gap-2">
                 <h2 id="viewsTrendTitle" class="text-base sm:text-lg font-bold text-[#131B2E] tracking-tight font-headline leading-tight">
                   Topic Velocity vs Historical Baseline
                 </h2>
@@ -632,7 +632,7 @@ tailwind.config = {
                   Sampled Age Brackets
                 </span>
               </div>
-              <p class="text-xs text-[#767586] mt-0.5">
+              <p class="text-xs text-[#767586] mt-1">
                 Lifetime views by upload age &bull; Accumulated lifetime views across video age buckets in the current sampled cohort
               </p>
             </div>
@@ -768,33 +768,40 @@ tailwind.config = {
 
             <!-- Format List Items -->
             <div class="flex flex-col gap-2 pt-2 border-t border-[#F1F5F9]">
-              <div class="p-3 rounded-xl bg-[#F8FAFC] border border-[#F1F5F9] flex items-center justify-between">
-                <div class="flex items-center gap-2.5">
+              <div class="p-2.5 rounded-xl bg-[#F8FAFC] border border-[#F1F5F9] flex items-center justify-between">
+                <div class="flex items-center gap-2.5 min-w-0">
                   <span class="w-2.5 h-2.5 rounded-full bg-[#4648D4] shrink-0"></span>
-                  <span class="text-xs font-semibold text-[#131B2E]">YouTube Shorts (&lt;60s)</span>
+                  <div class="flex flex-col">
+                    <span class="text-xs font-semibold text-[#131B2E]">Shorts</span>
+                    <span class="text-[11px] text-[#767586]">&lt;60s format</span>
+                  </div>
                 </div>
-                <div class="flex items-center gap-2.5">
+                <div class="flex items-center gap-2 shrink-0">
                   <span id="formatShortsVelocity" class="text-xs text-[#767586] font-medium">—</span>
                   <span id="formatShortsStat" class="px-2.5 py-1 rounded-lg bg-[#EAEDFF] text-[#4648D4] text-xs font-bold font-mono">52%</span>
                 </div>
               </div>
-              <div class="p-3 rounded-xl bg-[#F8FAFC] border border-[#F1F5F9] flex items-center justify-between">
-                <div class="flex items-center gap-2.5">
+              <div class="p-2.5 rounded-xl bg-[#F8FAFC] border border-[#F1F5F9] flex items-center justify-between">
+                <div class="flex items-center gap-2.5 min-w-0">
                   <span class="w-2.5 h-2.5 rounded-full bg-[#8A4CFC] shrink-0"></span>
-                  <span class="text-xs font-semibold text-[#131B2E]">Longform (&gt;8m)</span>
+                  <div class="flex flex-col">
+                    <span class="text-xs font-semibold text-[#131B2E]">Longform</span>
+                    <span class="text-[11px] text-[#767586]">14m sample avg</span>
+                  </div>
                 </div>
-                <div class="flex items-center gap-2.5">
-                  <span class="text-xs text-[#767586] font-medium">14m avg</span>
+                <div class="flex items-center gap-2 shrink-0">
                   <span id="formatLongStat" class="px-2.5 py-1 rounded-lg bg-[#F3E8FF] text-[#712AE2] text-xs font-bold font-mono">34%</span>
                 </div>
               </div>
-              <div class="p-3 rounded-xl bg-[#F8FAFC] border border-[#F1F5F9] flex items-center justify-between">
-                <div class="flex items-center gap-2.5">
+              <div class="p-2.5 rounded-xl bg-[#F8FAFC] border border-[#F1F5F9] flex items-center justify-between">
+                <div class="flex items-center gap-2.5 min-w-0">
                   <span class="w-2.5 h-2.5 rounded-full bg-[#00885D] shrink-0"></span>
-                  <span class="text-xs font-semibold text-[#131B2E]">Streams &amp; Premieres</span>
+                  <div class="flex flex-col">
+                    <span class="text-xs font-semibold text-[#131B2E]">Streams &amp; Live</span>
+                    <span class="text-[11px] text-[#767586]">45m sample avg</span>
+                  </div>
                 </div>
-                <div class="flex items-center gap-2.5">
-                  <span class="text-xs text-[#767586] font-medium">45m avg</span>
+                <div class="flex items-center gap-2 shrink-0">
                   <span id="formatLiveStat" class="px-2.5 py-1 rounded-lg bg-[#EAFFFA] text-[#006C49] text-xs font-bold font-mono">14%</span>
                 </div>
               </div>
@@ -809,24 +816,17 @@ tailwind.config = {
           </div>
 
           <!-- Audience Retention Indicator (Not Exposed in Public API) -->
-          <div class="p-5 rounded-2xl bg-white border border-[#E2E8F0]/80 shadow-sm flex flex-col justify-between gap-3 hover:shadow-md transition-shadow">
+          <div class="p-5 rounded-2xl bg-[#F8FAFC] border border-[#E2E8F0]/80 shadow-sm flex flex-col justify-between gap-3 min-w-0">
             <div class="flex items-center justify-between">
-              <span class="text-xs text-[#767586] font-semibold">30-Second Hold Rate</span>
-              <span class="px-2 py-0.5 rounded-full bg-[#EAEDFF] text-[#464554] text-xs font-bold">Unavailable</span>
+              <span class="text-xs font-bold text-[#131B2E]">Audience Retention Baseline</span>
+              <span class="px-2.5 py-0.5 rounded-full bg-[#EAEDFF] text-[#4648D4] text-xs font-bold">Studio Tier</span>
             </div>
-            <div class="flex items-baseline gap-2">
-              <span class="text-2xl font-extrabold text-[#767586] font-headline">—</span>
-              <span class="text-xs text-[#767586]">first 30s viewer retention</span>
-            </div>
-            <!-- Multi-tier Bar Progress -->
-            <div class="w-full flex flex-col gap-1.5 mt-1">
-              <div class="w-full h-3 rounded-full bg-[#EAEDFF] flex overflow-hidden">
-                <div class="bg-[#C5C6D0] h-full" style="width: 0%;"></div>
-              </div>
-              <div class="flex items-center justify-between text-xs text-[#767586] font-label">
-                <span>Category Benchmark: Unavailable</span>
-                <span class="text-[#767586]">Private to YouTube Studio</span>
-              </div>
+            <p class="text-xs text-[#767586] leading-relaxed">
+              First-30s hold rate and viewer drop-off analytics require YouTube Studio creator access. Public velocity curves are audited on the left.
+            </p>
+            <div class="flex items-center gap-2 pt-2 border-t border-[#E2E8F0] text-xs text-[#767586]">
+              <span class="material-symbols-outlined text-[16px] text-[#006C49]">verified_user</span>
+              <span>100% Truthful Public Data Model</span>
             </div>
           </div>
 
