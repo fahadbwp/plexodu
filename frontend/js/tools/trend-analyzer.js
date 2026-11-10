@@ -959,7 +959,7 @@ function renderTrendingList(videos, query) {
         </div>
 
         <!-- Col 2: Hourly Velocity & Momentum (3 cols) -->
-        <div class="col-span-3 flex lg:flex-col items-center lg:items-end justify-between w-full lg:w-auto">
+        <div class="col-span-3 flex flex-wrap lg:flex-col items-center lg:items-end justify-between w-full lg:w-auto gap-1">
           <span class="lg:hidden text-xs text-[#64748B] font-semibold">Velocity:</span>
           <div class="text-base sm:text-lg font-extrabold text-[#4648D4] tracking-tight">
             +${velocityHourly} <span class="text-xs text-[#64748B] font-semibold">views/hr</span>
@@ -971,7 +971,7 @@ function renderTrendingList(videos, query) {
         </div>
 
         <!-- Col 3: Engagement & Lifetime Views (3 cols) -->
-        <div class="col-span-3 flex lg:flex-col items-center lg:items-end justify-between w-full lg:w-auto pulsecheck-row-stat">
+        <div class="col-span-3 flex flex-wrap lg:flex-col items-center lg:items-end justify-between w-full lg:w-auto gap-1 pulsecheck-row-stat">
           <span class="lg:hidden text-xs text-[#64748B] font-semibold">Engagement:</span>
           <div class="text-base sm:text-lg font-extrabold text-[#0F172A]">
             ${engagementText} <span class="text-xs text-[#64748B] font-semibold">rate</span>
