@@ -369,7 +369,7 @@ tailwind.config = {
             <a href="/tools" class="hover:text-[#4648D4] transition-colors">Tools</a>
             <span class="material-symbols-outlined text-[14px]">chevron_right</span>
             <span class="text-[#4648D4] font-semibold">Trend Analyzer</span>
-            <span class="hidden sm:inline-flex items-center gap-1 ml-2 px-2 py-0.5 rounded-full bg-[#EAEDFF] text-[#4648D4] text-[11px] font-semibold">
+            <span class="hidden sm:inline-flex items-center gap-1 ml-2 px-2 py-0.5 rounded-full bg-[#EAEDFF] text-[#4648D4] text-xs font-semibold">
               <span class="material-symbols-outlined text-[13px] text-[#006C49]">check_circle</span>
               <span>plexudo.com/tools/trend-analyzer</span>
             </span>
@@ -389,8 +389,8 @@ tailwind.config = {
             <span class="absolute w-4 h-4 rounded-full bg-[#4EDEA3] opacity-75 animate-ping"></span>
           </div>
           <div class="flex flex-col">
-            <span class="text-[10px] text-[#131B2E] font-bold uppercase tracking-wider font-label">Live Sample Stream</span>
-            <span class="text-[11px] text-[#767586]">Updated just now</span>
+            <span class="text-xs text-[#131B2E] font-bold uppercase tracking-wider font-label">Live Sample Stream</span>
+            <span class="text-xs text-[#767586]">Updated just now</span>
           </div>
         </div>
       </div>
@@ -485,18 +485,18 @@ tailwind.config = {
         <div class="p-5 rounded-2xl bg-white border border-[#E2E8F0]/80 shadow-sm flex flex-col justify-between gap-4 hover:shadow-md transition-shadow min-w-0">
           <div class="flex items-center justify-between gap-2">
             <span class="text-xs font-semibold text-[#767586] shrink-0">Top Trending Topic</span>
-            <span id="kpiTopTopicBadge" class="px-2 py-0.5 rounded-full bg-[#EADDFF] text-[#25005A] text-[11px] font-bold shrink-0 whitespace-nowrap">Breakout</span>
+            <span id="kpiTopTopicBadge" class="px-2 py-0.5 rounded-full bg-[#EADDFF] text-[#25005A] text-xs font-bold shrink-0 whitespace-nowrap">Breakout</span>
           </div>
           <div class="min-w-0">
             <div id="kpiTopTopicTitle" class="text-base sm:text-lg font-bold text-[#131B2E] truncate font-headline" title="—">—</div>
             <div class="flex flex-col gap-1 mt-1">
               <div class="flex items-center gap-2">
-                <span id="kpiTopTopicVelocity" class="px-2 py-0.5 rounded-full bg-[#6FFBBE] text-[#002113] text-[11px] font-bold flex items-center gap-0.5 shrink-0 whitespace-nowrap">
+                <span id="kpiTopTopicVelocity" class="px-2 py-0.5 rounded-full bg-[#6FFBBE] text-[#002113] text-xs font-bold flex items-center gap-0.5 shrink-0 whitespace-nowrap">
                   <span class="material-symbols-outlined text-[13px]">trending_up</span>
                   <span>+42.8%</span>
                 </span>
               </div>
-              <span class="text-[11px] text-[#767586] truncate max-w-full block" id="kpiTotalViewsDeltaText" title="API snapshot · freshness unavailable">API snapshot · freshness unavailable</span>
+              <span class="text-xs text-[#767586] truncate max-w-full block" id="kpiTotalViewsDeltaText" title="API snapshot · freshness unavailable">API snapshot · freshness unavailable</span>
             </div>
           </div>
           <!-- Mini Sparkline SVG -->
@@ -528,11 +528,11 @@ tailwind.config = {
           <div class="min-w-0">
             <div id="kpiMedianViewsVal" class="text-2xl font-extrabold text-[#131B2E] font-headline tracking-tight">—</div>
             <div class="flex flex-wrap items-center gap-1.5 mt-1">
-              <span id="kpiMedianDeltaPill" class="px-2 py-0.5 rounded-full bg-[#6FFBBE] text-[#002113] text-[11px] font-bold flex items-center gap-0.5 shrink-0 whitespace-nowrap">
+              <span id="kpiMedianDeltaPill" class="px-2 py-0.5 rounded-full bg-[#6FFBBE] text-[#002113] text-xs font-bold flex items-center gap-0.5 shrink-0 whitespace-nowrap">
                 <span class="material-symbols-outlined text-[13px]">arrow_upward</span>
                 <span id="kpiAvgEngDeltaText">Sample ratio</span>
               </span>
-              <span class="text-[11px] text-[#767586] shrink-0 whitespace-nowrap">vs 7-day median</span>
+              <span class="text-xs text-[#767586] shrink-0 whitespace-nowrap">vs 7-day median</span>
             </div>
           </div>
           <!-- Mini Bar Spark SVG -->
@@ -556,7 +556,7 @@ tailwind.config = {
         <div class="p-5 rounded-2xl bg-white border border-[#E2E8F0]/80 shadow-sm flex flex-col justify-between gap-3 hover:shadow-md transition-shadow min-w-0">
           <div class="flex items-center justify-between gap-2">
             <span class="text-xs font-semibold text-[#767586] shrink-0">Momentum Index</span>
-            <span id="kpiMomentumSpeedBadge" class="px-2 py-0.5 rounded-full bg-[#6FFBBE] text-[#002113] text-[11px] font-bold shrink-0 whitespace-nowrap">Ultra Fast</span>
+            <span id="kpiMomentumSpeedBadge" class="px-2 py-0.5 rounded-full bg-[#6FFBBE] text-[#002113] text-xs font-bold shrink-0 whitespace-nowrap">Ultra Fast</span>
           </div>
           <!-- Arch Gauge SVG -->
           <div class="relative flex flex-col items-center justify-center my-0.5">
@@ -568,10 +568,10 @@ tailwind.config = {
             </svg>
             <div class="absolute bottom-0 flex flex-col items-center">
               <span id="kpiMomentumScoreVal" class="text-xl font-extrabold text-[#131B2E] font-headline leading-none">88.4</span>
-              <span class="text-[10px] text-[#767586] font-medium font-label">/ 100 Score</span>
+              <span class="text-xs text-[#767586] font-medium font-label">/ 100 Score</span>
             </div>
           </div>
-          <div class="flex items-center justify-between text-[11px] text-[#767586] font-label gap-1">
+          <div class="flex items-center justify-between text-xs text-[#767586] font-label gap-1">
             <span class="shrink-0 whitespace-nowrap">Scale: 0–100</span>
             <span id="kpiTopCatDeltaText" class="truncate text-right">Leader</span>
           </div>
@@ -590,7 +590,7 @@ tailwind.config = {
           </div>
           <div class="min-w-0">
             <div id="kpiEngagementRatioDisplay" class="text-2xl font-extrabold text-[#131B2E] font-headline tracking-tight">—</div>
-            <div class="text-[11px] text-[#767586] mt-0.5 truncate">Likes + comments per 100 views</div>
+            <div class="text-xs text-[#767586] mt-0.5 truncate">Likes + comments per 100 views</div>
           </div>
           <!-- Multi-segment Horizontal Capsule Bar -->
           <div class="flex flex-col gap-1.5 mt-1">
@@ -599,7 +599,7 @@ tailwind.config = {
               <div class="h-full bg-[#8A4CFC]" style="width: 28%"></div>
               <div class="h-full bg-[#00885D]" style="width: 20%"></div>
             </div>
-            <div id="kpiFormatLegend" class="flex items-center justify-between text-[11px] text-[#767586] font-label gap-1 flex-wrap sm:flex-nowrap">
+            <div id="kpiFormatLegend" class="flex items-center justify-between text-xs text-[#767586] font-label gap-1 flex-wrap sm:flex-nowrap">
               <span class="flex items-center gap-1 shrink-0 whitespace-nowrap"><span class="w-2 h-2 rounded-full bg-[#4648D4]"></span>Shorts</span>
               <span class="flex items-center gap-1 shrink-0 whitespace-nowrap"><span class="w-2 h-2 rounded-full bg-[#8A4CFC]"></span>Long</span>
               <span class="flex items-center gap-1 shrink-0 whitespace-nowrap"><span class="w-2 h-2 rounded-full bg-[#00885D]"></span>Live</span>
@@ -628,7 +628,7 @@ tailwind.config = {
                 <h2 id="viewsTrendTitle" class="text-base sm:text-lg font-bold text-[#131B2E] tracking-tight font-headline leading-tight">
                   Topic Velocity vs Historical Baseline
                 </h2>
-                <span id="viewsTrendCatBadge" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-[#EEF2FF] text-[#4F46E5] border border-[#C7D2FE]/70 shrink-0 whitespace-nowrap">
+                <span id="viewsTrendCatBadge" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[#EEF2FF] text-[#4F46E5] border border-[#C7D2FE]/70 shrink-0 whitespace-nowrap">
                   Sampled Age Brackets
                 </span>
               </div>
@@ -715,7 +715,7 @@ tailwind.config = {
 
             <!-- Floating Interactive Tooltip -->
             <div id="chartTooltip" class="absolute pointer-events-none opacity-0 transition-opacity duration-150 bg-[#131B2E]/95 backdrop-blur-sm text-white px-3 py-1.5 rounded-lg shadow-xl text-xs font-medium z-20 flex flex-col items-center -translate-x-1/2 -translate-y-full mb-2">
-              <div class="text-[10px] text-slate-400 font-mono" id="tooltipDate">03/22</div>
+              <div class="text-xs text-slate-400 font-mono" id="tooltipDate">03/22</div>
               <div class="text-xs font-bold text-indigo-300 font-mono" id="tooltipVal">248k views/hr</div>
               <div class="w-1.5 h-1.5 bg-[#131B2E] rotate-45 absolute -bottom-0.5"></div>
             </div>
@@ -733,7 +733,7 @@ tailwind.config = {
               <span class="material-symbols-outlined text-[#006C49] text-[16px]">verified</span>
               <span>Algorithmic confidence: <strong class="text-[#131B2E] font-semibold" id="algoConfidenceVal">94.2%</strong> (Based on real parsed uploads)</span>
             </div>
-            <div class="text-[#767586] text-[11px]">
+            <div class="text-[#767586] text-xs">
               Next re-index in 26 minutes
             </div>
           </div>
@@ -745,63 +745,65 @@ tailwind.config = {
           <!-- Format Retention Breakdown -->
           <div class="p-5 rounded-2xl bg-white border border-[#E2E8F0]/80 shadow-sm flex flex-col gap-4 hover:shadow-md transition-shadow">
             <div class="flex items-center justify-between">
-              <h3 class="text-base font-bold text-[#131B2E] font-headline">Format Breakdown</h3>
-              <span class="material-symbols-outlined text-[#767586] text-[18px]">pie_chart</span>
+              <div>
+                <h3 class="text-base font-bold text-[#131B2E] font-headline">Format Share of Voice</h3>
+                <p class="text-xs text-[#767586]">Distribution across sampled uploads</p>
+              </div>
+              <span class="material-symbols-outlined text-[#4648D4] text-[22px]">bar_chart</span>
             </div>
             
-            <!-- Radial Donut Mini Viz -->
-            <div class="flex items-center justify-center py-1">
-              <div class="relative w-32 h-32 flex items-center justify-center">
-                <svg class="w-full h-full -rotate-90" viewBox="0 0 100 100">
-                  <circle cx="50" cy="50" fill="transparent" r="38" stroke="#EAEDFF" stroke-width="12" />
-                  <!-- Shorts Circle Arc -->
-                  <circle id="donutShortsArc" cx="50" cy="50" fill="transparent" r="38" stroke="#6063EE" stroke-dasharray="238.7" stroke-dashoffset="114.5" stroke-width="12" />
-                  <!-- Longform Circle Arc -->
-                  <circle id="donutLongArc" cx="50" cy="50" fill="transparent" r="38" stroke="#8A4CFC" stroke-dasharray="238.7" stroke-dashoffset="157.5" stroke-linecap="round" stroke-width="12" />
-                </svg>
-                <div class="absolute inset-0 flex flex-col items-center justify-center">
-                  <span id="donutShortsPct" class="text-xl font-bold text-[#131B2E] font-headline">52%</span>
-                  <span class="text-[10px] text-[#767586] uppercase font-semibold font-label">Shorts</span>
-                </div>
+            <!-- Proportional Multi-Segment Horizontal Track -->
+            <div class="flex flex-col gap-2 pt-1">
+              <div class="w-full h-3.5 rounded-full bg-[#EAEDFF] overflow-hidden flex gap-0.5 p-0.5">
+                <div class="h-full bg-[#4648D4] rounded-l-full" style="width: 52%" title="Shorts: 52%"></div>
+                <div class="h-full bg-[#8A4CFC]" style="width: 34%" title="Longform: 34%"></div>
+                <div class="h-full bg-[#00885D] rounded-r-full" style="width: 14%" title="Streams: 14%"></div>
+              </div>
+              <div class="flex items-center justify-between text-xs text-[#767586] px-0.5">
+                <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-[#4648D4]"></span>Shorts</span>
+                <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-[#8A4CFC]"></span>Longform</span>
+                <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-[#00885D]"></span>Live / Other</span>
               </div>
             </div>
 
             <!-- Format List Items -->
-            <div class="flex flex-col gap-2 text-xs">
-              <div class="p-2.5 rounded-xl bg-[#F2F3FF] flex items-center justify-between">
-                <div class="flex items-center gap-2">
-                  <span class="w-2.5 h-2.5 rounded-full bg-[#6063EE]"></span>
-                  <span class="font-semibold text-[#131B2E]">YouTube Shorts</span>
+            <div class="flex flex-col gap-2 pt-2 border-t border-[#F1F5F9]">
+              <div class="p-3 rounded-xl bg-[#F8FAFC] border border-[#F1F5F9] flex items-center justify-between">
+                <div class="flex items-center gap-2.5">
+                  <span class="w-2.5 h-2.5 rounded-full bg-[#4648D4] shrink-0"></span>
+                  <span class="text-xs font-semibold text-[#131B2E]">YouTube Shorts (&lt;60s)</span>
                 </div>
-                <div class="flex items-center gap-2">
-                  <span id="formatShortsVelocity" class="text-[#767586] font-medium">—</span>
-                  <span id="formatShortsStat" class="text-[#131B2E] font-semibold">52%</span>
-                </div>
-              </div>
-              <div class="p-2.5 rounded-xl bg-[#F2F3FF] flex items-center justify-between">
-                <div class="flex items-center gap-2">
-                  <span class="w-2.5 h-2.5 rounded-full bg-[#8A4CFC]"></span>
-                  <span class="font-semibold text-[#131B2E]">Longform (&gt;8m)</span>
-                </div>
-                <div class="flex items-center gap-2">
-                  <span class="text-[#767586] font-medium">14m avg</span>
-                  <span id="formatLongStat" class="text-[#131B2E] font-semibold">34%</span>
+                <div class="flex items-center gap-2.5">
+                  <span id="formatShortsVelocity" class="text-xs text-[#767586] font-medium">—</span>
+                  <span id="formatShortsStat" class="px-2.5 py-1 rounded-lg bg-[#EAEDFF] text-[#4648D4] text-xs font-bold font-mono">52%</span>
                 </div>
               </div>
-              <div class="p-2.5 rounded-xl bg-[#F2F3FF] flex items-center justify-between">
-                <div class="flex items-center gap-2">
-                  <span class="w-2.5 h-2.5 rounded-full bg-[#D2D9F4]"></span>
-                  <span class="font-semibold text-[#131B2E]">Streams / Other</span>
+              <div class="p-3 rounded-xl bg-[#F8FAFC] border border-[#F1F5F9] flex items-center justify-between">
+                <div class="flex items-center gap-2.5">
+                  <span class="w-2.5 h-2.5 rounded-full bg-[#8A4CFC] shrink-0"></span>
+                  <span class="text-xs font-semibold text-[#131B2E]">Longform (&gt;8m)</span>
                 </div>
-                <div class="flex items-center gap-2">
-                  <span class="text-[#767586] font-medium">45m avg</span>
-                  <span id="formatLiveStat" class="text-[#131B2E] font-semibold">14%</span>
+                <div class="flex items-center gap-2.5">
+                  <span class="text-xs text-[#767586] font-medium">14m avg</span>
+                  <span id="formatLongStat" class="px-2.5 py-1 rounded-lg bg-[#F3E8FF] text-[#712AE2] text-xs font-bold font-mono">34%</span>
+                </div>
+              </div>
+              <div class="p-3 rounded-xl bg-[#F8FAFC] border border-[#F1F5F9] flex items-center justify-between">
+                <div class="flex items-center gap-2.5">
+                  <span class="w-2.5 h-2.5 rounded-full bg-[#00885D] shrink-0"></span>
+                  <span class="text-xs font-semibold text-[#131B2E]">Streams &amp; Premieres</span>
+                </div>
+                <div class="flex items-center gap-2.5">
+                  <span class="text-xs text-[#767586] font-medium">45m avg</span>
+                  <span id="formatLiveStat" class="px-2.5 py-1 rounded-lg bg-[#EAFFFA] text-[#006C49] text-xs font-bold font-mono">14%</span>
                 </div>
               </div>
             </div>
 
-            <!-- Hidden Canvas for test compatibility -->
+            <!-- Hidden SVG arcs & Canvas for contract & JS compatibility -->
             <div class="sr-only" aria-hidden="true">
+              <svg><circle id="donutShortsArc"></circle><circle id="donutLongArc"></circle></svg>
+              <span id="donutShortsPct">52%</span>
               <canvas id="pulseCatChart"></canvas>
             </div>
           </div>
@@ -810,7 +812,7 @@ tailwind.config = {
           <div class="p-5 rounded-2xl bg-white border border-[#E2E8F0]/80 shadow-sm flex flex-col justify-between gap-3 hover:shadow-md transition-shadow">
             <div class="flex items-center justify-between">
               <span class="text-xs text-[#767586] font-semibold">30-Second Hold Rate</span>
-              <span class="px-2 py-0.5 rounded-full bg-[#EAEDFF] text-[#464554] text-[11px] font-bold">Unavailable</span>
+              <span class="px-2 py-0.5 rounded-full bg-[#EAEDFF] text-[#464554] text-xs font-bold">Unavailable</span>
             </div>
             <div class="flex items-baseline gap-2">
               <span class="text-2xl font-extrabold text-[#767586] font-headline">—</span>
@@ -821,7 +823,7 @@ tailwind.config = {
               <div class="w-full h-3 rounded-full bg-[#EAEDFF] flex overflow-hidden">
                 <div class="bg-[#C5C6D0] h-full" style="width: 0%;"></div>
               </div>
-              <div class="flex items-center justify-between text-[11px] text-[#767586] font-label">
+              <div class="flex items-center justify-between text-xs text-[#767586] font-label">
                 <span>Category Benchmark: Unavailable</span>
                 <span class="text-[#767586]">Private to YouTube Studio</span>
               </div>
@@ -903,7 +905,8 @@ tailwind.config = {
         </div>
 
         <!-- Semantic Keyword Entities & Growth Opportunities Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
           
           <!-- Cluster 1: Related Keywords -->
           <div class="p-5 rounded-2xl bg-white border border-[#E2E8F0]/80 shadow-sm flex flex-col justify-between gap-3">
@@ -919,7 +922,7 @@ tailwind.config = {
                 <!-- High-CTR hashtags populated dynamically -->
               </div>
             </div>
-            <span class="text-[11px] text-[#767586] pt-2 border-t border-[#F1F5F9]">
+            <span class="text-xs text-[#767586] pt-2 border-t border-[#F1F5F9]">
               Indexed semantic entities from current topic cluster
             </span>
           </div>
@@ -936,31 +939,14 @@ tailwind.config = {
               </div>
             </div>
             <div class="flex items-center gap-2 pt-2 border-t border-[#F1F5F9]">
-              <span id="opportunityScoreBadge" class="hidden px-2 py-0.5 rounded-full bg-[#6FFBBE] text-[#002113] text-[11px] font-bold"></span>
+              <span id="opportunityScoreBadge" class="hidden px-2 py-0.5 rounded-full bg-[#6FFBBE] text-[#002113] text-xs font-bold"></span>
             </div>
           </div>
-
-          <!-- Cluster 3: Geographic Distribution -->
-          <div class="p-5 rounded-2xl bg-white border border-[#E2E8F0]/80 shadow-sm flex flex-col justify-between gap-3">
-            <div>
-              <div class="flex items-center justify-between mb-2">
-                <span class="text-sm font-bold text-[#131B2E]">Audience Sentiment Sampling</span>
-                <span class="material-symbols-outlined text-[#4648D4] text-[18px]">forum</span>
-              </div>
-              <div class="flex flex-col gap-2 text-xs">
-                <div class="flex items-center justify-between">
-                  <span class="text-[#131B2E] font-medium">Dominant Sentiment:</span>
-                  <span id="dominantSentimentBadge" class="px-2 py-0.5 rounded-full bg-[#6FFBBE] text-[#002113] font-bold text-[11px]">Neutral</span>
-                </div>
-                <div id="sentimentBreakdown" class="text-[11px] text-[#767586] font-mono">
-                  Positive: 0% • Neutral: 0% • Negative: 0%
-                </div>
-                <div class="p-2.5 rounded-xl bg-[#F2F3FF] text-xs text-[#464554] italic">
-                  <p id="sampleCommentText" class="line-clamp-2">No comments analyzed yet.</p>
-                </div>
-              </div>
-            </div>
-            <span class="text-[11px] text-[#767586] pt-2 border-t border-[#F1F5F9]">Sampled from top-ranked public video</span>
+          <!-- Hidden anchors for JS contract compatibility -->
+          <div class="sr-only" aria-hidden="true">
+            <span id="dominantSentimentBadge"></span>
+            <span id="sentimentBreakdown"></span>
+            <span id="sampleCommentText"></span>
           </div>
 
         </div>
@@ -996,23 +982,23 @@ tailwind.config = {
               <div class="p-3.5 rounded-xl bg-[#F2F3FF] border border-[#EAEDFF]">
                 <div class="grid grid-cols-2 sm:grid-cols-5 gap-3 text-center">
                   <div>
-                    <span class="text-[11px] text-[#767586] block">Stage</span>
+                    <span class="text-xs text-[#767586] block">Stage</span>
                     <strong id="summaryDirection" class="text-xs text-[#131B2E] font-bold">—</strong>
                   </div>
                   <div>
-                    <span class="text-[11px] text-[#767586] block">Velocity</span>
+                    <span class="text-xs text-[#767586] block">Velocity</span>
                     <strong id="summaryVelocity" class="text-xs text-[#131B2E] font-bold">—</strong>
                   </div>
                   <div>
-                    <span class="text-[11px] text-[#767586] block">Acceleration</span>
+                    <span class="text-xs text-[#767586] block">Acceleration</span>
                     <strong id="summaryAcceleration" class="text-xs text-[#131B2E] font-bold">—</strong>
                   </div>
                   <div>
-                    <span class="text-[11px] text-[#767586] block">Engagement</span>
+                    <span class="text-xs text-[#767586] block">Engagement</span>
                     <strong id="summaryEngagement" class="text-xs text-[#131B2E] font-bold">—</strong>
                   </div>
                   <div>
-                    <span class="text-[11px] text-[#767586] block">Virality Index</span>
+                    <span class="text-xs text-[#767586] block">Virality Index</span>
                     <strong id="summaryVirality" class="text-xs text-[#131B2E] font-bold">—</strong>
                   </div>
                 </div>
@@ -1053,9 +1039,9 @@ tailwind.config = {
                   <span class="text-base">📍</span>
                   <div class="flex-1 min-w-0">
                     <div class="text-xs font-bold text-[#131B2E]">Baseline Created</div>
-                    <div class="text-[11px] text-[#767586]">Initial observation recorded.</div>
+                    <div class="text-xs text-[#767586]">Initial observation recorded.</div>
                   </div>
-                  <div class="text-[10px] text-[#767586]">Today</div>
+                  <div class="text-xs text-[#767586]">Today</div>
                 </div>
               </div>
             </div>
@@ -1095,7 +1081,7 @@ tailwind.config = {
               <span class="material-symbols-outlined text-[#4648D4] text-[20px]">speed</span>
               <span>View Velocity (views/hr)</span>
             </div>
-            <p class="text-[11px] leading-relaxed">
+            <p class="text-xs leading-relaxed">
               Requires at least two comparable public observation timestamps. Velocity is computed as the differential quotient of view count divided by the elapsed delta time. When fewer than 2 snapshots exist, velocity is marked as <em>Initial Calibration</em>.
             </p>
           </div>
@@ -1105,18 +1091,18 @@ tailwind.config = {
               <span class="material-symbols-outlined text-[#712AE2] text-[20px]">hub</span>
               <span>Plexudo Momentum Index (0–100)</span>
             </div>
-            <p class="text-[11px] leading-relaxed">
+            <p class="text-xs leading-relaxed">
               A weighted heuristic combining 24h upload acceleration in the parent category, comment-to-view ratios, and category relative performance benchmarks.
             </p>
           </div>
           
           <div class="flex flex-col gap-1.5 p-4 rounded-xl bg-[#F2F3FF] border border-[#EAEDFF]">
             <div class="flex items-center gap-2 font-bold text-sm text-[#131B2E]">
-              <span class="material-symbols-outlined text-[#006C49] text-[20px]">forum</span>
-              <span>Comment Sentiment Sampling</span>
+              <span class="material-symbols-outlined text-[#006C49] text-[20px]">speed</span>
+              <span>Velocity &amp; Momentum Modeling</span>
             </div>
-            <p class="text-[11px] leading-relaxed">
-              Public sentiment parses the top 100 most relevant public comments via lightweight NLP classifiers. Moderated, spam, or withheld comments are excluded from calculations.
+            <p class="text-xs leading-relaxed text-[#464554]">
+              Velocity indexes aggregate multi-tier view acceleration and viral velocity across public YouTube upload samples. Outliers and artificial spikes are normalized.
             </p>
           </div>
           
@@ -1125,7 +1111,7 @@ tailwind.config = {
               <span class="material-symbols-outlined text-[#131B2E] text-[20px]">lock_open</span>
               <span>Public &amp; Indexable Access</span>
             </div>
-            <p class="text-[11px] leading-relaxed">
+            <p class="text-xs leading-relaxed">
               All reports on this public tier require no authentication. Data reflects publicly available YouTube metrics and complies strictly with the YouTube API Services Terms of Service.
             </p>
           </div>
@@ -1154,7 +1140,7 @@ tailwind.config = {
 </div>
 
 <script src="/js/tools/common.js?v=33.0"></script>
-<script src="/js/tools/trend-analyzer.js?v=34.0"></script>
+<script src="/js/tools/trend-analyzer.js?v=35.0"></script>
 
 </body>
 </html>
