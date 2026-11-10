@@ -194,7 +194,30 @@ function escapeAttr(str) {
 }
 
 // ── DOM Initialization ───────────────────────────────────────────────────────
+function initMobileMenu() {
+  const toggleBtn = document.getElementById("mobileMenuToggle");
+  const closeBtn = document.getElementById("sidebarCloseBtn");
+  const sidebar = document.getElementById("stitchSidebar");
+  const backdrop = document.getElementById("sidebarBackdrop");
+  if (!sidebar) return;
+
+  const openDrawer = () => {
+    sidebar.classList.remove("-translate-x-full");
+    if (backdrop) backdrop.classList.remove("hidden");
+  };
+
+  const closeDrawer = () => {
+    sidebar.classList.add("-translate-x-full");
+    if (backdrop) backdrop.classList.add("hidden");
+  };
+
+  if (toggleBtn) toggleBtn.addEventListener("click", openDrawer);
+  if (closeBtn) closeBtn.addEventListener("click", closeDrawer);
+  if (backdrop) backdrop.addEventListener("click", closeDrawer);
+}
+
 document.addEventListener("DOMContentLoaded", () => {
+  initMobileMenu();
   initCategories();
   initTimeframePills();
   initRegionSelect();
