@@ -42,3 +42,18 @@ This document establishes the non-negotiable frontend, UI/UX, and architectural 
 - **Preserve IDs and Data Attributes:** Never remove, rename, or alter existing element IDs (e.g., `id="analyzeBtn"`, `id="creatorInput"`) or data attributes that JavaScript or API calls bind to.
 - **Preserve Working Features:** When asked to edit or add a feature, never strip away previously working analytics, charts, or state handling.
 - **Maintain Clean Code & Comments:** Preserve meaningful comments and documentation while ensuring CSS classes remain clean and reusable.
+
+---
+
+## 5. Language & Communication Standard
+- **Always Communicate in Roman Urdu or English:**
+  - Never generate responses in Nastaliq / Arabic-script Urdu.
+  - Use natural, friendly Roman Urdu mixed with clear English technical terms.
+
+---
+
+## 6. Feed & Feature Boundary Simplicity
+- **No Premature Feature Placeholders:**
+  - Lightweight aggregate discovery feeds (such as Trend Analyzer list) must not include premature placeholders (like empty sentiment bars or "Unavailable" comment analysis) that require on-demand deep scanning.
+  - Keep deep NLP and comment-dependent metrics inside dedicated analysis views (e.g., Video Analyzer).
+

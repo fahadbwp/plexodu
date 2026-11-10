@@ -927,82 +927,67 @@ function renderTrendingList(videos, query) {
       const ageText = v.hoursAgo != null && Number.isFinite(Number(v.hoursAgo))
         ? (Number(v.hoursAgo) >= 48 ? `${Math.floor(Number(v.hoursAgo) / 24)}d ago` : `${v.hoursAgo}h ago`)
         : "—";
-
-      const hasSentiment = v.sentiment != null && Number.isFinite(Number(v.sentiment));
-      const sentimentPct = hasSentiment ? Math.max(0, Math.min(100, Math.round(v.sentiment))) : null;
-      const sentimentLabel = hasSentiment ? `${sentimentPct}% Positive` : "—";
-      const sentimentSub = hasSentiment ? "Sampled" : "Unavailable";
-      const barWidth = hasSentiment ? `${sentimentPct}%` : "0%";
-      const barBg = hasSentiment ? "bg-[#006C49]" : "bg-[#C5C6D0]";
-
       return `
-      <div class="p-3.5 sm:p-4 rounded-xl bg-[#F2F3FF]/60 hover:bg-[#F2F3FF] border border-[#EAEDFF] transition-all flex flex-col lg:grid lg:grid-cols-12 gap-3.5 items-start lg:items-center pulsecheck-row">
+      <div class="p-3.5 sm:p-4 rounded-xl bg-[#F8FAFC] hover:bg-[#F1F5F9] border border-[#E2E8F0] transition-all flex flex-col lg:grid lg:grid-cols-12 gap-3.5 sm:gap-4 items-start lg:items-center pulsecheck-row">
         <!-- Col 1: Video details & Thumbnail (5 cols) -->
-        <div class="col-span-5 flex items-start gap-3 w-full min-w-0">
+        <div class="col-span-5 flex items-start gap-3.5 w-full min-w-0">
           <div class="relative w-28 h-16 sm:w-32 sm:h-20 rounded-xl overflow-hidden shrink-0 shadow-sm bg-[#EAEDFF] flex items-center justify-center">
             ${thumbUrl ? `<img src="${escapeAttr(thumbUrl)}" alt="${escapeAttr(v.title)}" class="w-full h-full object-cover" loading="lazy" />` : `
               <div class="w-full h-full flex items-center justify-center bg-[#6063EE]/15">
-                <span class="material-symbols-outlined text-[#4648D4] text-[24px]">play_circle</span>
+                <span class="material-symbols-rounded text-[#4648D4] text-[24px]">play_circle</span>
               </div>
             `}
-            <span class="absolute bottom-1 right-1 px-1.5 py-0.5 rounded bg-[#131B2E]/85 text-white font-mono text-[10px] font-semibold">
+            <span class="absolute bottom-1 right-1 px-1.5 py-0.5 rounded bg-[#131B2E]/90 text-white font-mono text-[10px] font-bold">
               ${dur}
             </span>
           </div>
-          <div class="flex flex-col min-w-0 flex-1">
-            <div class="flex items-center gap-1.5 mb-0.5 flex-wrap">
-              <span class="px-2 py-0.5 rounded-full bg-[#EADDFF] text-[#25005A] text-[10px] font-bold truncate">
+          <div class="flex flex-col min-w-0 flex-1 justify-center">
+            <div class="flex items-center gap-1.5 mb-1 flex-wrap">
+              <span class="px-2 py-0.5 rounded-full bg-[#EDE9FE] text-[#5B21B6] text-[11px] font-bold tracking-wide truncate">
                 ${escapeHtml(v.category || "Trending")}
               </span>
-              <span class="text-[11px] text-[#767586]">${ageText}</span>
+              <span class="text-xs text-[#64748B] font-medium">${ageText}</span>
             </div>
-            <h3 class="text-xs sm:text-sm font-bold text-[#131B2E] truncate leading-snug hover:text-[#4648D4] transition-colors" title="${escapeAttr(v.title)}">
+            <h3 class="text-sm sm:text-base font-bold text-[#0F172A] truncate leading-tight hover:text-[#4648D4] transition-colors" title="${escapeAttr(v.title)}">
               ${escapeHtml(v.title)}
             </h3>
-            <div class="flex items-center gap-1.5 mt-1 text-xs text-[#767586]">
-              <span class="font-medium text-[#131B2E] truncate">${escapeHtml(v.channel)}</span>
-              <span class="px-1.5 py-0.2 rounded bg-white border border-[#E2E8F0] text-[10px] font-semibold">${v.rank ? `#${v.rank}` : "Top"}</span>
+            <div class="flex items-center gap-2 mt-1.5 text-xs text-[#64748B]">
+              <span class="font-semibold text-[#334155] truncate">${escapeHtml(v.channel)}</span>
+              <span class="px-2 py-0.5 rounded bg-white border border-[#CBD5E1] text-[10px] font-extrabold text-[#475569] shadow-2xs">${v.rank ? `#${v.rank}` : "Top"}</span>
             </div>
           </div>
         </div>
 
-        <!-- Col 2: Velocity & Views (2 cols) -->
-        <div class="col-span-2 flex lg:flex-col items-center lg:items-end justify-between w-full lg:w-auto">
-          <span class="lg:hidden text-xs text-[#767586] font-medium">Velocity:</span>
-          <div class="text-sm sm:text-base font-bold text-[#4648D4]">
-            +${velocityHourly} <span class="text-[11px] text-[#767586] font-normal">views/hr</span>
+        <!-- Col 2: Hourly Velocity & Momentum (3 cols) -->
+        <div class="col-span-3 flex lg:flex-col items-center lg:items-end justify-between w-full lg:w-auto">
+          <span class="lg:hidden text-xs text-[#64748B] font-semibold">Velocity:</span>
+          <div class="text-base sm:text-lg font-extrabold text-[#4648D4] tracking-tight">
+            +${velocityHourly} <span class="text-xs text-[#64748B] font-semibold">views/hr</span>
           </div>
-          <span class="text-[11px] text-[#006C49] font-bold flex items-center gap-0.5 pulsecheck-growth ${hasMomentum ? "score" : "pending"}">
-            <span class="material-symbols-outlined text-[13px]">rocket_launch</span>
+          <span class="mt-1 px-2.5 py-0.5 rounded-full text-xs font-bold flex items-center gap-1 bg-[#F0FDF4] text-[#16A34A] border border-[#DCFCE7] pulsecheck-growth ${hasMomentum ? "score" : "pending"}">
+            <span class="material-symbols-rounded text-[14px]">rocket_launch</span>
             ${momentumText}
           </span>
         </div>
 
-        <!-- Col 3: Engagement (2 cols) -->
-        <div class="col-span-2 flex lg:flex-col items-center lg:items-end justify-between w-full lg:w-auto pulsecheck-row-stat">
-          <span class="lg:hidden text-xs text-[#767586] font-medium">Engagement:</span>
-          <div class="text-sm font-bold text-[#131B2E]">${engagementText}</div>
-          <span class="text-[11px] text-[#767586]">
-            ${formatCompact(v.views)} views • ${formatCompact(v.comments)} cmts
+        <!-- Col 3: Engagement & Lifetime Views (3 cols) -->
+        <div class="col-span-3 flex lg:flex-col items-center lg:items-end justify-between w-full lg:w-auto pulsecheck-row-stat">
+          <span class="lg:hidden text-xs text-[#64748B] font-semibold">Engagement:</span>
+          <div class="text-base sm:text-lg font-extrabold text-[#0F172A]">
+            ${engagementText} <span class="text-xs text-[#64748B] font-semibold">rate</span>
+          </div>
+          <span class="mt-1 text-xs text-[#475569] font-semibold flex items-center gap-1.5">
+            <span>${formatCompact(v.views)} views</span>
+            <span class="text-[#94A3B8]">•</span>
+            <span>${formatCompact(v.comments)} cmts</span>
           </span>
         </div>
 
-        <!-- Col 4: Sentiment (2 cols) -->
-        <div class="col-span-2 flex flex-col gap-1 w-full">
-          <div class="flex items-center justify-between text-[11px]">
-            <span class="${hasSentiment ? "text-[#006C49] font-bold" : "text-[#767586] font-medium"}">${sentimentLabel}</span>
-            <span class="text-[#767586]">${sentimentSub}</span>
-          </div>
-          <div class="w-full h-2 rounded-full bg-[#E2E7FF] overflow-hidden flex">
-            <div class="h-full ${barBg}" style="width: ${barWidth}"></div>
-          </div>
-        </div>
-
-        <!-- Col 5: Deep Analyze CTA (1 col) -->
+        <!-- Col 4: Deep Analyze CTA (1 col) -->
         <div class="col-span-1 flex items-center justify-end lg:justify-center w-full lg:w-auto">
-          <a href="/tools/video-analyzer?url=https://www.youtube.com/watch?v=${vidId}" class="w-full lg:w-9 h-9 rounded-xl bg-[#6063EE] text-white hover:bg-[#4648D4] flex items-center justify-center transition-all shadow-sm text-xs font-semibold gap-1.5 lg:gap-0" title="Deep Analyze this video">
-            <span class="material-symbols-outlined text-[18px]">analytics</span>
-            <span class="lg:hidden">Deep Analyze</span>
+          <a href="/tools/video-analyzer?url=https://www.youtube.com/watch?v=${vidId}" class="w-full lg:w-10 h-10 rounded-xl bg-[#6063EE] text-white hover:bg-[#4648D4] flex items-center justify-center transition-all shadow-sm text-xs font-semibold gap-2 lg:gap-0" title="Deep Analyze this video">
+            <span class="material-symbols-rounded text-[20px]">analytics</span>
+            <span class="lg:hidden font-bold">Deep Analyze</span>
           </a>
         </div>
       </div>
