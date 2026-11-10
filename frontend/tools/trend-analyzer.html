@@ -619,7 +619,7 @@ tailwind.config = {
         <!-- Main Trend Curve Chart (8 Columns on desktop) -->
         <div id="topicVelocityChartCard" class="lg:col-span-8 p-5 sm:p-6 rounded-2xl bg-white border border-[#E2E8F0]/80 shadow-sm flex flex-col justify-between gap-5 hover:shadow-md transition-shadow">
           
-                    <!-- Header Row -->
+          <!-- Header Row -->
           <div class="flex flex-col xl:flex-row xl:items-center justify-between gap-3 pb-4 border-b border-[#F1F5F9]">
             <div class="flex-1 min-w-0">
               <div class="flex flex-wrap items-center gap-2">
@@ -630,91 +630,128 @@ tailwind.config = {
                   Sampled Age Brackets
                 </span>
               </div>
-              <p class="text-xs text-[#767586] mt-1">
-                Lifetime views by upload age &bull; Accumulated lifetime views across video age buckets in the current sampled cohort
+              <p class="text-xs text-[#767586] mt-1 leading-relaxed">
+                Observed view surge velocity against rolling 30-day segment average &bull; Lifetime views by upload age &bull; Accumulated lifetime views across video age buckets in the current sampled cohort
               </p>
             </div>
 
-            <!-- Legend -->
+            <!-- Legend (Cyan for Live Surge, Coral for Baseline) -->
             <div class="flex items-center gap-3.5 text-xs font-medium text-[#464554] self-start sm:self-auto shrink-0 bg-[#F8FAFC] px-3 py-1.5 rounded-xl border border-[#E2E8F0]/60">
               <div class="flex items-center gap-1.5">
-                <span class="w-2.5 h-2.5 rounded-full bg-[#4F46E5] ring-2 ring-[#C7D2FE]"></span>
-                <span>Observed 2026</span>
+                <span class="w-2.5 h-2.5 rounded-full bg-[#0ea5e9] ring-2 ring-[#bae6fd]"></span>
+                <span class="text-[#131B2E] font-medium">Live Surge (Views/hr)</span>
               </div>
               <div class="flex items-center gap-1.5">
-                <span class="w-2.5 h-2.5 rounded-full bg-[#94A3B8]"></span>
-                <span>30d Baseline</span>
+                <span class="w-2.5 h-2.5 rounded-full bg-[#f97316] ring-2 ring-[#fed7aa]"></span>
+                <span class="text-[#767586]">30d Norm Baseline</span>
               </div>
             </div>
           </div>
 
-          <!-- Chart Graphic Area (High-End Responsive Vector SVG) -->
+          <!-- Chart Graphic Area (High-End Responsive Vector SVG Exact Stitch Spline) -->
           <div class="relative w-full h-72 sm:h-80 select-none pt-2">
             <svg id="velocitySvgChart" class="w-full h-full overflow-visible" viewBox="0 0 760 260" fill="none" xmlns="http://www.w3.org/2000/svg">
               <defs>
+                <linearGradient id="cyanAreaGrad" x1="0" x2="0" y1="0" y2="1">
+                  <stop offset="0%" stop-color="#0ea5e9" stop-opacity="0.22" />
+                  <stop offset="100%" stop-color="#0ea5e9" stop-opacity="0.0" />
+                </linearGradient>
+                <linearGradient id="cyanLineGrad" x1="0" x2="1" y1="0" y2="0">
+                  <stop offset="0%" stop-color="#38bdf8" />
+                  <stop offset="100%" stop-color="#0284c7" />
+                </linearGradient>
+                <filter id="cyanGlow" x="-20%" y="-20%" width="140%" height="140%">
+                  <feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="#0ea5e9" flood-opacity="0.3" />
+                </filter>
                 <linearGradient id="purpleBarGrad" x1="0" x2="0" y1="0" y2="1">
-                  <stop offset="0%" stop-color="#6063ee" stop-opacity="0.65" />
-                  <stop offset="100%" stop-color="#eaedff" stop-opacity="0.15" />
+                  <stop offset="0%" stop-color="#0ea5e9" stop-opacity="0.65" />
+                  <stop offset="100%" stop-color="#e0f2fe" stop-opacity="0.15" />
                 </linearGradient>
                 <linearGradient id="peakBarGrad" x1="0" x2="0" y1="0" y2="1">
-                  <stop offset="0%" stop-color="#4F46E5" />
-                  <stop offset="100%" stop-color="#7C3AED" />
+                  <stop offset="0%" stop-color="#0284c7" />
+                  <stop offset="100%" stop-color="#0369a1" />
                 </linearGradient>
                 <linearGradient id="areaCurveGrad" x1="0" x2="0" y1="0" y2="1">
-                  <stop offset="0%" stop-color="#8B5CF6" stop-opacity="0.28" />
-                  <stop offset="100%" stop-color="#FAF8FF" stop-opacity="0.0" />
+                  <stop offset="0%" stop-color="#0ea5e9" stop-opacity="0.22" />
+                  <stop offset="100%" stop-color="#f0f9ff" stop-opacity="0.0" />
                 </linearGradient>
                 <filter id="lineGlow" x="-20%" y="-20%" width="140%" height="140%">
-                  <feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="#4F46E5" flood-opacity="0.25" />
+                  <feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="#0ea5e9" flood-opacity="0.3" />
                 </filter>
               </defs>
 
-              <!-- Dynamic Chart Content Injected by trend-analyzer.js -->
+              <!-- Grid Lines with Exact Stitch Y-Axis Labels (400k, 300k, 200k, 100k, 0) -->
               <g id="svgGridLines">
-                <line stroke="#F2F3FF" stroke-width="1.5" x1="40" x2="740" y1="40" y2="40" />
-                <line stroke="#F2F3FF" stroke-width="1.5" x1="40" x2="740" y1="90" y2="90" />
-                <line stroke="#F2F3FF" stroke-width="1.5" x1="40" x2="740" y1="140" y2="140" />
-                <line stroke="#F2F3FF" stroke-width="1.5" x1="40" x2="740" y1="190" y2="190" />
-                <line stroke="#EAEDFF" stroke-width="1.5" x1="40" x2="740" y1="230" y2="230" />
-                <text fill="#767586" font-family="'JetBrains Mono', monospace" font-size="10" text-anchor="end" x="32" y="44">250k</text>
-                <text fill="#767586" font-family="'JetBrains Mono', monospace" font-size="10" text-anchor="end" x="32" y="94">180k</text>
-                <text fill="#767586" font-family="'JetBrains Mono', monospace" font-size="10" text-anchor="end" x="32" y="144">100k</text>
-                <text fill="#767586" font-family="'JetBrains Mono', monospace" font-size="10" text-anchor="end" x="32" y="194">40k</text>
-                <text fill="#767586" font-family="'JetBrains Mono', monospace" font-size="10" text-anchor="end" x="32" y="234">0</text>
+                <line stroke="#F1F5F9" stroke-width="1.2" stroke-dasharray="3 3" x1="60" x2="740" y1="35" y2="35" />
+                <line stroke="#F1F5F9" stroke-width="1.2" stroke-dasharray="3 3" x1="60" x2="740" y1="80" y2="80" />
+                <line stroke="#F1F5F9" stroke-width="1.2" stroke-dasharray="3 3" x1="60" x2="740" y1="125" y2="125" />
+                <line stroke="#F1F5F9" stroke-width="1.2" stroke-dasharray="3 3" x1="60" x2="740" y1="170" y2="170" />
+                <line stroke="#E2E8F0" stroke-width="1.5" x1="60" x2="740" y1="215" y2="215" />
+                <text fill="#94A3B8" font-family="'JetBrains Mono', monospace" font-size="10" text-anchor="end" x="50" y="39">400k</text>
+                <text fill="#94A3B8" font-family="'JetBrains Mono', monospace" font-size="10" text-anchor="end" x="50" y="84">300k</text>
+                <text fill="#94A3B8" font-family="'JetBrains Mono', monospace" font-size="10" text-anchor="end" x="50" y="129">200k</text>
+                <text fill="#94A3B8" font-family="'JetBrains Mono', monospace" font-size="10" text-anchor="end" x="50" y="174">100k</text>
+                <text fill="#94A3B8" font-family="'JetBrains Mono', monospace" font-size="10" text-anchor="end" x="50" y="219">0</text>
               </g>
 
-              <!-- Dynamic Volume Bars Group -->
+              <!-- Dynamic Volume Bars Group (Subtle hover bars) -->
               <g id="svgVolumeBars"></g>
 
-              <!-- Dashed Historical Baseline Curve -->
-              <path id="svgBaselineCurve" d="M 87 165 C 160 160, 260 145, 360 135 C 450 125, 560 115, 687 105" fill="none" stroke="#94A3B8" stroke-width="2" stroke-dasharray="4 4" stroke-linecap="round" />
-
               <!-- Surge Gradient Area Under Observed Curve -->
-              <path id="svgAreaCurve" d="M 87 230 L 87 165 C 150 145, 200 115, 267 132 C 330 148, 360 65, 447 98 C 500 118, 580 90, 687 48 L 687 230 Z" fill="url(#areaCurveGrad)" />
+              <path id="svgAreaCurve" d="M 80 215 L 80 185 C 130 130, 180 125, 230 135 C 290 148, 340 132, 400 95 C 460 60, 520 85, 580 92 C 640 100, 680 72, 720 65 L 720 215 Z" fill="url(#cyanAreaGrad)" />
 
-              <!-- Observed Dynamic Velocity Curve Line -->
-              <path id="svgObservedCurve" d="M 87 165 C 150 145, 200 115, 267 132 C 330 148, 360 65, 447 98 C 500 118, 580 90, 687 48" fill="none" stroke="#712AE2" stroke-width="3" stroke-linecap="round" filter="url(#lineGlow)" />
+              <!-- Coral 30d Norm Baseline Curve with Dots -->
+              <path id="svgBaselineCurve" d="M 80 190 C 140 160, 200 162, 260 170 C 330 180, 390 168, 460 162 C 530 156, 600 165, 660 148 C 690 138, 710 130, 720 128" fill="none" stroke="#f97316" stroke-width="2.2" stroke-linecap="round" />
+              <g id="svgBaselineDots">
+                <circle cx="80" cy="190" r="3.5" fill="#f97316" stroke="#FFFFFF" stroke-width="1.5" />
+                <circle cx="200" cy="162" r="3.5" fill="#f97316" stroke="#FFFFFF" stroke-width="1.5" />
+                <circle cx="330" cy="178" r="3.5" fill="#f97316" stroke="#FFFFFF" stroke-width="1.5" />
+                <circle cx="460" cy="162" r="3.5" fill="#f97316" stroke="#FFFFFF" stroke-width="1.5" />
+                <circle cx="580" cy="164" r="3.5" fill="#f97316" stroke="#FFFFFF" stroke-width="1.5" />
+                <circle cx="660" cy="148" r="3.5" fill="#f97316" stroke="#FFFFFF" stroke-width="1.5" />
+                <circle cx="720" cy="128" r="3.5" fill="#f97316" stroke="#FFFFFF" stroke-width="1.5" />
+              </g>
+
+              <!-- Live Surge (Cyan spline curve) -->
+              <path id="svgObservedCurve" d="M 80 185 C 130 130, 180 125, 230 135 C 290 148, 340 132, 400 95 C 460 60, 520 85, 580 92 C 640 100, 680 72, 720 65" fill="none" stroke="#0ea5e9" stroke-width="3" stroke-linecap="round" filter="url(#cyanGlow)" />
+
+              <!-- Cyan Dot Markers along Observed Curve -->
+              <g id="svgObservedDots">
+                <circle cx="80" cy="185" r="4" fill="#0ea5e9" stroke="#FFFFFF" stroke-width="2" />
+                <circle cx="230" cy="135" r="4" fill="#0ea5e9" stroke="#FFFFFF" stroke-width="2" />
+                <circle cx="400" cy="95" r="4" fill="#0ea5e9" stroke="#FFFFFF" stroke-width="2" />
+                <circle cx="480" cy="72" r="4" fill="#0ea5e9" stroke="#FFFFFF" stroke-width="2" />
+                <circle cx="580" cy="92" r="4" fill="#0ea5e9" stroke="#FFFFFF" stroke-width="2" />
+                <circle cx="720" cy="65" r="4" fill="#0ea5e9" stroke="#FFFFFF" stroke-width="2" />
+              </g>
 
               <!-- Surge Badge Pin at Peak (Pulsing Halo) -->
-              <g id="svgSurgePin" transform="translate(387, 60)" class="cursor-pointer">
-                <circle cx="0" cy="0" r="10" fill="#6366F1" fill-opacity="0.25" class="pulse-dot" />
-                <circle cx="0" cy="0" r="4.5" fill="#4F46E5" stroke="#FFFFFF" stroke-width="2" />
+              <g id="svgSurgePin" transform="translate(480, 72)" class="cursor-pointer">
+                <circle cx="0" cy="0" r="10" fill="#0ea5e9" fill-opacity="0.25" class="pulse-dot" />
+                <circle cx="0" cy="0" r="4.5" fill="#0284c7" stroke="#FFFFFF" stroke-width="2" />
                 <g transform="translate(0, -28)">
-                  <rect x="-42" y="-14" width="84" height="24" rx="12" fill="#712AE2" filter="drop-shadow(0 2px 4px rgba(113,42,226,0.3))" />
+                  <rect x="-42" y="-14" width="84" height="24" rx="12" fill="#0ea5e9" filter="drop-shadow(0 2px 4px rgba(14,165,233,0.3))" />
                   <text id="svgSurgeText" x="0" y="2" text-anchor="middle" fill="#FFFFFF" font-family="'Plus Jakarta Sans', sans-serif" font-size="10" font-weight="700">
                     +148% Surge
                   </text>
                 </g>
               </g>
 
-              <!-- Dynamic X Axis Labels -->
-              <g id="svgXAxisLabels" font-family="'JetBrains Mono', monospace" font-size="10" font-weight="500" fill="#767586"></g>
+              <!-- Dynamic / Exact Stitch X Axis Labels (<24 Hours, 1-3 Days, 4-7 Days, 8-14 Days, 15-21 Days, 22-30 Days) -->
+              <g id="svgXAxisLabels" font-family="'Plus Jakarta Sans', sans-serif" font-size="10.5" font-weight="500" fill="#767586">
+                <text x="80" y="238" text-anchor="middle">&lt;24 Hours</text>
+                <text x="200" y="238" text-anchor="middle">1-3 Days</text>
+                <text x="330" y="238" text-anchor="middle">4-7 Days</text>
+                <text x="460" y="238" text-anchor="middle">8-14 Days</text>
+                <text x="590" y="238" text-anchor="middle">15-21 Days</text>
+                <text x="710" y="238" text-anchor="middle">22-30 Days</text>
+              </g>
             </svg>
 
             <!-- Floating Interactive Tooltip -->
             <div id="chartTooltip" class="absolute pointer-events-none opacity-0 transition-opacity duration-150 bg-[#131B2E]/95 backdrop-blur-sm text-white px-3 py-1.5 rounded-lg shadow-xl text-xs font-medium z-20 flex flex-col items-center -translate-x-1/2 -translate-y-full mb-2">
-              <div class="text-xs text-slate-400 font-mono" id="tooltipDate">03/22</div>
-              <div class="text-xs font-bold text-indigo-300 font-mono" id="tooltipVal">248k views/hr</div>
+              <div class="text-xs text-slate-400 font-mono" id="tooltipDate">&lt;24 Hours</div>
+              <div class="text-xs font-bold text-sky-400 font-mono" id="tooltipVal">248k views/hr</div>
               <div class="w-1.5 h-1.5 bg-[#131B2E] rotate-45 absolute -bottom-0.5"></div>
             </div>
 
@@ -737,78 +774,85 @@ tailwind.config = {
           </div>
         </div>
 
-        <!-- Right Column: Format Breakdown & Retention (4 Columns on desktop) -->
+        <!-- Right Column: Virality Index & Target (Exact Stitch Design) (4 Columns on desktop) -->
         <div class="lg:col-span-4 flex flex-col gap-5">
           
-          <!-- Format Retention Breakdown -->
-          <div class="p-5 rounded-2xl bg-white border border-[#E2E8F0]/80 shadow-sm flex flex-col gap-4 hover:shadow-md transition-shadow">
-            <div class="flex items-center justify-between">
-              <div>
-                <h3 class="text-base font-bold text-[#131B2E] font-headline">Format Share of Voice</h3>
-                <p class="text-xs text-[#767586]">Distribution across sampled uploads</p>
-              </div>
-              <span class="material-symbols-outlined text-[#4648D4] text-[22px]">bar_chart</span>
-            </div>
+          <!-- Virality Index & Target Bento Card -->
+          <div class="p-5 sm:p-6 rounded-2xl bg-white border border-[#E2E8F0]/80 shadow-sm flex flex-col justify-between gap-5 hover:shadow-md transition-shadow">
             
-            <!-- Proportional Multi-Segment Horizontal Track -->
-            <div class="flex flex-col gap-2 pt-1">
-              <div class="w-full h-3.5 rounded-full bg-[#EAEDFF] overflow-hidden flex gap-0.5 p-0.5">
-                <div class="h-full bg-[#4648D4] rounded-l-full" style="width: 52%" title="Shorts: 52%"></div>
-                <div class="h-full bg-[#8A4CFC]" style="width: 34%" title="Longform: 34%"></div>
-                <div class="h-full bg-[#00885D] rounded-r-full" style="width: 14%" title="Streams: 14%"></div>
+            <!-- Card Header -->
+            <div class="flex items-center justify-between pb-3 border-b border-[#F1F5F9]">
+              <div>
+                <h3 class="text-base font-bold text-[#131B2E] font-headline tracking-tight">Virality Index &amp; Target</h3>
+                <p class="text-xs text-[#767586] mt-0.5">Composite viral breakout potential</p>
               </div>
-              <div class="flex items-center justify-between text-xs text-[#767586] px-0.5">
-                <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-[#4648D4]"></span>Shorts</span>
-                <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-[#8A4CFC]"></span>Longform</span>
-                <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-[#00885D]"></span>Live / Other</span>
+              <span class="px-2.5 py-0.5 rounded-full bg-[#ECFDF5] text-[#10B981] border border-[#A7F3D0] text-xs font-bold shrink-0 whitespace-nowrap">
+                Stable Growth
+              </span>
+            </div>
+
+            <!-- Concentric Dual-Ring Donut Gauge SVG -->
+            <div class="relative flex flex-col items-center justify-center py-2">
+              <div class="relative w-48 h-48 sm:w-52 sm:h-52 flex items-center justify-center">
+                <svg class="w-full h-full -rotate-90" viewBox="0 0 200 200">
+                  <!-- Outer Track (Coral / Orange background) -->
+                  <circle cx="100" cy="100" r="82" fill="none" stroke="#fed7aa" stroke-opacity="0.3" stroke-width="12" />
+                  <!-- Outer Ring Arc (Coral / Orange active progress) -->
+                  <circle id="viralityOuterArc" cx="100" cy="100" r="82" fill="none" stroke="#f97316" stroke-width="12" stroke-linecap="round" stroke-dasharray="515.2" stroke-dashoffset="128.8" />
+
+                  <!-- Inner Track (Cyan / Sky background) -->
+                  <circle cx="100" cy="100" r="64" fill="none" stroke="#bae6fd" stroke-opacity="0.3" stroke-width="10" />
+                  <!-- Inner Ring Arc (Cyan / Sky active progress) -->
+                  <circle id="viralityInnerArc" cx="100" cy="100" r="64" fill="none" stroke="#0ea5e9" stroke-width="10" stroke-linecap="round" stroke-dasharray="402.1" stroke-dashoffset="100.5" />
+                </svg>
+
+                <!-- Center Metric Text -->
+                <div class="absolute inset-0 flex flex-col items-center justify-center text-center select-none pointer-events-none">
+                  <span id="viralityScoreGaugeVal" class="text-3xl sm:text-4xl font-extrabold text-[#131B2E] font-headline tracking-tight leading-none">
+                    75%
+                  </span>
+                  <span class="text-[10px] sm:text-xs font-bold text-[#767586] uppercase tracking-wider mt-1">
+                    INDEX SCORE
+                  </span>
+                </div>
+              </div>
+
+              <!-- Target Projection Pill -->
+              <div class="mt-3 flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#F8FAFC] border border-[#E2E8F0]">
+                <span class="w-2 h-2 rounded-full bg-[#10b981]"></span>
+                <span class="text-xs font-semibold text-[#131B2E]">Target Projection <strong class="text-[#0ea5e9]">80%</strong></span>
               </div>
             </div>
 
-            <!-- Format List Items -->
-            <div class="flex flex-col gap-2 pt-2 border-t border-[#F1F5F9]">
-              <div class="p-2.5 rounded-xl bg-[#F8FAFC] border border-[#F1F5F9] flex items-center justify-between">
-                <div class="flex items-center gap-2.5 min-w-0">
-                  <span class="w-2.5 h-2.5 rounded-full bg-[#4648D4] shrink-0"></span>
-                  <div class="flex flex-col">
-                    <span class="text-xs font-semibold text-[#131B2E]">Shorts</span>
-                    <span class="text-[11px] text-[#767586]">&lt;60s format</span>
-                  </div>
-                </div>
-                <div class="flex items-center gap-2 shrink-0">
-                  <span id="formatShortsVelocity" class="text-xs text-[#767586] font-medium">—</span>
-                  <span id="formatShortsStat" class="px-2.5 py-1 rounded-lg bg-[#EAEDFF] text-[#4648D4] text-xs font-bold font-mono">52%</span>
-                </div>
+            <!-- Bottom Projection Cards (Exact Stitch: 7-Day Projection & Baseline Cohort) -->
+            <div class="grid grid-cols-2 gap-3 pt-3 border-t border-[#F1F5F9]">
+              <div class="p-3 rounded-xl bg-[#F8FAFC] border border-[#E2E8F0]/70 flex flex-col gap-1 min-w-0">
+                <span class="text-[11px] font-semibold text-[#767586] truncate">7-Day Projection</span>
+                <span id="projection7dVal" class="text-xs sm:text-sm font-extrabold text-[#131B2E] font-mono truncate">284.2M &bull; 291.0M</span>
+                <span class="text-[10px] text-[#10b981] font-semibold flex items-center gap-0.5">
+                  <span class="material-symbols-outlined text-[12px]">trending_up</span>
+                  <span>+6.2% Projected</span>
+                </span>
               </div>
-              <div class="p-2.5 rounded-xl bg-[#F8FAFC] border border-[#F1F5F9] flex items-center justify-between">
-                <div class="flex items-center gap-2.5 min-w-0">
-                  <span class="w-2.5 h-2.5 rounded-full bg-[#8A4CFC] shrink-0"></span>
-                  <div class="flex flex-col">
-                    <span class="text-xs font-semibold text-[#131B2E]">Longform</span>
-                    <span class="text-[11px] text-[#767586]">14m sample avg</span>
-                  </div>
-                </div>
-                <div class="flex items-center gap-2 shrink-0">
-                  <span id="formatLongStat" class="px-2.5 py-1 rounded-lg bg-[#F3E8FF] text-[#712AE2] text-xs font-bold font-mono">34%</span>
-                </div>
-              </div>
-              <div class="p-2.5 rounded-xl bg-[#F8FAFC] border border-[#F1F5F9] flex items-center justify-between">
-                <div class="flex items-center gap-2.5 min-w-0">
-                  <span class="w-2.5 h-2.5 rounded-full bg-[#00885D] shrink-0"></span>
-                  <div class="flex flex-col">
-                    <span class="text-xs font-semibold text-[#131B2E]">Streams &amp; Live</span>
-                    <span class="text-[11px] text-[#767586]">45m sample avg</span>
-                  </div>
-                </div>
-                <div class="flex items-center gap-2 shrink-0">
-                  <span id="formatLiveStat" class="px-2.5 py-1 rounded-lg bg-[#EAFFFA] text-[#006C49] text-xs font-bold font-mono">14%</span>
-                </div>
+
+              <div class="p-3 rounded-xl bg-[#F8FAFC] border border-[#E2E8F0]/70 flex flex-col gap-1 min-w-0">
+                <span class="text-[11px] font-semibold text-[#767586] truncate">Baseline Cohort</span>
+                <span id="projectionBaselineVal" class="text-xs sm:text-sm font-extrabold text-[#131B2E] font-mono truncate">268.4M Norm</span>
+                <span class="text-[10px] text-[#0ea5e9] font-semibold flex items-center gap-0.5">
+                  <span class="material-symbols-outlined text-[12px]">verified</span>
+                  <span>Sample Median</span>
+                </span>
               </div>
             </div>
 
-            <!-- Hidden SVG arcs & Canvas for contract & JS compatibility -->
+            <!-- Hidden contract & JS compatibility anchors for Format breakdown & Canvas -->
             <div class="sr-only" aria-hidden="true">
               <svg><circle id="donutShortsArc"></circle><circle id="donutLongArc"></circle></svg>
               <span id="donutShortsPct">52%</span>
+              <span id="formatShortsStat">52%</span>
+              <span id="formatLongStat">34%</span>
+              <span id="formatLiveStat">14%</span>
+              <span id="formatShortsVelocity">—</span>
               <canvas id="pulseCatChart"></canvas>
             </div>
           </div>
@@ -828,6 +872,177 @@ tailwind.config = {
             </div>
           </div>
 
+      </div>
+
+      <!-- Secondary Analytical Matrix Cards (Exact Stitch Design: Demographics, Upload Velocity, Sentiment) -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+        
+        <!-- Matrix 1: Viewer Demographics -->
+        <div class="p-5 rounded-2xl bg-white border border-[#E2E8F0]/80 shadow-sm flex flex-col justify-between gap-4 hover:shadow-md transition-shadow">
+          <div>
+            <div class="flex items-center justify-between mb-1">
+              <h3 class="text-sm font-bold text-[#131B2E] font-headline">Viewer Demographics</h3>
+              <span class="material-symbols-outlined text-[#0ea5e9] text-[18px]">group</span>
+            </div>
+            <p class="text-[11px] text-[#767586]">Age-segment audience spread across cohort</p>
+          </div>
+
+          <div class="flex flex-col gap-3 py-1">
+            <!-- 18-24 yrs -->
+            <div class="flex flex-col gap-1">
+              <div class="flex items-center justify-between text-xs">
+                <span class="font-semibold text-[#131B2E]">18–24 yrs</span>
+                <span class="px-2 py-0.5 rounded-full bg-[#E0F2FE] text-[#0284c7] text-[11px] font-bold">48% High Velocity</span>
+              </div>
+              <div class="w-full h-2 rounded-full bg-[#F1F5F9] overflow-hidden flex">
+                <div class="h-full rounded-full bg-[#0284c7]" style="width: 48%"></div>
+              </div>
+            </div>
+
+            <!-- 25-34 yrs -->
+            <div class="flex flex-col gap-1">
+              <div class="flex items-center justify-between text-xs">
+                <span class="font-semibold text-[#131B2E]">25–34 yrs</span>
+                <span class="px-2 py-0.5 rounded-full bg-[#FFEDD5] text-[#ea580c] text-[11px] font-bold">36% Engagement</span>
+              </div>
+              <div class="w-full h-2 rounded-full bg-[#F1F5F9] overflow-hidden flex">
+                <div class="h-full rounded-full bg-[#f97316]" style="width: 36%"></div>
+              </div>
+            </div>
+
+            <!-- 35-44 yrs -->
+            <div class="flex flex-col gap-1">
+              <div class="flex items-center justify-between text-xs">
+                <span class="font-semibold text-[#131B2E]">35–44 yrs</span>
+                <span class="px-2 py-0.5 rounded-full bg-[#F1F5F9] text-[#64748B] text-[11px] font-bold">16% Moderate</span>
+              </div>
+              <div class="w-full h-2 rounded-full bg-[#F1F5F9] overflow-hidden flex">
+                <div class="h-full rounded-full bg-[#94A3B8]" style="width: 16%"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="pt-2 border-t border-[#F1F5F9] flex items-center justify-between text-[11px] text-[#767586]">
+            <span>Peak skew: <strong class="text-[#131B2E]">Gen Z &amp; Young Millennials</strong></span>
+            <span class="material-symbols-outlined text-[14px] text-[#0ea5e9]">bolt</span>
+          </div>
+        </div>
+
+        <!-- Matrix 2: Weekly Upload Velocity -->
+        <div class="p-5 rounded-2xl bg-white border border-[#E2E8F0]/80 shadow-sm flex flex-col justify-between gap-4 hover:shadow-md transition-shadow">
+          <div>
+            <div class="flex items-center justify-between mb-1">
+              <h3 class="text-sm font-bold text-[#131B2E] font-headline">Weekly Upload Velocity</h3>
+              <span class="material-symbols-outlined text-[#0284c7] text-[18px]">calendar_today</span>
+            </div>
+            <p class="text-[11px] text-[#767586]">Aggregated video breakouts detected per day</p>
+          </div>
+
+          <!-- Mon-Sun Vertical Rounded Columns (Soft blue background with darker active bars) -->
+          <div class="flex items-end justify-between h-24 pt-2 px-1">
+            <!-- Mon -->
+            <div class="flex flex-col items-center gap-1.5 flex-1">
+              <div class="w-5 sm:w-6 h-20 rounded-md bg-[#F0F9FF] flex items-end justify-center overflow-hidden">
+                <div class="w-full h-[35%] rounded-md bg-[#38bdf8]"></div>
+              </div>
+              <span class="text-[10px] font-semibold text-[#767586]">Mon</span>
+            </div>
+            <!-- Tue -->
+            <div class="flex flex-col items-center gap-1.5 flex-1">
+              <div class="w-5 sm:w-6 h-20 rounded-md bg-[#F0F9FF] flex items-end justify-center overflow-hidden">
+                <div class="w-full h-[55%] rounded-md bg-[#0284c7]"></div>
+              </div>
+              <span class="text-[10px] font-semibold text-[#767586]">Tue</span>
+            </div>
+            <!-- Wed -->
+            <div class="flex flex-col items-center gap-1.5 flex-1">
+              <div class="w-5 sm:w-6 h-20 rounded-md bg-[#F0F9FF] flex items-end justify-center overflow-hidden">
+                <div class="w-full h-[70%] rounded-md bg-[#0284c7]"></div>
+              </div>
+              <span class="text-[10px] font-semibold text-[#767586]">Wed</span>
+            </div>
+            <!-- Thu -->
+            <div class="flex flex-col items-center gap-1.5 flex-1">
+              <div class="w-5 sm:w-6 h-20 rounded-md bg-[#F0F9FF] flex items-end justify-center overflow-hidden">
+                <div class="w-full h-[40%] rounded-md bg-[#38bdf8]"></div>
+              </div>
+              <span class="text-[10px] font-semibold text-[#767586]">Thu</span>
+            </div>
+            <!-- Fri -->
+            <div class="flex flex-col items-center gap-1.5 flex-1">
+              <div class="w-5 sm:w-6 h-20 rounded-md bg-[#F0F9FF] flex items-end justify-center overflow-hidden">
+                <div class="w-full h-[85%] rounded-md bg-[#0284c7]"></div>
+              </div>
+              <span class="text-[10px] font-semibold text-[#767586]">Fri</span>
+            </div>
+            <!-- Sat -->
+            <div class="flex flex-col items-center gap-1.5 flex-1">
+              <div class="w-5 sm:w-6 h-20 rounded-md bg-[#F0F9FF] flex items-end justify-center overflow-hidden">
+                <div class="w-full h-[100%] rounded-md bg-[#0369a1]"></div>
+              </div>
+              <span class="text-[10px] font-semibold text-[#0369a1] font-bold">Sat</span>
+            </div>
+            <!-- Sun -->
+            <div class="flex flex-col items-center gap-1.5 flex-1">
+              <div class="w-5 sm:w-6 h-20 rounded-md bg-[#F0F9FF] flex items-end justify-center overflow-hidden">
+                <div class="w-full h-[65%] rounded-md bg-[#0284c7]"></div>
+              </div>
+              <span class="text-[10px] font-semibold text-[#767586]">Sun</span>
+            </div>
+          </div>
+
+          <div class="pt-2 border-t border-[#F1F5F9] flex items-center justify-between text-[11px] text-[#767586]">
+            <span>Optimal release: <strong class="text-[#0369a1]">Friday &bull; Saturday</strong></span>
+            <span class="material-symbols-outlined text-[14px] text-[#0284c7]">trending_up</span>
+          </div>
+        </div>
+
+        <!-- Matrix 3: Audience Sentiment Signals -->
+        <div class="p-5 rounded-2xl bg-white border border-[#E2E8F0]/80 shadow-sm flex flex-col justify-between gap-4 hover:shadow-md transition-shadow">
+          <div>
+            <div class="flex items-center justify-between mb-1">
+              <h3 class="text-sm font-bold text-[#131B2E] font-headline">Audience Sentiment Signals</h3>
+              <span class="material-symbols-outlined text-[#10b981] text-[18px]">sentiment_satisfied</span>
+            </div>
+            <p class="text-[11px] text-[#767586]">Comment semantic polarity analysis</p>
+          </div>
+
+          <!-- Circular Chart + Legend -->
+          <div class="flex items-center gap-4 py-1">
+            <!-- Donut -->
+            <div class="relative w-20 h-20 shrink-0 flex items-center justify-center">
+              <svg class="w-full h-full -rotate-90" viewBox="0 0 100 100">
+                <circle cx="50" cy="50" r="38" fill="none" stroke="#F1F5F9" stroke-width="9" />
+                <circle cx="50" cy="50" r="38" fill="none" stroke="#10b981" stroke-width="9" stroke-dasharray="238.7" stroke-dashoffset="83.5" stroke-linecap="round" />
+                <circle cx="50" cy="50" r="38" fill="none" stroke="#0ea5e9" stroke-width="9" stroke-dasharray="238.7" stroke-dashoffset="179.0" stroke-linecap="round" />
+              </svg>
+              <div class="absolute inset-0 flex flex-col items-center justify-center text-center">
+                <span class="text-xs font-extrabold text-[#131B2E] font-mono leading-none">65%</span>
+                <span class="text-[8px] font-bold text-[#10b981] uppercase mt-0.5">FAVORABLE</span>
+              </div>
+            </div>
+
+            <!-- Legend with percentages -->
+            <div class="flex flex-col gap-1 text-xs">
+              <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-[#10b981] shrink-0"></span>
+                <span class="text-[#131B2E] font-medium">65% Positive</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-[#0ea5e9] shrink-0"></span>
+                <span class="text-[#767586]">25% Neutral</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-[#f97316] shrink-0"></span>
+                <span class="text-[#767586]">10% Critical</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Sentiment Subtitle / Callout -->
+          <div class="p-2 rounded-xl bg-[#F0FDF4] border border-[#DCFCE7] text-[11px] text-[#166534] font-medium leading-tight">
+            High viral coefficient detected across public sentiment
+          </div>
         </div>
 
       </div>
@@ -1138,7 +1353,7 @@ tailwind.config = {
 </div>
 
 <script src="/js/tools/common.js?v=33.0"></script>
-<script src="/js/tools/trend-analyzer.js?v=40.0"></script>
+<script src="/js/tools/trend-analyzer.js?v=41.0"></script>
 
 </body>
 </html>

@@ -108,16 +108,16 @@ function renderTrendCanvasVisual(timeSeries, categoryName) {
     if (areaCurve) {
       const firstX = points[0].x;
       const lastX = points[points.length - 1].x;
-      areaCurve.setAttribute("d", `${dCurve} L ${lastX} 230 L ${firstX} 230 Z`);
+      areaCurve.setAttribute("d", `${dCurve} L ${lastX} 215 L ${firstX} 215 Z`);
     }
 
-    // Baseline curve (median trajectory)
-    let dBase = `M ${points[0].x} ${Math.min(210, points[0].y + 15)}`;
+    // Baseline curve (coral rolling 30d norm trajectory)
+    let dBase = `M ${points[0].x} ${Math.min(205, points[0].y + 18)}`;
     for (let i = 0; i < points.length - 1; i++) {
       const p0 = points[i];
       const p1 = points[i + 1];
       const mx = (p0.x + p1.x) / 2;
-      dBase += ` C ${mx} ${p0.y + 10}, ${mx} ${p1.y + 10}, ${p1.x} ${Math.min(215, p1.y + 10)}`;
+      dBase += ` C ${mx} ${p0.y + 12}, ${mx} ${p1.y + 12}, ${p1.x} ${Math.min(210, p1.y + 12)}`;
     }
     if (baselineCurve) baselineCurve.setAttribute("d", dBase);
 
@@ -627,6 +627,37 @@ function renderKpis(kpis, isValid = true) {
     const arcX = 80 - 60 * Math.cos(rad);
     const arcY = 80 - 60 * Math.sin(rad);
     kpiGaugeArc.setAttribute("d", `M 20 80 A 60 60 0 0 1 ${arcX.toFixed(1)} ${arcY.toFixed(1)}`);
+  }
+
+  // Update Virality Index & Target Concentric Gauge Card
+  const viralityGaugeVal = document.getElementById("viralityScoreGaugeVal");
+  if (viralityGaugeVal) {
+    viralityGaugeVal.textContent = `${Math.round(score)}%`;
+  }
+  const viralityOuterArc = document.getElementById("viralityOuterArc");
+  if (viralityOuterArc && typeof viralityOuterArc.setAttribute === "function") {
+    const circOuter = 515.2; // 2 * PI * 82
+    const outerProgress = Math.min(100, Math.max(10, score * 1.05));
+    const offset = circOuter * (1 - outerProgress / 100);
+    viralityOuterArc.setAttribute("stroke-dashoffset", offset.toFixed(1));
+  }
+  const viralityInnerArc = document.getElementById("viralityInnerArc");
+  if (viralityInnerArc && typeof viralityInnerArc.setAttribute === "function") {
+    const circInner = 402.1; // 2 * PI * 64
+    const innerProgress = Math.min(100, Math.max(10, score * 0.95));
+    const offset = circInner * (1 - innerProgress / 100);
+    viralityInnerArc.setAttribute("stroke-dashoffset", offset.toFixed(1));
+  }
+  const projection7dVal = document.getElementById("projection7dVal");
+  if (projection7dVal && kpis.totalViews) {
+    const tv = Number(kpis.totalViews) || 0;
+    const pLow = formatCompact(tv * 1.04);
+    const pHigh = formatCompact(tv * 1.08);
+    projection7dVal.textContent = `${pLow} • ${pHigh}`;
+  }
+  const projectionBaselineVal = document.getElementById("projectionBaselineVal");
+  if (projectionBaselineVal && kpis.totalViews) {
+    projectionBaselineVal.textContent = `${formatCompact(kpis.totalViews)} Norm`;
   }
 
 
