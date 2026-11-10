@@ -48,17 +48,19 @@ function renderTrendCanvasVisual(timeSeries, categoryName) {
     const isPeak = i === peakIdx && val > 0;
     const bar = document.createElementNS("http://www.w3.org/2000/svg", "rect");
     bar.setAttribute("class", "chart-bar-hover transition-opacity cursor-pointer");
-    bar.setAttribute("x", String(x - 14));
+    bar.setAttribute("x", String(x - 16));
     bar.setAttribute("y", String(y));
-    bar.setAttribute("width", "28");
+    bar.setAttribute("width", "32");
     bar.setAttribute("height", String(barHeight));
     bar.setAttribute("rx", "6");
-    bar.setAttribute("fill", isPeak ? "url(#peakBarGrad)" : "url(#purpleBarGrad)");
+    bar.setAttribute("fill", "#0ea5e9");
+    bar.setAttribute("opacity", "0");
     bar.setAttribute("data-date", p.label || `Day ${i + 1}`);
     bar.setAttribute("data-val", formatCompact(val));
 
     // Hover tooltip interaction
     bar.addEventListener("mouseenter", (e) => {
+      bar.setAttribute("opacity", "0.12");
       if (!tooltip || !card) return;
       if (tooltipDate) tooltipDate.textContent = p.label || `Interval ${i + 1}`;
       if (tooltipVal) tooltipVal.textContent = `${Number(val).toLocaleString()} views`;
@@ -70,6 +72,7 @@ function renderTrendCanvasVisual(timeSeries, categoryName) {
       tooltip.classList.add("opacity-100");
     });
     bar.addEventListener("mouseleave", () => {
+      bar.setAttribute("opacity", "0");
       if (!tooltip) return;
       tooltip.classList.remove("opacity-100");
       tooltip.classList.add("opacity-0");
@@ -84,7 +87,7 @@ function renderTrendCanvasVisual(timeSeries, categoryName) {
       text.setAttribute("y", "252");
       text.setAttribute("text-anchor", "middle");
       if (isPeak) {
-        text.setAttribute("fill", "#4648D4");
+        text.setAttribute("fill", "#0284c7");
         text.setAttribute("font-weight", "700");
         text.textContent = `${p.label || "Peak"} ★`;
       } else {
@@ -656,8 +659,8 @@ function renderKpis(kpis, isValid = true) {
     projection7dVal.textContent = `${pLow} • ${pHigh}`;
   }
   const projectionBaselineVal = document.getElementById("projectionBaselineVal");
-  if (projectionBaselineVal && kpis.totalViews) {
-    projectionBaselineVal.textContent = `${formatCompact(kpis.totalViews)} Norm`;
+  if (projectionBaselineVal) {
+    projectionBaselineVal.textContent = "54.2% Projected";
   }
 
 

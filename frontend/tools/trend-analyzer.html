@@ -698,35 +698,34 @@ tailwind.config = {
               <g id="svgVolumeBars"></g>
 
               <!-- Surge Gradient Area Under Observed Curve -->
-              <path id="svgAreaCurve" d="M 80 215 L 80 185 C 130 130, 180 125, 230 135 C 290 148, 340 132, 400 95 C 460 60, 520 85, 580 92 C 640 100, 680 72, 720 65 L 720 215 Z" fill="url(#cyanAreaGrad)" />
+              <path id="svgAreaCurve" d="M 80 215 L 80 184 C 130 135, 160 105, 205 103 C 255 101, 290 114, 330 116 C 380 118, 415 125, 455 123 C 500 120, 540 64, 580 62 C 630 60, 670 72, 710 73 L 710 215 Z" fill="url(#cyanAreaGrad)" />
 
               <!-- Coral 30d Norm Baseline Curve with Dots -->
-              <path id="svgBaselineCurve" d="M 80 190 C 140 160, 200 162, 260 170 C 330 180, 390 168, 460 162 C 530 156, 600 165, 660 148 C 690 138, 710 130, 720 128" fill="none" stroke="#f97316" stroke-width="2.2" stroke-linecap="round" />
+              <path id="svgBaselineCurve" d="M 80 192 C 130 178, 165 167, 205 165 C 250 163, 290 177, 330 179 C 380 181, 415 170, 455 168 C 500 166, 540 171, 580 172 C 630 173, 670 142, 710 138" fill="none" stroke="#f97316" stroke-width="2.2" stroke-linecap="round" />
               <g id="svgBaselineDots">
-                <circle cx="80" cy="190" r="3.5" fill="#f97316" stroke="#FFFFFF" stroke-width="1.5" />
-                <circle cx="200" cy="162" r="3.5" fill="#f97316" stroke="#FFFFFF" stroke-width="1.5" />
-                <circle cx="330" cy="178" r="3.5" fill="#f97316" stroke="#FFFFFF" stroke-width="1.5" />
-                <circle cx="460" cy="162" r="3.5" fill="#f97316" stroke="#FFFFFF" stroke-width="1.5" />
-                <circle cx="580" cy="164" r="3.5" fill="#f97316" stroke="#FFFFFF" stroke-width="1.5" />
-                <circle cx="660" cy="148" r="3.5" fill="#f97316" stroke="#FFFFFF" stroke-width="1.5" />
-                <circle cx="720" cy="128" r="3.5" fill="#f97316" stroke="#FFFFFF" stroke-width="1.5" />
+                <circle cx="80" cy="192" r="3.5" fill="#f97316" stroke="#FFFFFF" stroke-width="1.5" />
+                <circle cx="205" cy="165" r="3.5" fill="#f97316" stroke="#FFFFFF" stroke-width="1.5" />
+                <circle cx="330" cy="179" r="3.5" fill="#f97316" stroke="#FFFFFF" stroke-width="1.5" />
+                <circle cx="455" cy="168" r="3.5" fill="#f97316" stroke="#FFFFFF" stroke-width="1.5" />
+                <circle cx="580" cy="172" r="3.5" fill="#f97316" stroke="#FFFFFF" stroke-width="1.5" />
+                <circle cx="710" cy="138" r="3.5" fill="#f97316" stroke="#FFFFFF" stroke-width="1.5" />
               </g>
 
               <!-- Live Surge (Cyan spline curve) -->
-              <path id="svgObservedCurve" d="M 80 185 C 130 130, 180 125, 230 135 C 290 148, 340 132, 400 95 C 460 60, 520 85, 580 92 C 640 100, 680 72, 720 65" fill="none" stroke="#0ea5e9" stroke-width="3" stroke-linecap="round" filter="url(#cyanGlow)" />
+              <path id="svgObservedCurve" d="M 80 184 C 130 135, 160 105, 205 103 C 255 101, 290 114, 330 116 C 380 118, 415 125, 455 123 C 500 120, 540 64, 580 62 C 630 60, 670 72, 710 73" fill="none" stroke="#0ea5e9" stroke-width="3" stroke-linecap="round" filter="url(#cyanGlow)" />
 
               <!-- Cyan Dot Markers along Observed Curve -->
               <g id="svgObservedDots">
-                <circle cx="80" cy="185" r="4" fill="#0ea5e9" stroke="#FFFFFF" stroke-width="2" />
-                <circle cx="230" cy="135" r="4" fill="#0ea5e9" stroke="#FFFFFF" stroke-width="2" />
-                <circle cx="400" cy="95" r="4" fill="#0ea5e9" stroke="#FFFFFF" stroke-width="2" />
-                <circle cx="480" cy="72" r="4" fill="#0ea5e9" stroke="#FFFFFF" stroke-width="2" />
-                <circle cx="580" cy="92" r="4" fill="#0ea5e9" stroke="#FFFFFF" stroke-width="2" />
-                <circle cx="720" cy="65" r="4" fill="#0ea5e9" stroke="#FFFFFF" stroke-width="2" />
+                <circle cx="80" cy="184" r="4" fill="#0ea5e9" stroke="#FFFFFF" stroke-width="2" />
+                <circle cx="205" cy="103" r="4" fill="#0ea5e9" stroke="#FFFFFF" stroke-width="2" />
+                <circle cx="330" cy="116" r="4" fill="#0ea5e9" stroke="#FFFFFF" stroke-width="2" />
+                <circle cx="455" cy="123" r="4" fill="#0ea5e9" stroke="#FFFFFF" stroke-width="2" />
+                <circle cx="580" cy="62" r="4" fill="#0ea5e9" stroke="#FFFFFF" stroke-width="2" />
+                <circle cx="710" cy="73" r="4" fill="#0ea5e9" stroke="#FFFFFF" stroke-width="2" />
               </g>
 
               <!-- Surge Badge Pin at Peak (Pulsing Halo) -->
-              <g id="svgSurgePin" transform="translate(480, 72)" class="cursor-pointer">
+              <g id="svgSurgePin" transform="translate(580, 62)" class="cursor-pointer">
                 <circle cx="0" cy="0" r="10" fill="#0ea5e9" fill-opacity="0.25" class="pulse-dot" />
                 <circle cx="0" cy="0" r="4.5" fill="#0284c7" stroke="#FFFFFF" stroke-width="2" />
                 <g transform="translate(0, -28)">
@@ -740,10 +739,10 @@ tailwind.config = {
               <!-- Dynamic / Exact Stitch X Axis Labels (<24 Hours, 1-3 Days, 4-7 Days, 8-14 Days, 15-21 Days, 22-30 Days) -->
               <g id="svgXAxisLabels" font-family="'Plus Jakarta Sans', sans-serif" font-size="10.5" font-weight="500" fill="#767586">
                 <text x="80" y="238" text-anchor="middle">&lt;24 Hours</text>
-                <text x="200" y="238" text-anchor="middle">1-3 Days</text>
+                <text x="205" y="238" text-anchor="middle">1-3 Days</text>
                 <text x="330" y="238" text-anchor="middle">4-7 Days</text>
-                <text x="460" y="238" text-anchor="middle">8-14 Days</text>
-                <text x="590" y="238" text-anchor="middle">15-21 Days</text>
+                <text x="455" y="238" text-anchor="middle">8-14 Days</text>
+                <text x="580" y="238" text-anchor="middle">15-21 Days</text>
                 <text x="710" y="238" text-anchor="middle">22-30 Days</text>
               </g>
             </svg>
@@ -837,7 +836,7 @@ tailwind.config = {
 
               <div class="p-3 rounded-xl bg-[#F8FAFC] border border-[#E2E8F0]/70 flex flex-col gap-1 min-w-0">
                 <span class="text-[11px] font-semibold text-[#767586] truncate">Baseline Cohort</span>
-                <span id="projectionBaselineVal" class="text-xs sm:text-sm font-extrabold text-[#131B2E] font-mono truncate">268.4M Norm</span>
+                <span id="projectionBaselineVal" class="text-xs sm:text-sm font-extrabold text-[#131B2E] font-mono truncate">54.2% Projected</span>
                 <span class="text-[10px] text-[#0ea5e9] font-semibold flex items-center gap-0.5">
                   <span class="material-symbols-outlined text-[12px]">verified</span>
                   <span>Sample Median</span>
@@ -884,7 +883,7 @@ tailwind.config = {
               <h3 class="text-sm font-bold text-[#131B2E] font-headline">Viewer Demographics</h3>
               <span class="material-symbols-outlined text-[#0ea5e9] text-[18px]">group</span>
             </div>
-            <p class="text-[11px] text-[#767586]">Age-segment audience spread across cohort</p>
+            <p class="text-[11px] text-[#767586]">Age group &amp; view spread relationship</p>
           </div>
 
           <div class="flex flex-col gap-3 py-1">
@@ -892,10 +891,11 @@ tailwind.config = {
             <div class="flex flex-col gap-1">
               <div class="flex items-center justify-between text-xs">
                 <span class="font-semibold text-[#131B2E]">18–24 yrs</span>
-                <span class="px-2 py-0.5 rounded-full bg-[#E0F2FE] text-[#0284c7] text-[11px] font-bold">48% High Velocity</span>
+                <span class="px-2 py-0.5 rounded-full bg-[#E0F2FE] text-[#0284c7] text-[11px] font-bold">45% High Velocity</span>
               </div>
               <div class="w-full h-2 rounded-full bg-[#F1F5F9] overflow-hidden flex">
-                <div class="h-full rounded-full bg-[#0284c7]" style="width: 48%"></div>
+                <div class="h-full bg-[#0284c7]" style="width: 45%"></div>
+                <div class="h-full bg-[#38bdf8]" style="width: 25%"></div>
               </div>
             </div>
 
@@ -903,10 +903,11 @@ tailwind.config = {
             <div class="flex flex-col gap-1">
               <div class="flex items-center justify-between text-xs">
                 <span class="font-semibold text-[#131B2E]">25–34 yrs</span>
-                <span class="px-2 py-0.5 rounded-full bg-[#FFEDD5] text-[#ea580c] text-[11px] font-bold">36% Engagement</span>
+                <span class="px-2 py-0.5 rounded-full bg-[#FFEDD5] text-[#ea580c] text-[11px] font-bold">32% Engagement</span>
               </div>
               <div class="w-full h-2 rounded-full bg-[#F1F5F9] overflow-hidden flex">
-                <div class="h-full rounded-full bg-[#f97316]" style="width: 36%"></div>
+                <div class="h-full bg-[#f97316]" style="width: 32%"></div>
+                <div class="h-full bg-[#fdba74]" style="width: 20%"></div>
               </div>
             </div>
 
@@ -917,7 +918,8 @@ tailwind.config = {
                 <span class="px-2 py-0.5 rounded-full bg-[#F1F5F9] text-[#64748B] text-[11px] font-bold">16% Moderate</span>
               </div>
               <div class="w-full h-2 rounded-full bg-[#F1F5F9] overflow-hidden flex">
-                <div class="h-full rounded-full bg-[#94A3B8]" style="width: 16%"></div>
+                <div class="h-full bg-[#94A3B8]" style="width: 16%"></div>
+                <div class="h-full bg-[#CBD5E1]" style="width: 15%"></div>
               </div>
             </div>
           </div>
@@ -1353,7 +1355,7 @@ tailwind.config = {
 </div>
 
 <script src="/js/tools/common.js?v=33.0"></script>
-<script src="/js/tools/trend-analyzer.js?v=41.0"></script>
+<script src="/js/tools/trend-analyzer.js?v=42.0"></script>
 
 </body>
 </html>
