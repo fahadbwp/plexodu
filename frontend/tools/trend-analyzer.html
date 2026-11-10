@@ -11,17 +11,11 @@
 <link rel="icon" type="image/png" sizes="64x64" href="/favicon.png?v=3">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200">
 <link rel="stylesheet" href="/css/style.css?v=33.0">
 <link rel="stylesheet" href="/css/trend-analyzer.css?v=33.0">
-<style>
-@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}
-::-webkit-scrollbar{display:none;}
-.no-scrollbar::-webkit-scrollbar{display:none;}
-.no-scrollbar{-ms-overflow-style:none;scrollbar-width:none;}
-</style>
 <script src="https://cdn.tailwindcss.com"></script>
 <script id="tailwind-config">
 tailwind.config = {
@@ -29,53 +23,53 @@ tailwind.config = {
   theme: {
     extend: {
       colors: {
-        "tertiary-fixed-dim": "#4edea3",
-        "tertiary-container": "#00b17b",
-        "surface-container-highest": "#dbe1ff",
         "on-primary": "#ffffff",
-        "primary-fixed-dim": "#89ceff",
-        "surface": "#faf8ff",
-        "on-error": "#ffffff",
-        "secondary-fixed-dim": "#b4c5ff",
-        "surface-container-lowest": "#ffffff",
-        "on-secondary-fixed": "#00174b",
-        "outline": "#6e7881",
-        "surface-container-high": "#e3e7ff",
-        "on-tertiary": "#ffffff",
-        "outline-variant": "#bec8d2",
-        "tertiary-fixed": "#6ffbbe",
-        "on-secondary": "#ffffff",
-        "error": "#ba1a1a",
-        "on-surface": "#131b31",
-        "surface-container": "#eaedff",
-        "surface-bright": "#faf8ff",
-        "on-primary-fixed-variant": "#004c6e",
-        "background": "#faf8ff",
-        "primary-container": "#0ea5e9",
-        "on-secondary-fixed-variant": "#003ea8",
-        "on-secondary-container": "#fefcff",
-        "primary-fixed": "#c9e6ff",
-        "on-error-container": "#93000a",
-        "inverse-primary": "#89ceff",
-        "on-surface-variant": "#3e4850",
-        "secondary-container": "#316bf3",
-        "tertiary": "#006c49",
-        "on-background": "#131b31",
-        "surface-dim": "#d2d9f7",
-        "error-container": "#ffdad6",
-        "inverse-surface": "#283047",
-        "on-tertiary-fixed": "#002113",
-        "secondary-fixed": "#dbe1ff",
-        "primary": "#006591",
-        "on-tertiary-fixed-variant": "#005236",
-        "on-primary-container": "#003751",
-        "inverse-on-surface": "#eef0ff",
-        "surface-variant": "#dbe1ff",
-        "secondary": "#0051d5",
+        "secondary-fixed-dim": "#d2bbff",
         "surface-container-low": "#f2f3ff",
-        "on-tertiary-container": "#003b26",
-        "surface-tint": "#006591",
-        "on-primary-fixed": "#001e2f"
+        "tertiary-fixed-dim": "#4edea3",
+        "on-secondary-fixed": "#25005a",
+        "on-tertiary-fixed": "#002113",
+        "error-container": "#ffdad6",
+        "on-error": "#ffffff",
+        "surface-tint": "#494bd6",
+        "primary-fixed": "#e1e0ff",
+        "surface-dim": "#d2d9f4",
+        "surface-container": "#eaedff",
+        "secondary": "#712ae2",
+        "inverse-surface": "#283044",
+        "on-surface-variant": "#464554",
+        "on-secondary": "#ffffff",
+        "primary-container": "#6063ee",
+        "on-tertiary": "#ffffff",
+        "tertiary": "#006c49",
+        "primary-fixed-dim": "#c0c1ff",
+        "tertiary-container": "#00885d",
+        "on-primary-container": "#fffbff",
+        "tertiary-fixed": "#6ffbbe",
+        "surface": "#faf8ff",
+        "background": "#faf8ff",
+        "on-background": "#131b2e",
+        "on-secondary-fixed-variant": "#5a00c6",
+        "on-tertiary-fixed-variant": "#005236",
+        "primary": "#4648d4",
+        "surface-container-lowest": "#ffffff",
+        "outline-variant": "#c7c4d7",
+        "on-tertiary-container": "#000703",
+        "outline": "#767586",
+        "on-primary-fixed-variant": "#2f2ebe",
+        "on-primary-fixed": "#07006c",
+        "surface-container-high": "#e2e7ff",
+        "surface-container-highest": "#dae2fd",
+        "on-error-container": "#93000a",
+        "surface-variant": "#dae2fd",
+        "inverse-on-surface": "#eef0ff",
+        "surface-bright": "#faf8ff",
+        "error": "#ba1a1a",
+        "on-surface": "#131b2e",
+        "secondary-container": "#8a4cfc",
+        "inverse-primary": "#c0c1ff",
+        "on-secondary-container": "#fffbff",
+        "secondary-fixed": "#eaddff"
       },
       borderRadius: {
         DEFAULT: "0.25rem",
@@ -85,747 +79,1064 @@ tailwind.config = {
         full: "9999px"
       },
       spacing: {
-        "margin-mobile": "1rem",
-        "space-2xs": "0.25rem",
-        "gutter-sm": "1rem",
-        "space-xs": "0.5rem",
-        "space-sm": "0.75rem",
-        "space-md": "1rem",
-        "space-lg": "1.5rem",
-        "space-xl": "2rem",
-        "space-2xl": "3rem"
+        margin: "1rem",
+        "space-xs": "0.25rem",
+        "space-sm": "0.5rem",
+        "space-md": "0.75rem",
+        "space-lg": "1.25rem",
+        "space-xl": "1.75rem",
+        "space-2xl": "2.5rem",
+        "margin-tablet": "1.5rem",
+        "margin-desktop": "2rem"
       },
       fontFamily: {
-        "headline-lg": ["'Plus Jakarta Sans'", "sans-serif"],
-        "headline-md": ["'Plus Jakarta Sans'", "sans-serif"],
-        "headline-sm": ["'Plus Jakarta Sans'", "sans-serif"],
-        "headline-xl": ["'Plus Jakarta Sans'", "sans-serif"],
-        "body-lg": ["'Plus Jakarta Sans'", "'Inter'", "sans-serif"],
-        "body-md": ["'Plus Jakarta Sans'", "'Inter'", "sans-serif"],
-        "body-sm": ["'Plus Jakarta Sans'", "'Inter'", "sans-serif"],
-        "label-lg": ["'Plus Jakarta Sans'", "sans-serif"],
-        "label-md": ["'Plus Jakarta Sans'", "sans-serif"],
-        "label-sm": ["'Plus Jakarta Sans'", "sans-serif"],
-        "code-md": ["'JetBrains Mono'", "monospace"]
+        headline: ["Plus Jakarta Sans", "sans-serif"],
+        body: ["Plus Jakarta Sans", "sans-serif"],
+        label: ["Inter", "sans-serif"],
+        mono: ["JetBrains Mono", "monospace"]
       }
     }
   }
 };
 </script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+<script defer src="/js/analytics.js"></script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebApplication",
+      "@id": "https://plexudo.vercel.app/tools/trend-analyzer#software",
+      "name": "YouTube Trend Analyzer & Topic Momentum \u2014 Plexudo",
+      "url": "https://plexudo.vercel.app/tools/trend-analyzer",
+      "applicationCategory": "BusinessApplication",
+      "applicationSubCategory": "Video SEO & Trend Intelligence",
+      "operatingSystem": "All",
+      "browserRequirements": "Requires JavaScript. Requires HTML5.",
+      "description": "Analyze real-time YouTube topic velocity, breakout category momentum, and audience engagement trends 100% free with no login required.",
+      "publisher": {
+        "@type": "Organization",
+        "name": "Plexudo",
+        "url": "https://plexudo.vercel.app/"
+      },
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "@id": "https://plexudo.vercel.app/tools/trend-analyzer#breadcrumb",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://plexudo.vercel.app/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Tools",
+          "item": "https://plexudo.vercel.app/tools"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "Trend Analyzer",
+          "item": "https://plexudo.vercel.app/tools/trend-analyzer"
+        }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "@id": "https://plexudo.vercel.app/tools/trend-analyzer#faq",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "How does the Plexudo YouTube Trend Analyzer calculate topic momentum?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Plexudo evaluates video view velocity, search volume velocity, and engagement ratios across recently published public YouTube videos in real time."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is the YouTube Trend Analyzer free to use?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes, Plexudo provides 100% free and anonymous access to YouTube trend analytics with no account creation, credit card, or login required."
+          }
+        }
+      ]
+    }
+  ]
+}
+</script>
 </head>
-<body class="bg-surface font-body-md text-on-surface stitch-tools">
+<body class="trend-ui stitch-tools">
 
-<!-- Left Sidebar: Exact Stitch Navy Sidebar -->
-<aside id="stitchSidebar" class="fixed inset-y-0 left-0 -translate-x-full lg:translate-x-0 w-64 bg-[#0b1329] z-[10002] flex flex-col justify-between shadow-2xl lg:shadow-[0_1px_8px_rgba(0,0,0,0.04)] stitch-sidebar transition-transform duration-200 ease-in-out">
-  <div class="flex flex-col">
-    <!-- Brand / Logo -->
-    <div class="h-16 px-space-lg flex items-center gap-space-sm border-b border-[#16203a]">
-      <a href="/tools" class="flex items-center gap-space-sm text-decoration-none">
-        <div class="w-9 h-9 rounded-xl bg-primary flex items-center justify-center shadow-sm">
-          <span class="material-symbols-rounded text-on-primary text-[20px]">play_circle</span>
+<div class="stitch-app-shell">
+  <!-- Desktop Fixed Sidebar -->
+  <aside class="stitch-sidebar" aria-label="Sidebar Navigation">
+    <div class="stitch-sidebar-top">
+      <div class="stitch-sidebar-brand">
+        <a href="/" class="stitch-brand-link">
+          <div class="stitch-brand-logo-icon">
+            <span class="material-symbols-outlined" style="font-size:22px;" aria-hidden="true">play_shapes</span>
+          </div>
+          <div>
+            <div class="stitch-brand-title">PLEXUDO</div>
+            <div class="stitch-brand-subtitle">Creator Suite</div>
+          </div>
+        </a>
+      </div>
+
+      <div class="stitch-public-badge">
+        <span class="material-symbols-outlined stitch-public-badge-icon" style="font-size:18px;" aria-hidden="true">public</span>
+        <div>
+          <div class="stitch-public-badge-title">Public Workspace</div>
+          <div class="stitch-public-badge-sub">Free &amp; Instant Access</div>
         </div>
-        <div class="flex flex-col">
-          <span class="font-headline-md text-white font-bold tracking-tight leading-none">Plexudo</span>
-          <span class="font-label-sm text-outline-variant uppercase tracking-wider mt-0.5">Trend Studio</span>
-        </div>
-      </a>
-      <button id="sidebarCloseBtn" class="lg:hidden p-1 rounded-lg text-outline-variant hover:text-white" type="button" aria-label="Close sidebar">
-        <span class="material-symbols-rounded text-[20px]">close</span>
+      </div>
+
+      <div class="stitch-nav-group">
+        <span class="stitch-nav-heading">Analytics Engine</span>
+        <nav class="stitch-nav-list">
+          <a href="/tools/trend-analyzer" class="stitch-nav-link active" aria-current="page">
+            <span class="material-symbols-outlined stitch-nav-icon" style="font-size:20px;" aria-hidden="true">trending_up</span>
+            <span>Trend Analyzer</span>
+          </a>
+          <a href="/tools/video-analyzer" class="stitch-nav-link">
+            <span class="material-symbols-outlined stitch-nav-icon" style="font-size:20px;" aria-hidden="true">analytics</span>
+            <span>Video Analyzer</span>
+          </a>
+          <a href="/tools/competitor-audit" class="stitch-nav-link">
+            <span class="material-symbols-outlined stitch-nav-icon" style="font-size:20px;" aria-hidden="true">compare_arrows</span>
+            <span>Competitor Audit</span>
+          </a>
+          <a href="/tools/ai-strategist" class="stitch-nav-link">
+            <span class="material-symbols-outlined stitch-nav-icon" style="font-size:20px;" aria-hidden="true">smart_toy</span>
+            <span>AI Strategist</span>
+          </a>
+        </nav>
+      </div>
+
+      <div class="stitch-nav-group">
+        <span class="stitch-nav-heading">Resources &amp; Hub</span>
+        <nav class="stitch-nav-list">
+          <a href="/tools" class="stitch-nav-link">
+            <span class="material-symbols-outlined stitch-nav-icon" style="font-size:18px;" aria-hidden="true">apps</span>
+            <span>All Tools Directory</span>
+          </a>
+          <a href="/blog/" class="stitch-nav-link">
+            <span class="material-symbols-outlined stitch-nav-icon" style="font-size:18px;" aria-hidden="true">menu_book</span>
+            <span>Guides &amp; Articles</span>
+          </a>
+          <a href="/privacy" class="stitch-nav-link">
+            <span class="material-symbols-outlined stitch-nav-icon" style="font-size:18px;" aria-hidden="true">security</span>
+            <span>Privacy Policy</span>
+          </a>
+          <a href="/terms" class="stitch-nav-link">
+            <span class="material-symbols-outlined stitch-nav-icon" style="font-size:18px;" aria-hidden="true">description</span>
+            <span>Terms of Service</span>
+          </a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="stitch-sidebar-footer-card">
+      <div class="stitch-footer-card-header">
+        <span class="material-symbols-outlined" style="font-size:18px; color:var(--stitch-secondary);" aria-hidden="true">rocket_launch</span>
+        <span>Automated Tracking</span>
+      </div>
+      <p class="stitch-footer-card-desc">Continuous 24/7 channel surveillance and automated alerts are scheduled for a future release.</p>
+      <div class="stitch-footer-card-pill" aria-label="Planned Feature">
+        <span class="material-symbols-outlined" style="font-size:13px;" aria-hidden="true">schedule</span>
+        <span>Planned Feature &bull; 100% Free Suite</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Mobile Sticky Topbar -->
+  <header class="stitch-mobile-topbar" aria-label="Mobile Navigation Bar">
+    <div class="stitch-flex-row stitch-gap-xs">
+      <button class="stitch-hamburger-btn" onclick="toggleSidebarDrawer()" aria-label="Open navigation menu">
+        <span class="material-symbols-outlined" style="font-size:24px;" aria-hidden="true">menu</span>
       </button>
-    </div>
-
-    <!-- Navigation Links -->
-    <nav class="flex flex-col gap-space-2xs px-space-sm mt-space-md" data-active-classes="bg-primary-container text-white font-headline-sm rounded-xl">
-      <a href="/tools/trend-analyzer" aria-current="page" class="flex items-center gap-space-sm px-space-md py-space-sm transition-all bg-primary-container text-white font-semibold rounded-xl shadow-sm">
-        <span class="material-symbols-rounded text-[20px]">trending_up</span>
-        <span>Trend Analyzer</span>
-      </a>
-      <a href="/tools/video-analyzer" class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-outline-variant hover:bg-[#16203a] hover:text-white transition-all font-medium text-sm">
-        <span class="material-symbols-rounded text-[20px]">analytics</span>
-        <span>Video Analyzer</span>
-      </a>
-      <a href="/tools/competitor-audit" class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-outline-variant hover:bg-[#16203a] hover:text-white transition-all font-medium text-sm">
-        <span class="material-symbols-rounded text-[20px]">compare_arrows</span>
-        <span>Competitor Audit</span>
-      </a>
-      <a href="/tools/ai-strategist" class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-outline-variant hover:bg-[#16203a] hover:text-white transition-all font-medium text-sm">
-        <span class="material-symbols-rounded text-[20px]">smart_toy</span>
-        <span>AI Strategist</span>
-      </a>
-      <a href="/tools" class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-outline-variant hover:bg-[#16203a] hover:text-white transition-all font-medium text-sm">
-        <span class="material-symbols-rounded text-[20px]">apps</span>
-        <span>Tools Hub</span>
-      </a>
-    </nav>
-  </div>
-
-  <!-- Bottom Workspace User / Session Info -->
-  <div class="p-space-sm flex flex-col gap-space-2xs bg-[#0b1329] border-t border-[#16203a]">
-    <div class="flex items-center justify-between p-space-sm rounded-xl bg-[#16203a]/60 hover:bg-[#16203a] transition-colors cursor-pointer">
-      <div class="flex items-center gap-space-xs">
-        <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
-          <span class="material-symbols-rounded text-on-primary text-[18px]">person</span>
+      <a href="/" class="stitch-brand-link" style="gap:8px;">
+        <div class="stitch-brand-logo-icon" style="width:32px; height:32px; border-radius:8px;">
+          <span class="material-symbols-outlined" style="font-size:18px;" aria-hidden="true">play_shapes</span>
         </div>
-        <div class="flex flex-col">
-          <span class="font-label-md text-white font-semibold leading-tight">Alex Rivers</span>
-          <span class="text-xs text-outline-variant leading-tight">Creator Pro • Anonymous</span>
-        </div>
-      </div>
-      <span class="material-symbols-rounded text-outline-variant text-[18px]">verified</span>
-    </div>
-    <div class="px-space-md py-space-xs flex items-center justify-between text-xs text-outline-variant">
-      <span>100% Free Public Tier</span>
-      <span class="stitch-footer-card-pill px-2 py-0.5 rounded-full bg-primary/20 text-[#89ceff] text-[10px] font-bold">Planned Feature</span>
-    </div>
-  </div>
-</aside>
-
-<!-- Backdrop overlay for mobile sidebar -->
-<div id="sidebarBackdrop" class="fixed inset-0 bg-black/60 z-[10001] hidden transition-opacity lg:hidden" aria-hidden="true"></div>
-
-<!-- Main Wrapper with Left Padding for Sidebar -->
-<div class="pl-0 lg:pl-64 stitch-main-canvas min-w-0 max-w-full">
-  
-  <!-- Fixed Top Header -->
-  <header class="fixed top-0 left-0 lg:left-64 right-0 h-16 bg-surface/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-30 flex items-center justify-between px-3 sm:px-6 border-b border-[#E2E8F0]/60">
-    <div class="flex items-center gap-2 sm:gap-4 min-w-0">
-      <button id="mobileMenuToggle" class="lg:hidden p-1.5 rounded-lg text-on-surface hover:bg-surface-container transition-colors flex-shrink-0" type="button" aria-label="Toggle Navigation">
-        <span class="material-symbols-rounded text-[22px]">menu</span>
-      </button>
-      <span class="font-headline-sm text-on-surface font-bold text-sm sm:text-base truncate">YouTube Trend Analyzer</span>
-      <div class="relative hidden md:flex items-center">
-        <span class="material-symbols-rounded absolute left-3 text-outline text-[18px]">search</span>
-        <input id="pulseSearchInput" class="w-64 lg:w-80 h-10 pl-10 pr-4 rounded-full bg-surface-container-lowest text-on-surface text-xs font-medium placeholder-outline shadow-sm border border-transparent focus:outline-none focus:ring-2 focus:ring-primary-container focus:bg-white transition-all" placeholder="Search channels, topics, metrics..." type="text" autocomplete="off" />
-        <button id="pulseSearchBtn" class="sr-only" type="button" aria-label="Search">Search</button>
-      </div>
-    </div>
-    
-    <div class="flex items-center gap-space-sm">
-      <a href="/tools" class="px-3 py-1.5 rounded-full bg-surface-container-low text-on-surface hover:bg-surface-container transition-colors text-xs font-semibold flex items-center gap-1 shadow-xs">
-        <span class="material-symbols-rounded text-[16px]">apps</span>
-        <span class="hidden sm:inline">All Tools</span>
+        <span class="stitch-brand-title" style="font-size:1rem;">PLEXUDO</span>
       </a>
-      <div class="flex items-center gap-space-xs pl-space-xs pr-space-sm py-1 rounded-full bg-surface-container-lowest shadow-sm border border-[#E2E8F0]/80">
-        <div class="w-7 h-7 rounded-full bg-primary flex items-center justify-center">
-          <span class="material-symbols-rounded text-on-primary text-[16px]">person</span>
-        </div>
-        <span class="font-label-md text-on-surface hidden sm:inline-block font-semibold">Alex R.</span>
-      </div>
+    </div>
+    <div class="stitch-flex-row stitch-gap-xs">
+      <span class="stitch-badge-pill" style="padding:3px 8px; font-size:0.6875rem;">
+        <span class="stitch-live-dot"></span> Free Tool
+      </span>
+      <div class="stitch-user-avatar" style="width:28px; height:28px; font-size:0.75rem;">GC</div>
     </div>
   </header>
 
-  <!-- Main Canvas Content Area -->
-  <main class="w-full pt-16 bg-surface">
-    <div class="flex flex-col w-full">
-      <div class="p-space-lg lg:p-space-xl flex flex-col gap-space-lg bg-[#f1f4f9] min-w-0 stitch-content-container">
+  <!-- Mobile Drawer Backdrop & Menu -->
+  <div class="stitch-drawer-backdrop" id="stitchDrawerBackdrop" onclick="closeSidebarDrawer()" aria-hidden="true"></div>
+  <aside class="stitch-drawer" id="stitchMobileDrawer" inert aria-hidden="true" aria-label="Mobile Navigation Drawer">
+    <div>
+      <div class="stitch-drawer-header">
+        <div class="stitch-flex-row stitch-gap-xs">
+          <div class="stitch-brand-logo-icon" style="width:32px; height:32px; border-radius:8px;">
+            <span class="material-symbols-outlined" style="font-size:18px;" aria-hidden="true">play_shapes</span>
+          </div>
+          <span class="stitch-brand-title" style="font-size:1.05rem;">PLEXUDO</span>
+        </div>
+        <button class="stitch-drawer-close-btn" onclick="closeSidebarDrawer()" aria-label="Close navigation menu">
+          <span class="material-symbols-outlined" style="font-size:20px;" aria-hidden="true">close</span>
+        </button>
+      </div>
 
-        <!-- Top Live Subheader & Filter Matrix -->
-        <div class="flex flex-col gap-space-md bg-surface-container-lowest p-space-lg rounded-2xl shadow-[0_10px_25px_-5px_rgba(11,19,41,0.03),0_8px_10px_-6px_rgba(11,19,41,0.02)] border border-[#E2E8F0]/80">
+      <div class="stitch-nav-group">
+        <span class="stitch-nav-heading">Creator Utilities</span>
+        <nav class="stitch-nav-list">
+          <a href="/tools/trend-analyzer" class="stitch-nav-link active" onclick="closeSidebarDrawer()">
+            <span class="material-symbols-outlined stitch-nav-icon" style="font-size:20px;" aria-hidden="true">trending_up</span>
+            <span>Trend Analyzer</span>
+          </a>
+          <a href="/tools/video-analyzer" class="stitch-nav-link" onclick="closeSidebarDrawer()">
+            <span class="material-symbols-outlined stitch-nav-icon" style="font-size:20px;" aria-hidden="true">analytics</span>
+            <span>Video Analyzer</span>
+          </a>
+          <a href="/tools/competitor-audit" class="stitch-nav-link" onclick="closeSidebarDrawer()">
+            <span class="material-symbols-outlined stitch-nav-icon" style="font-size:20px;" aria-hidden="true">compare_arrows</span>
+            <span>Competitor Audit</span>
+          </a>
+          <a href="/tools/ai-strategist" class="stitch-nav-link" onclick="closeSidebarDrawer()">
+            <span class="material-symbols-outlined stitch-nav-icon" style="font-size:20px;" aria-hidden="true">smart_toy</span>
+            <span>AI Strategist</span>
+          </a>
+          <a href="/tools" class="stitch-nav-link" onclick="closeSidebarDrawer()">
+            <span class="material-symbols-outlined stitch-nav-icon" style="font-size:18px;" aria-hidden="true">apps</span>
+            <span>All Tools Hub</span>
+          </a>
+        </nav>
+      </div>
+
+      <div class="stitch-nav-group">
+        <span class="stitch-nav-heading">Platform &amp; Legal</span>
+        <nav class="stitch-nav-list">
+          <a href="/" class="stitch-nav-link" onclick="closeSidebarDrawer()">
+            <span class="material-symbols-outlined" style="font-size:18px;" aria-hidden="true">home</span>
+            <span>Homepage</span>
+          </a>
+          <a href="/blog/" class="stitch-nav-link" onclick="closeSidebarDrawer()">
+            <span class="material-symbols-outlined" style="font-size:18px;" aria-hidden="true">menu_book</span>
+            <span>Blog &amp; Guides</span>
+          </a>
+          <a href="/privacy" class="stitch-nav-link" onclick="closeSidebarDrawer()">
+            <span class="material-symbols-outlined" style="font-size:18px;" aria-hidden="true">security</span>
+            <span>Privacy Policy</span>
+          </a>
+          <a href="/terms" class="stitch-nav-link" onclick="closeSidebarDrawer()">
+            <span class="material-symbols-outlined" style="font-size:18px;" aria-hidden="true">description</span>
+            <span>Terms of Service</span>
+          </a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="stitch-sidebar-footer-card">
+      <div class="stitch-footer-card-header">
+        <span class="material-symbols-outlined" style="font-size:18px; color:var(--stitch-secondary);" aria-hidden="true">rocket_launch</span>
+        <span>Automated Tracking</span>
+      </div>
+      <p class="stitch-footer-card-desc">Continuous 24/7 channel surveillance and automated alerts are scheduled for a future release.</p>
+      <div class="stitch-footer-card-pill" aria-label="Planned Feature">
+        <span class="material-symbols-outlined" style="font-size:13px;" aria-hidden="true">schedule</span>
+        <span>Planned Feature &bull; 100% Free Suite</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Canvas -->
+  <main class="stitch-main-canvas">
+    <div class="stitch-content-container">
+<!-- Breadcrumb & Top Bar -->
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div class="flex flex-col gap-1">
+          <div class="flex items-center gap-1.5 text-xs text-[#767586] font-label">
+            <a href="/tools" class="hover:text-[#4648D4] transition-colors">Tools</a>
+            <span class="material-symbols-outlined text-[14px]">chevron_right</span>
+            <span class="text-[#4648D4] font-semibold">Trend Analyzer</span>
+            <span class="hidden sm:inline-flex items-center gap-1 ml-2 px-2 py-0.5 rounded-full bg-[#EAEDFF] text-[#4648D4] text-xs font-semibold">
+              <span class="material-symbols-outlined text-[13px] text-[#006C49]">check_circle</span>
+              <span>plexudo.com/tools/trend-analyzer</span>
+            </span>
+          </div>
+          <h1 class="text-2xl sm:text-3xl font-extrabold text-[#131B2E] tracking-tight font-headline">
+            YouTube Trend Analyzer &amp; Topic Momentum
+          </h1>
+          <p class="text-xs sm:text-sm text-[#464554] max-w-3xl leading-relaxed">
+            Real-time query velocity, category breakout velocity, and audience engagement signals derived across public YouTube uploads.
+          </p>
+        </div>
+
+        <!-- Quick Status Chip -->
+        <div class="flex items-center gap-2 self-start md:self-auto px-4 py-2 rounded-2xl bg-white border border-[#E2E8F0] shadow-sm">
+          <div class="relative flex items-center justify-center">
+            <span class="w-2.5 h-2.5 rounded-full bg-[#00885D]"></span>
+            <span class="absolute w-4 h-4 rounded-full bg-[#4EDEA3] opacity-75 animate-ping"></span>
+          </div>
+          <div class="flex flex-col">
+            <span class="text-xs text-[#131B2E] font-bold uppercase tracking-wider font-label">Live Sample Stream</span>
+            <span class="text-xs text-[#767586]">Updated just now</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Filter & Controls Surface (Exact Stitch Layout) -->
+      <div class="p-4 sm:p-5 rounded-2xl bg-white border border-[#E2E8F0]/80 shadow-sm flex flex-col gap-4">
+        <div class="flex flex-col xl:flex-row items-stretch xl:items-center justify-between gap-3">
           
-          <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-space-md">
-            <div class="flex flex-col gap-space-2xs">
-              <div class="flex items-center gap-space-xs flex-wrap">
-                <h1 class="font-headline-lg text-on-surface font-extrabold tracking-tight">YouTube Trend Analyzer &amp; Topic Momentum</h1>
-                <span class="inline-flex items-center gap-1.5 px-space-xs py-0.5 rounded-full bg-tertiary-fixed-dim/20 text-tertiary font-label-md text-xs font-bold">
-                  <span class="w-2 h-2 rounded-full bg-tertiary-container animate-pulse"></span>
-                  Live Sample Stream • Updated just now
-                </span>
-              </div>
-              <p class="font-body-md text-outline text-xs sm:text-sm">Real-time query velocity, category breakout velocity, and audience engagement signals derived across public YouTube uploads.</p>
-            </div>
-
-            <!-- Action Exports -->
-            <div class="flex items-center gap-space-xs self-start lg:self-center">
-              <button id="exportCsvBtn" class="inline-flex items-center gap-space-xs px-space-md py-space-xs rounded-xl bg-surface-container-low text-on-surface hover:bg-surface-container transition-all font-semibold text-xs shadow-sm border border-[#E2E8F0]" type="button">
-                <span class="material-symbols-rounded text-[18px] text-primary">download</span>
-                <span>CSV Export</span>
-              </button>
-              <button id="exportPdfBtn" class="inline-flex items-center gap-space-xs px-space-md py-space-xs rounded-xl bg-primary text-on-primary hover:bg-secondary-container transition-all font-semibold text-xs shadow-sm" type="button">
-                <span class="material-symbols-rounded text-[18px]">picture_as_pdf</span>
-                <span>PDF Report</span>
-              </button>
-            </div>
+          <!-- Search Bar -->
+          <div class="relative flex-1 min-w-0">
+            <span class="absolute left-3.5 top-1/2 -translate-y-1/2 material-symbols-outlined text-[#4648D4] text-[20px]">search_insights</span>
+            <input type="text" id="pulseSearchInput" class="w-full h-11 pl-11 pr-4 rounded-xl bg-[#F2F3FF] text-[#131B2E] text-sm font-medium border border-transparent focus:outline-none focus:bg-white focus:border-[#6063EE] shadow-sm transition-all placeholder:text-[#767586]" placeholder="Search topics, keywords, creators..." autocomplete="off" aria-label="Search trending topics" />
+            <div id="suggestionsDropdown" class="suggestions-dropdown" style="display:none;"></div>
           </div>
 
-          <!-- Secondary Filter Row: Countries + Timeframes -->
-          <div class="flex flex-col md:flex-row md:items-center justify-between gap-space-sm pt-space-xs border-t border-[#F1F5F9]">
-            <!-- Region Selector Pills -->
-            <div class="flex items-center gap-space-xs overflow-x-auto pb-1 md:pb-0" id="region-selector">
-              <button data-region="Global" class="px-space-md py-1.5 rounded-full bg-primary-container text-white font-semibold text-xs shadow-sm transition-all pulsecheck-region-btn active">
-                🌐 Global
-              </button>
-              <button data-region="US" class="px-space-md py-1.5 rounded-full bg-surface-container-low text-on-surface-variant hover:bg-surface-container font-semibold text-xs transition-all pulsecheck-region-btn">
-                🇺🇸 United States
-              </button>
-              <button data-region="IN" class="px-space-md py-1.5 rounded-full bg-surface-container-low text-on-surface-variant hover:bg-surface-container font-semibold text-xs transition-all pulsecheck-region-btn">
-                🇮🇳 India
-              </button>
-              <button data-region="Pakistan" class="px-space-md py-1.5 rounded-full bg-surface-container-low text-on-surface-variant hover:bg-surface-container font-semibold text-xs transition-all pulsecheck-region-btn">
-                🇵🇰 Pakistan
-              </button>
-              <button data-region="GB" class="px-space-md py-1.5 rounded-full bg-surface-container-low text-on-surface-variant hover:bg-surface-container font-semibold text-xs transition-all pulsecheck-region-btn">
-                🇬🇧 United Kingdom
-              </button>
+          <!-- Controls Group: Search Button, Region, Timeframe, Exports -->
+          <div class="flex flex-wrap items-center gap-2.5 justify-between xl:justify-end">
+            <!-- Search Button -->
+            <button id="analyzeBtn" class="h-11 px-4 rounded-xl bg-[#4648D4] hover:bg-[#3B3DB8] text-white text-xs font-bold flex items-center gap-1.5 shadow-sm transition-all" type="button">
+              <span class="material-symbols-outlined text-[18px]">search</span>
+              <span>Search</span>
+            </button>
+
+            <!-- Region Dropdown -->
+            <div class="relative">
+              <select id="pulseRegionSelect" class="h-11 px-3.5 pr-8 rounded-xl bg-[#F2F3FF] hover:bg-[#EAEDFF] text-[#131B2E] text-xs font-semibold appearance-none border border-transparent focus:outline-none focus:border-[#6063EE] cursor-pointer transition-colors" aria-label="Select Region">
+                <option value="Pakistan" selected>🇵🇰 Pakistan</option>
+                <option value="United States">🇺🇸 United States</option>
+                <option value="India">🇮🇳 India</option>
+                <option value="United Kingdom">🇬🇧 United Kingdom</option>
+                <option value="Global">🌐 Global</option>
+              </select>
+              <span class="absolute right-2.5 top-1/2 -translate-y-1/2 material-symbols-outlined text-[16px] text-[#767586] pointer-events-none">expand_more</span>
             </div>
 
             <!-- Timeframe Pills -->
-            <div class="flex items-center gap-1 bg-surface-container-low p-1 rounded-xl self-start md:self-auto border border-[#E2E8F0]/60">
-              <button data-timeframe="24h" class="px-3 py-1 rounded-lg bg-surface-container-lowest text-xs text-primary font-bold shadow-sm timeframe-pill active">24h</button>
-              <button data-timeframe="7d" class="px-3 py-1 rounded-lg text-xs text-outline hover:text-on-surface timeframe-pill font-semibold">7d</button>
-              <button data-timeframe="30d" class="px-3 py-1 rounded-lg text-xs text-outline hover:text-on-surface timeframe-pill font-semibold">30d</button>
+            <div class="flex items-center p-1 bg-[#F2F3FF] rounded-xl border border-[#EAEDFF]" id="pulsecheckTimeframes">
+              <button class="px-3 py-1.5 rounded-lg text-xs font-medium text-[#767586] hover:text-[#131B2E] transition-all pulsecheck-pill" data-timeframe="24h">24h</button>
+              <button class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-[#6063EE] text-white shadow-sm transition-all pulsecheck-pill active" data-timeframe="7d">7d</button>
+              <button class="px-3 py-1.5 rounded-lg text-xs font-medium text-[#767586] hover:text-[#131B2E] transition-all pulsecheck-pill" data-timeframe="30d">30d</button>
             </div>
-          </div>
 
-          <!-- Category Filter Pills (Verticals) -->
-          <div class="flex items-center gap-space-xs overflow-x-auto no-scrollbar pt-space-xs border-t border-[#F1F5F9]" id="pulseCatScroller">
-            <span class="font-label-sm text-outline uppercase tracking-wider whitespace-nowrap mr-1 font-bold">Verticals:</span>
-            <button data-category="All" class="px-3 py-1 rounded-lg bg-primary-container text-white text-xs font-semibold whitespace-nowrap shadow-sm pulsecheck-cat-chip active">All Verticals</button>
-            <button data-category="Music" class="px-3 py-1 rounded-lg bg-surface-container-low text-outline hover:text-on-surface hover:bg-surface-container text-xs font-semibold whitespace-nowrap pulsecheck-cat-chip">Music</button>
-            <button data-category="Gaming" class="px-3 py-1 rounded-lg bg-surface-container-low text-outline hover:text-on-surface hover:bg-surface-container text-xs font-semibold whitespace-nowrap pulsecheck-cat-chip">Gaming</button>
-            <button data-category="Comedy" class="px-3 py-1 rounded-lg bg-surface-container-low text-outline hover:text-on-surface hover:bg-surface-container text-xs font-semibold whitespace-nowrap pulsecheck-cat-chip">Comedy</button>
-            <button data-category="Technology" class="px-3 py-1 rounded-lg bg-surface-container-low text-outline hover:text-on-surface hover:bg-surface-container text-xs font-semibold whitespace-nowrap pulsecheck-cat-chip">Tech</button>
-            <button data-category="Education" class="px-3 py-1 rounded-lg bg-surface-container-low text-outline hover:text-on-surface hover:bg-surface-container text-xs font-semibold whitespace-nowrap pulsecheck-cat-chip">Education</button>
-            <button data-category="Sports" class="px-3 py-1 rounded-lg bg-surface-container-low text-outline hover:text-on-surface hover:bg-surface-container text-xs font-semibold whitespace-nowrap pulsecheck-cat-chip">Sports</button>
-            <button data-category="News" class="px-3 py-1 rounded-lg bg-surface-container-low text-outline hover:text-on-surface hover:bg-surface-container text-xs font-semibold whitespace-nowrap pulsecheck-cat-chip">News</button>
-            <button data-category="Entertainment" class="px-3 py-1 rounded-lg bg-surface-container-low text-outline hover:text-on-surface hover:bg-surface-container text-xs font-semibold whitespace-nowrap pulsecheck-cat-chip">Lifestyle</button>
+            <!-- Export Buttons -->
+            <div class="flex items-center gap-1.5">
+              <button id="exportCsvBtn" class="h-11 px-3 rounded-xl bg-[#F2F3FF] hover:bg-[#EAEDFF] text-[#131B2E] text-xs font-semibold flex items-center gap-1 border border-[#EAEDFF] shadow-sm transition-all" type="button">
+                <span class="material-symbols-outlined text-[16px]">table_chart</span>
+                <span>CSV</span>
+              </button>
+              <button id="exportPdfBtn" class="h-11 px-3 rounded-xl bg-[#F2F3FF] hover:bg-[#EAEDFF] text-[#131B2E] text-xs font-semibold flex items-center gap-1 border border-[#EAEDFF] shadow-sm transition-all" type="button">
+                <span class="material-symbols-outlined text-[16px]">picture_as_pdf</span>
+                <span>Report</span>
+              </button>
+            </div>
           </div>
         </div>
 
-        <!-- Top Metric Bento Cards (5 Key KPIs) -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-space-md">
-          
-          <!-- Card 1: 24h Median Views -->
-          <div class="bg-surface-container-lowest p-space-md rounded-2xl flex flex-col justify-between shadow-[0_10px_25px_-5px_rgba(11,19,41,0.03),0_8px_10px_-6px_rgba(11,19,41,0.02)] hover:shadow-md transition-shadow border border-[#E2E8F0]/80">
-            <div class="flex items-center justify-between">
-              <span class="font-label-sm text-outline uppercase tracking-wider font-bold">24h Median Views</span>
-              <span class="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
-                <span class="material-symbols-rounded text-[16px]">visibility</span>
-              </span>
-            </div>
-            <div class="mt-space-sm">
-              <div class="flex items-baseline gap-space-2xs">
-                <span id="kpiMedianViewsVal" class="font-headline-xl text-on-surface font-extrabold tracking-tight text-2xl">268.4M</span>
-              </div>
-              <div class="flex items-center gap-1 mt-1">
-                <span id="kpiMedianDeltaPill" class="inline-flex items-center text-xs text-tertiary font-bold">
-                  <span class="material-symbols-rounded text-[14px]">arrow_upward</span>
-                  <span id="kpiAvgEngDeltaText">+14.9M</span>
-                </span>
-                <span class="text-xs text-outline">(+1.3% vs avg)</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Card 2: Momentum Index -->
-          <div class="bg-surface-container-lowest p-space-md rounded-2xl flex flex-col justify-between shadow-[0_10px_25px_-5px_rgba(11,19,41,0.03),0_8px_10px_-6px_rgba(11,19,41,0.02)] hover:shadow-md transition-shadow border border-[#E2E8F0]/80">
-            <div class="flex items-center justify-between">
-              <span class="font-label-sm text-outline uppercase tracking-wider font-bold">Momentum Index</span>
-              <span id="kpiMomentumSpeedBadge" class="px-2 py-0.5 rounded-full bg-primary-container/10 text-primary text-xs font-bold">Ultra Fast</span>
-            </div>
-            <div class="mt-space-sm">
-              <div class="flex items-baseline gap-1">
-                <span id="kpiMomentumScoreVal" class="font-headline-xl text-on-surface font-extrabold tracking-tight text-2xl">94.0</span>
-                <span class="text-xs text-outline font-semibold">/ 100</span>
-              </div>
-              <div class="w-full bg-surface-container-high h-2 rounded-full mt-2 overflow-hidden">
-                <div id="kpiMomentumProgressBar" class="bg-primary-container h-full rounded-full transition-all duration-500" style="width: 94%"></div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Card 3: Avg Engagement -->
-          <div class="bg-surface-container-lowest p-space-md rounded-2xl flex flex-col justify-between shadow-[0_10px_25px_-5px_rgba(11,19,41,0.03),0_8px_10px_-6px_rgba(11,19,41,0.02)] hover:shadow-md transition-shadow border border-[#E2E8F0]/80">
-            <div class="flex items-center justify-between">
-              <span class="font-label-sm text-outline uppercase tracking-wider font-bold">Avg Engagement</span>
-              <span class="w-7 h-7 rounded-lg bg-tertiary-fixed-dim/20 flex items-center justify-center text-tertiary">
-                <span class="material-symbols-rounded text-[16px]">thumb_up</span>
-              </span>
-            </div>
-            <div class="mt-space-sm">
-              <div class="flex items-baseline gap-space-2xs">
-                <span id="kpiEngagementRatioDisplay" class="font-headline-xl text-on-surface font-extrabold tracking-tight text-2xl">1.3%</span>
-              </div>
-              <div class="flex items-center gap-1 mt-1">
-                <span class="text-xs text-outline">Likes + Comments / 100 views</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Card 4: #1 Breakout Track / Video -->
-          <div class="bg-surface-container-lowest p-space-md rounded-2xl flex flex-col justify-between shadow-[0_10px_25px_-5px_rgba(11,19,41,0.03),0_8px_10px_-6px_rgba(11,19,41,0.02)] hover:shadow-md transition-shadow border border-[#E2E8F0]/80">
-            <div class="flex items-center justify-between">
-              <span class="font-label-sm text-outline uppercase tracking-wider font-bold">#1 Breakout Track</span>
-              <span id="kpiTopTopicBadge" class="px-2 py-0.5 rounded-full bg-secondary-fixed text-secondary text-xs font-semibold">Music • IN</span>
-            </div>
-            <div class="mt-space-xs">
-              <span id="kpiTopTopicTitle" class="font-headline-sm text-on-surface font-bold text-sm block truncate" title="Mahiya (Official Music Video)">Mahiya (Official Music Video)</span>
-              <span id="kpiTopTopicChannel" class="text-xs text-outline block truncate">Badshah x Shreya Ghoshal</span>
-              <div class="flex items-center gap-2 mt-1">
-                <span class="text-xs text-tertiary font-bold">+38.4% Surge</span>
-                <span id="kpiTopTopicVelocity" class="font-code-md text-xs text-primary font-semibold">+371.6K v/hr</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Card 5: Format Distribution -->
-          <div class="bg-surface-container-lowest p-space-md rounded-2xl flex flex-col justify-between shadow-[0_10px_25px_-5px_rgba(11,19,41,0.03),0_8px_10px_-6px_rgba(11,19,41,0.02)] hover:shadow-md transition-shadow border border-[#E2E8F0]/80">
-            <div class="flex items-center justify-between">
-              <span class="font-label-sm text-outline uppercase tracking-wider font-bold">Format Distribution</span>
-              <span class="w-7 h-7 rounded-lg bg-surface-container-high flex items-center justify-center text-outline">
-                <span class="material-symbols-rounded text-[16px]">pie_chart</span>
-              </span>
-            </div>
-            <div class="mt-space-xs">
-              <div id="kpiFormatCapsuleBar" class="flex h-3 w-full rounded-full overflow-hidden bg-surface-container-high gap-0.5">
-                <div class="bg-[#0ea5e9] h-full" style="width: 55%" title="Streams & Live (55%)"></div>
-                <div class="bg-[#f97316] h-full" style="width: 39%" title="Longform (39%)"></div>
-                <div class="bg-[#10b981] h-full" style="width: 6%" title="Shorts (6%)"></div>
-              </div>
-              <div class="flex items-center justify-between mt-2 text-xs">
-                <div class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-[#0ea5e9]"></span><span id="formatLiveStat" class="text-on-surface font-medium">55%</span> <span class="text-outline">Stream</span></div>
-                <div class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-[#f97316]"></span><span id="formatLongStat" class="text-on-surface font-medium">39%</span> <span class="text-outline">Long</span></div>
-                <div class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-[#10b981]"></span><span id="formatShortsStat" class="text-on-surface font-medium">6%</span> <span class="text-outline">Shorts</span></div>
-              </div>
-            </div>
-          </div>
-
-        </div>
-
-        <!-- Analytical Dual Charts Section (Matching Reference Composition) -->
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg">
-          
-          <!-- Left Chart: Topic Velocity vs Historical Baseline (8 Cols) -->
-          <div class="lg:col-span-8 bg-surface-container-lowest p-space-lg rounded-2xl shadow-[0_10px_25px_-5px_rgba(11,19,41,0.03),0_8px_10px_-6px_rgba(11,19,41,0.02)] flex flex-col justify-between border border-[#E2E8F0]/80">
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-space-xs mb-space-md">
-              <div class="flex flex-col">
-                <div class="flex items-center gap-2">
-                  <h2 id="viewsTrendTitle" class="font-headline-md text-on-surface font-bold text-lg">Topic Velocity vs Historical Baseline</h2>
-                  <span id="viewsTrendCatBadge" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[#EEF2FF] text-[#4F46E5] border border-[#C7D2FE]/70 shrink-0">Sampled Age Brackets</span>
-                </div>
-                <span class="text-xs text-outline mt-0.5">Observed view surge velocity against rolling 30-day segment average • Lifetime views by upload age • Accumulated lifetime views across video age buckets in the current sampled cohort</span>
-              </div>
-              <div class="flex items-center gap-space-sm shrink-0">
-                <div class="flex items-center gap-1.5">
-                  <span class="w-3 h-3 rounded-full bg-[#0ea5e9]"></span>
-                  <span class="text-xs text-on-surface font-semibold">Live Surge (Views/hr)</span>
-                </div>
-                <div class="flex items-center gap-1.5">
-                  <span class="w-3 h-3 rounded-full bg-[#f97316]"></span>
-                  <span class="text-xs text-outline font-semibold">30d Norm Baseline</span>
-                </div>
-              </div>
-            </div>
-
-            <!-- SVG Line/Area Chart with Soft Curvature & Points -->
-            <div class="relative w-full h-64 select-none">
-              <svg class="w-full h-full overflow-visible" preserveaspectratio="none" viewbox="0 0 760 220">
-                <defs>
-                  <lineargradient id="cyanArea" x1="0" x2="0" y1="0" y2="1">
-                    <stop offset="0%" stop-color="#0ea5e9" stop-opacity="0.25"></stop>
-                    <stop offset="100%" stop-color="#0ea5e9" stop-opacity="0.0"></stop>
-                  </lineargradient>
-                  <lineargradient id="coralArea" x1="0" x2="0" y1="0" y2="1">
-                    <stop offset="0%" stop-color="#f97316" stop-opacity="0.18"></stop>
-                    <stop offset="100%" stop-color="#f97316" stop-opacity="0.0"></stop>
-                  </lineargradient>
-                </defs>
-                <!-- Horizontal Grid lines -->
-                <line stroke="#eaedff" stroke-width="1" x1="40" x2="740" y1="20" y2="20"></line>
-                <line stroke="#eaedff" stroke-width="1" x1="40" x2="740" y1="70" y2="70"></line>
-                <line stroke="#eaedff" stroke-width="1" x1="40" x2="740" y1="120" y2="120"></line>
-                <line stroke="#eaedff" stroke-width="1" x1="40" x2="740" y1="170" y2="170"></line>
-                <!-- Y Axis values -->
-                <text class="fill-[#6e7881] text-xs font-mono" font-size="11" text-anchor="end" x="30" y="24">400k</text>
-                <text class="fill-[#6e7881] text-xs font-mono" font-size="11" text-anchor="end" x="30" y="74">300k</text>
-                <text class="fill-[#6e7881] text-xs font-mono" font-size="11" text-anchor="end" x="30" y="124">200k</text>
-                <text class="fill-[#6e7881] text-xs font-mono" font-size="11" text-anchor="end" x="30" y="174">100k</text>
-                <!-- Coral Baseline Path & Area -->
-                <path d="M 60,185 C 110,160 160,135 210,140 C 260,145 310,178 360,160 C 410,142 460,155 510,145 C 560,135 610,165 660,135 C 700,110 720,120 740,115 L 740,190 L 60,190 Z" fill="url(#coralArea)"></path>
-                <path d="M 60,185 C 110,160 160,135 210,140 C 260,145 310,178 360,160 C 410,142 460,155 510,145 C 560,135 610,165 660,135 C 700,110 720,120 740,115" fill="none" stroke="#f97316" stroke-linecap="round" stroke-width="2.5"></path>
-                <!-- Coral Node dots -->
-                <circle cx="60" cy="185" fill="#ffffff" r="4" stroke="#f97316" stroke-width="2.5"></circle>
-                <circle cx="210" cy="140" fill="#ffffff" r="4" stroke="#f97316" stroke-width="2.5"></circle>
-                <circle cx="360" cy="160" fill="#ffffff" r="4" stroke="#f97316" stroke-width="2.5"></circle>
-                <circle cx="510" cy="145" fill="#ffffff" r="4" stroke="#f97316" stroke-width="2.5"></circle>
-                <circle cx="660" cy="135" fill="#ffffff" r="4" stroke="#f97316" stroke-width="2.5"></circle>
-                <circle cx="740" cy="115" fill="#ffffff" r="4" stroke="#f97316" stroke-width="2.5"></circle>
-                <!-- Cyan Live Path & Area -->
-                <path d="M 60,175 C 110,95 160,105 210,115 C 260,125 310,80 360,98 C 410,116 460,100 510,50 C 560,100 610,65 660,90 C 700,60 720,40 740,45 L 740,190 L 60,190 Z" fill="url(#cyanArea)"></path>
-                <path d="M 60,175 C 110,95 160,105 210,115 C 260,125 310,80 360,98 C 410,116 460,100 510,50 C 560,100 610,65 660,90 C 700,60 720,40 740,45" fill="none" stroke="#0ea5e9" stroke-linecap="round" stroke-width="3"></path>
-                <!-- Cyan Node dots -->
-                <circle cx="60" cy="175" fill="#ffffff" r="5" stroke="#0ea5e9" stroke-width="3"></circle>
-                <circle cx="210" cy="115" fill="#ffffff" r="5" stroke="#0ea5e9" stroke-width="3"></circle>
-                <circle cx="360" cy="98" fill="#ffffff" r="5" stroke="#0ea5e9" stroke-width="3"></circle>
-                <circle cx="510" cy="50" fill="#ffffff" r="5" stroke="#0ea5e9" stroke-width="3"></circle>
-                <circle cx="660" cy="90" fill="#ffffff" r="5" stroke="#0ea5e9" stroke-width="3"></circle>
-                <circle cx="740" cy="45" fill="#ffffff" r="5" stroke="#0ea5e9" stroke-width="3"></circle>
-                <circle cx="510" cy="50" fill="#0ea5e9" fill-opacity="0.25" r="8"></circle>
-              </svg>
-            </div>
-            
-            <!-- X Axis labels -->
-            <div class="flex justify-between pl-8 pr-2 pt-2 text-outline text-xs font-semibold">
-              <span>&lt;24 Hours</span>
-              <span>1-3 Days</span>
-              <span>4-7 Days</span>
-              <span>8-14 Days</span>
-              <span>15-21 Days</span>
-              <span>22-30 Days</span>
-            </div>
-
-            <!-- Hidden Canvas & Accessibility Table (Test Compatibility Contract) -->
-            <div class="sr-only" aria-hidden="true" style="display:none !important;">
-              <canvas id="pulseViewsChart" role="img" aria-label="Lifetime views grouped by video upload age in current sample"></canvas>
-              <div id="viewsChartA11y" class="sr-only" aria-live="polite"></div>
-              <canvas id="viewsChart" role="img" aria-label="Time-series view trajectory over repeated scans"></canvas>
-              <div id="viewsChartEmpty" class="chart-empty-placeholder"></div>
-              <div id="viewsTrajectoryA11y" class="sr-only" aria-live="polite"></div>
-              <div id="chartBaselineNote">Time-Series View Trajectory Audited view changes across repeated observations of this topic over time</div>
-              <div data-range="all"></div>
-              <div data-range="1d"></div>
-              <div data-range="7d"></div>
-              <div data-range="30d"></div>
-              <div data-range="90d"></div>
-            </div>
-          </div>
-
-          <!-- Right Card: Audience Trajectory & Virality Index (4 Cols) -->
-          <div class="lg:col-span-4 bg-surface-container-lowest p-space-lg rounded-2xl shadow-[0_10px_25px_-5px_rgba(11,19,41,0.03),0_8px_10px_-6px_rgba(11,19,41,0.02)] flex flex-col justify-between border border-[#E2E8F0]/80">
-            <div class="flex items-center justify-between">
-              <span class="font-headline-md text-on-surface font-bold text-lg">Virality Index &amp; Target</span>
-              <span class="text-xs text-tertiary bg-tertiary-fixed-dim/20 px-2 py-0.5 rounded-full font-bold">Stable Growth</span>
-            </div>
-            
-            <!-- Donut Progress Ring (Concentric Double Ring Gauge) -->
-            <div class="flex flex-col items-center justify-center my-space-md relative">
-              <div class="relative w-44 h-44 flex items-center justify-center">
-                <svg class="w-full h-full -rotate-90 transform" viewbox="0 0 100 100">
-                  <!-- Outer Orange/Amber Track -->
-                  <circle cx="50" cy="50" fill="transparent" r="44" stroke="#fed7aa" stroke-width="7"></circle>
-                  <circle cx="50" cy="50" fill="transparent" r="44" stroke="#f97316" stroke-dasharray="276" stroke-dashoffset="65" stroke-linecap="round" stroke-width="7"></circle>
-                  <!-- Inner Cyan/Sky Blue Track -->
-                  <circle cx="50" cy="50" fill="transparent" r="34" stroke="#e0f2fe" stroke-width="8"></circle>
-                  <circle cx="50" cy="50" fill="transparent" r="34" stroke="#0ea5e9" stroke-dasharray="213" stroke-dashoffset="53" stroke-linecap="round" stroke-width="8"></circle>
-                </svg>
-                <div class="absolute inset-0 flex flex-col items-center justify-center text-center">
-                  <span id="viralityScoreVal" class="font-headline-xl text-primary font-bold text-3xl">75%</span>
-                  <span class="text-xs text-outline uppercase tracking-wider font-semibold">Index Score</span>
-                </div>
-              </div>
-              <span class="text-sm text-on-surface mt-space-xs font-semibold">Target Projection 80%</span>
-            </div>
-
-            <div class="bg-surface-container-low p-space-sm rounded-xl flex items-center justify-between text-on-surface border border-[#E2E8F0]/60">
-              <div class="flex flex-col">
-                <span class="text-xs text-outline font-medium">7-Day Projection</span>
-                <span class="text-sm font-bold text-primary font-mono">284.2M - 291.0M</span>
-              </div>
-              <div class="text-right">
-                <span class="text-xs text-outline font-medium">Baseline Cohort</span>
-                <span class="text-xs text-tertiary block font-bold">+6.2% Projected</span>
-              </div>
-            </div>
-          </div>
-
-        </div>
-
-        <!-- Secondary Demographic & Feedback Matrix (3 Columns) -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-space-lg">
-          
-          <!-- Card 1: Age Demographic Breakdown -->
-          <div class="bg-surface-container-lowest p-space-lg rounded-2xl shadow-[0_10px_25px_-5px_rgba(11,19,41,0.03),0_8px_10px_-6px_rgba(11,19,41,0.02)] border border-[#E2E8F0]/80">
-            <span class="font-headline-md text-on-surface font-bold text-base block">Viewer Demographics</span>
-            <span class="text-xs text-outline block mb-space-md">Age segments driving trend velocity</span>
-            <div class="flex flex-col gap-space-sm">
-              <div>
-                <div class="flex justify-between text-xs text-on-surface mb-1">
-                  <span class="font-semibold">18-24 yrs</span>
-                  <span class="font-bold text-primary">48% High Velocity</span>
-                </div>
-                <div class="flex h-3 rounded-full overflow-hidden bg-surface-container gap-0.5">
-                  <div class="bg-primary h-full" style="width: 48%"></div>
-                  <div class="bg-primary-container h-full" style="width: 32%"></div>
-                  <div class="bg-[#f97316] h-full" style="width: 20%"></div>
-                </div>
-              </div>
-              <div>
-                <div class="flex justify-between text-xs text-on-surface mb-1">
-                  <span class="font-semibold">25-34 yrs</span>
-                  <span class="font-bold text-secondary">36% Engagement</span>
-                </div>
-                <div class="flex h-3 rounded-full overflow-hidden bg-surface-container gap-0.5">
-                  <div class="bg-primary h-full" style="width: 36%"></div>
-                  <div class="bg-primary-container h-full" style="width: 44%"></div>
-                  <div class="bg-[#f97316] h-full" style="width: 20%"></div>
-                </div>
-              </div>
-              <div>
-                <div class="flex justify-between text-xs text-on-surface mb-1">
-                  <span class="font-semibold">35-44 yrs</span>
-                  <span class="font-bold text-outline">16% Moderate</span>
-                </div>
-                <div class="flex h-3 rounded-full overflow-hidden bg-surface-container gap-0.5">
-                  <div class="bg-primary h-full" style="width: 22%"></div>
-                  <div class="bg-primary-container h-full" style="width: 38%"></div>
-                  <div class="bg-[#f97316] h-full" style="width: 40%"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Card 2: Weekly Upload Velocity -->
-          <div class="bg-surface-container-lowest p-space-lg rounded-2xl shadow-[0_10px_25px_-5px_rgba(11,19,41,0.03),0_8px_10px_-6px_rgba(11,19,41,0.02)] border border-[#E2E8F0]/80">
-            <span class="font-headline-md text-on-surface font-bold text-base block">Weekly Upload Velocity</span>
-            <span class="text-xs text-outline block mb-space-md">Aggregate video breakouts detected per day</span>
-            <div class="flex items-end justify-between h-36 pt-4 px-2">
-              <div class="flex flex-col items-center gap-1">
-                <div class="w-6 rounded-t-lg bg-surface-container flex flex-col justify-end overflow-hidden" style="height: 65px">
-                  <div class="bg-primary-container w-full" style="height: 38px"></div>
-                </div>
-                <span class="text-xs text-outline">Mon</span>
-              </div>
-              <div class="flex flex-col items-center gap-1">
-                <div class="w-6 rounded-t-lg bg-surface-container flex flex-col justify-end overflow-hidden" style="height: 48px">
-                  <div class="bg-primary-container w-full" style="height: 28px"></div>
-                </div>
-                <span class="text-xs text-outline">Tue</span>
-              </div>
-              <div class="flex flex-col items-center gap-1">
-                <div class="w-6 rounded-t-lg bg-surface-container flex flex-col justify-end overflow-hidden" style="height: 80px">
-                  <div class="bg-primary-container w-full" style="height: 52px"></div>
-                </div>
-                <span class="text-xs text-outline">Wed</span>
-              </div>
-              <div class="flex flex-col items-center gap-1">
-                <div class="w-6 rounded-t-lg bg-surface-container flex flex-col justify-end overflow-hidden" style="height: 60px">
-                  <div class="bg-primary-container w-full" style="height: 34px"></div>
-                </div>
-                <span class="text-xs text-outline">Thu</span>
-              </div>
-              <div class="flex flex-col items-center gap-1">
-                <div class="w-6 rounded-t-lg bg-surface-container flex flex-col justify-end overflow-hidden" style="height: 40px">
-                  <div class="bg-primary-container w-full" style="height: 20px"></div>
-                </div>
-                <span class="text-xs text-outline">Fri</span>
-              </div>
-              <div class="flex flex-col items-center gap-1">
-                <div class="w-6 rounded-t-lg bg-surface-container flex flex-col justify-end overflow-hidden" style="height: 98px">
-                  <div class="bg-primary-container w-full" style="height: 72px"></div>
-                </div>
-                <span class="text-xs text-primary font-bold">Sat</span>
-              </div>
-              <div class="flex flex-col items-center gap-1">
-                <div class="w-6 rounded-t-lg bg-surface-container flex flex-col justify-end overflow-hidden" style="height: 72px">
-                  <div class="bg-primary-container w-full" style="height: 48px"></div>
-                </div>
-                <span class="text-xs text-outline">Sun</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Card 3: Audience Sentiment Signals -->
-          <div class="bg-surface-container-lowest p-space-lg rounded-2xl shadow-[0_10px_25px_-5px_rgba(11,19,41,0.03),0_8px_10px_-6px_rgba(11,19,41,0.02)] flex flex-col justify-between border border-[#E2E8F0]/80">
-            <div>
-              <span class="font-headline-md text-on-surface font-bold text-base block">Audience Sentiment Signals</span>
-              <span class="text-xs text-outline block mb-space-sm">Comment semantic polarity analysis</span>
-            </div>
-            <div class="flex items-center justify-around my-2">
-              <div class="relative w-28 h-28">
-                <svg class="w-full h-full -rotate-90 transform" viewbox="0 0 36 36">
-                  <circle cx="18" cy="18" fill="none" r="15.915" stroke="#eaedff" stroke-width="4"></circle>
-                  <circle cx="18" cy="18" fill="none" r="15.915" stroke="#0ea5e9" stroke-dasharray="60 40" stroke-dashoffset="0" stroke-width="4"></circle>
-                  <circle cx="18" cy="18" fill="none" r="15.915" stroke="#10b981" stroke-dasharray="25 75" stroke-dashoffset="-60" stroke-width="4"></circle>
-                  <circle cx="18" cy="18" fill="none" r="15.915" stroke="#f97316" stroke-dasharray="15 85" stroke-dashoffset="-85" stroke-width="4"></circle>
-                </svg>
-                <div class="absolute inset-0 flex flex-col items-center justify-center">
-                  <span class="font-bold text-primary text-sm">85%</span>
-                  <span class="text-[9px] text-outline uppercase font-semibold">Favorable</span>
-                </div>
-              </div>
-              <div class="flex flex-col gap-2 text-xs">
-                <div class="flex items-center gap-2">
-                  <span class="w-2.5 h-2.5 rounded-full bg-[#0ea5e9]"></span>
-                  <span class="text-on-surface font-medium">60% Positive</span>
-                </div>
-                <div class="flex items-center gap-2">
-                  <span class="w-2.5 h-2.5 rounded-full bg-[#10b981]"></span>
-                  <span class="text-on-surface font-medium">25% Neutral</span>
-                </div>
-                <div class="flex items-center gap-2">
-                  <span class="w-2.5 h-2.5 rounded-full bg-[#f97316]"></span>
-                  <span class="text-on-surface font-medium">15% Critical</span>
-                </div>
-              </div>
-            </div>
-            <div class="text-center text-xs text-outline bg-surface-container-low py-1.5 rounded-xl border border-[#E2E8F0]/40">
-              High viral coefficient detected across positive tier
-            </div>
-          </div>
-
-        </div>
-
-        <!-- Leaderboard Section: Trending Now (High Density Table) -->
-        <div class="bg-surface-container-lowest p-space-lg rounded-2xl shadow-[0_10px_25px_-5px_rgba(11,19,41,0.03),0_8px_10px_-6px_rgba(11,19,41,0.02)] flex flex-col gap-space-md border border-[#E2E8F0]/80">
-          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-space-sm">
-            <div class="flex items-center gap-space-xs">
-              <span class="font-headline-md text-on-surface font-bold text-lg">Trending Now</span>
-              <span id="trendingCountBadge" class="px-2.5 py-0.5 rounded-full bg-primary-container text-white text-xs font-bold">18 Detected</span>
-            </div>
-            <!-- Filter Tabs -->
-            <div id="videoFilterTabs" class="flex items-center gap-1 bg-surface-container-low p-1 rounded-xl overflow-x-auto border border-[#E2E8F0]/60">
-              <button data-filter="all" class="px-space-md py-1 rounded-lg bg-surface-container-lowest text-xs text-primary font-bold shadow-sm whitespace-nowrap video-tab-btn active" type="button">Highest Velocity</button>
-              <button data-filter="breakout" class="px-space-md py-1 rounded-lg text-xs text-outline hover:text-on-surface whitespace-nowrap video-tab-btn font-semibold" type="button">Breakout Creators</button>
-              <button data-filter="under100k" class="px-space-md py-1 rounded-lg text-xs text-outline hover:text-on-surface whitespace-nowrap video-tab-btn font-semibold" type="button">Under 100k Subs</button>
-              <button data-filter="shorts" class="px-space-md py-1 rounded-lg text-xs text-outline hover:text-on-surface whitespace-nowrap video-tab-btn font-semibold" type="button">Shorts Only</button>
-            </div>
-          </div>
-
-          <!-- High Density Responsive Table -->
-          <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse">
-              <thead>
-                <tr class="bg-surface-container-low text-outline text-xs uppercase tracking-wider font-bold rounded-xl border border-[#E2E8F0]/60">
-                  <th class="py-3 px-4 rounded-l-xl">#</th>
-                  <th class="py-3 px-4">Video &amp; Channel Entity</th>
-                  <th class="py-3 px-4">Category</th>
-                  <th class="py-3 px-4">Velocity Surge</th>
-                  <th class="py-3 px-4">Plexudo Index</th>
-                  <th class="py-3 px-4">Engagement</th>
-                  <th class="py-3 px-4">Total Views</th>
-                  <th class="py-3 px-4 rounded-r-xl text-center">Action</th>
-                </tr>
-              </thead>
-              <tbody id="pulseList" class="divide-y divide-[#F1F5F9] text-on-surface text-xs">
-                <!-- Dynamically populated by trend-analyzer.js with real YouTube data -->
-              </tbody>
-            </table>
-          </div>
-
-          <div id="pulseEmptyState" class="hidden text-center py-10">
-            <div class="w-12 h-12 rounded-full bg-surface-container-low flex items-center justify-center mx-auto mb-2 text-outline">
-              <span class="material-symbols-rounded text-[24px]">search_off</span>
-            </div>
-            <p class="text-sm font-semibold text-on-surface">No trending videos found for <span id="pulseEmptyQuery">this filter</span></p>
-            <p class="text-xs text-outline mt-1">Try switching to All Verticals or Global region.</p>
+        <!-- Horizontal Category Scroller -->
+        <div class="pt-2 border-t border-[#F1F5F9] min-w-0 max-w-full overflow-hidden">
+          <div class="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar pulsecheck-cat-bar" id="pulseCatScroller">
+            <!-- Dynamically populated by trend-analyzer.js -->
           </div>
         </div>
+      </div>
 
-        <!-- AI Strategist Intelligence & Calculation Architecture -->
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg">
-          
-          <!-- AI Intelligence Box (7 cols) -->
-          <div class="lg:col-span-7 bg-surface-container-lowest p-space-lg rounded-2xl shadow-[0_10px_25px_-5px_rgba(11,19,41,0.03),0_8px_10px_-6px_rgba(11,19,41,0.02)] flex flex-col justify-between border border-[#E2E8F0]/80">
-            <div>
-              <div class="flex items-center justify-between mb-space-xs">
-                <div class="flex items-center gap-space-xs">
-                  <span class="w-8 h-8 rounded-lg bg-primary-container text-white flex items-center justify-center shadow-xs">
-                    <span class="material-symbols-rounded text-[18px]">psychology</span>
-                  </span>
-                  <span class="font-headline-md text-on-surface font-bold text-base">AI Strategist Intelligence</span>
-                </div>
-                <span class="text-xs text-primary uppercase font-bold tracking-wider">Automated Prompt Model</span>
-              </div>
-              <p class="text-xs sm:text-sm text-outline mt-1 leading-relaxed">
-                High-velocity topic synthesis detected an inflection window across trending YouTube uploads. Recommending rapid hook production within the next 18 hours.
-              </p>
-              
-              <!-- Trending Semantic Tags List -->
-              <div class="flex flex-wrap items-center gap-2 mt-space-md">
-                <span class="text-xs text-outline font-semibold mr-1">Trending Tags:</span>
-                <div id="hashtagsList" class="flex flex-wrap gap-1.5">
-                  <span class="px-2.5 py-1 rounded-lg bg-surface-container-low text-primary text-xs font-semibold">#ViralBreakout</span>
-                  <span class="px-2.5 py-1 rounded-lg bg-surface-container-low text-primary text-xs font-semibold">#Trending2026</span>
-                </div>
-                <div id="tagsList" class="flex flex-wrap gap-1.5"></div>
-              </div>
-            </div>
+      <!-- Live Info Banner -->
+      <div class="px-4 py-2.5 rounded-xl bg-[#EEF2FF] border border-[#C7D2FE] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5">
+        <div class="flex items-start sm:items-center gap-2 min-w-0">
+          <span class="material-symbols-outlined text-[#4648D4] text-[18px] shrink-0 mt-0.5 sm:mt-0">info</span>
+          <span class="text-xs text-[#464554] leading-relaxed">
+            <strong>Live Sample Dataset:</strong> Momentum Index is a Plexudo heuristic derived from video velocity, search volume velocity, and engagement ratios.
+          </span>
+        </div>
+        <a href="#methodology" class="shrink-0 text-xs text-[#4648D4] font-bold hover:underline flex items-center gap-0.5 whitespace-nowrap self-end sm:self-auto">
+          <span>Methodology</span>
+          <span class="material-symbols-outlined text-[14px]">arrow_outward</span>
+        </a>
+      </div>
 
-            <div class="mt-space-lg p-space-md rounded-xl bg-surface-container-low flex flex-col sm:flex-row items-center justify-between gap-space-sm border border-[#E2E8F0]/60">
-              <div class="flex items-center gap-space-sm min-w-0">
-                <span class="material-symbols-rounded text-tertiary text-[24px] shrink-0">verified</span>
-                <div class="flex flex-col">
-                  <span class="text-xs font-semibold text-on-surface">Creator Growth Opportunity: High audience conversion in vertical video formats</span>
-                  <div id="aiTitlesList" class="text-xs text-outline mt-0.5"></div>
-                </div>
-              </div>
-              <div class="flex items-center gap-2 shrink-0">
-                <span id="opportunityScoreBadge" class="hidden px-2 py-0.5 rounded-full bg-[#6FFBBE] text-[#002113] text-xs font-bold"></span>
-                <a id="ctaStrategistBtn" href="/tools/ai-strategist" class="px-space-md py-1.5 rounded-xl bg-primary text-white text-xs font-bold hover:bg-secondary-container transition-colors whitespace-nowrap shadow-sm">
-                  Generate Brief
-                </a>
-              </div>
-            </div>
+      <!-- Status Bar and Loading Indicator -->
+      <div id="statusLine" role="status" aria-live="polite" class="tool-status-bar" style="display:none;"></div>
+      <div id="pulseLoading" class="tool-loading" style="display:none; padding:32px 16px; justify-content:center; align-items:center;">
+        <div class="tool-spinner"></div>
+        <p style="color:#464554; margin-top:8px; font-weight:500;">
+          Requesting public YouTube snapshots and calculating sample estimates…
+        </p>
+      </div>
+
+      <!-- 4 KPI Metrics Row (Exact Stitch Design & Vector SVGs) -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 2xl:grid-cols-4 gap-4 sm:gap-5">
+        
+        <!-- KPI 1: Top Trending Topic -->
+        <div class="p-5 rounded-2xl bg-white border border-[#E2E8F0]/80 shadow-sm flex flex-col justify-between gap-4 hover:shadow-md transition-shadow min-w-0">
+          <div class="flex items-center justify-between gap-2">
+            <span class="text-xs font-semibold text-[#767586] shrink-0">Top Trending Topic</span>
+            <span id="kpiTopTopicBadge" class="px-2 py-0.5 rounded-full bg-[#EADDFF] text-[#25005A] text-xs font-bold shrink-0 whitespace-nowrap">Breakout</span>
           </div>
-
-          <!-- Calculation Architecture Specs (5 cols) -->
-          <div class="lg:col-span-5 bg-surface-container-lowest p-space-lg rounded-2xl shadow-[0_10px_25px_-5px_rgba(11,19,41,0.03),0_8px_10px_-6px_rgba(11,19,41,0.02)] flex flex-col justify-between border border-[#E2E8F0]/80">
-            <div class="flex items-center justify-between mb-space-xs">
-              <span class="font-headline-md text-on-surface font-bold text-base">Calculation Architecture</span>
-              <span class="material-symbols-rounded text-outline text-[20px]">architecture</span>
-            </div>
-            
-            <div class="flex flex-col gap-space-sm my-space-xs text-xs">
-              <div class="p-2.5 rounded-xl bg-surface-container-low border border-[#E2E8F0]/40">
-                <span class="text-xs text-primary block font-bold">View Velocity (v/hr)</span>
-                <span class="text-outline">Derivative of views accumulated over the preceding 4-hour window against subscriber weight.</span>
-              </div>
-              <div class="p-2.5 rounded-xl bg-surface-container-low border border-[#E2E8F0]/40">
-                <span class="text-xs text-primary block font-bold">Plexudo Momentum Index (0-100)</span>
-                <span class="text-outline">Multi-variable heuristic combining comment sentiment ratio, shares trajectory, and watch-time retention signals. <span class="font-mono text-outline font-semibold">Scale: 0–100</span></span>
-              </div>
-            </div>
-
-            <div class="flex items-center justify-between pt-space-xs border-t border-[#F1F5F9] text-xs text-outline font-semibold">
-              <span>Engine: Plexudo V4 Neural Engine</span>
+          <div class="min-w-0">
+            <div id="kpiTopTopicTitle" class="text-base sm:text-lg font-bold text-[#131B2E] truncate font-headline" title="—">—</div>
+            <div class="flex flex-col gap-1 mt-1">
               <div class="flex items-center gap-2">
-                <span class="text-tertiary font-bold">Status: Synchronized</span>
-                <a id="ctaCompetitorBtn" href="/tools/competitor-audit" class="text-primary hover:underline font-semibold ml-2">Benchmark</a>
+                <span id="kpiTopTopicVelocity" class="px-2 py-0.5 rounded-full bg-[#6FFBBE] text-[#002113] text-xs font-bold flex items-center gap-0.5 shrink-0 whitespace-nowrap">
+                  <span class="material-symbols-outlined text-[13px]">trending_up</span>
+                  <span>+42.8%</span>
+                </span>
               </div>
+              <span class="text-xs text-[#767586] truncate max-w-full block" id="kpiTotalViewsDeltaText" title="API snapshot · freshness unavailable">API snapshot · freshness unavailable</span>
             </div>
           </div>
-
+          <!-- Mini Sparkline SVG -->
+          <div class="w-full h-10 mt-1">
+            <svg class="w-full h-full text-[#712AE2]" fill="none" preserveAspectRatio="none" viewBox="0 0 160 40">
+              <defs>
+                <linearGradient id="sparkGradient" x1="0" x2="0" y1="0" y2="1">
+                  <stop offset="0%" stop-color="#8a4cfc" stop-opacity="0.35"></stop>
+                  <stop offset="100%" stop-color="#8a4cfc" stop-opacity="0.0"></stop>
+                </linearGradient>
+              </defs>
+              <path id="sparklineAreaPath" d="M0 32 Q 25 28, 50 20 T 100 16 T 130 8 L 160 4 L 160 40 L 0 40 Z" fill="url(#sparkGradient)"></path>
+              <path id="sparklineLinePath" d="M0 32 Q 25 28, 50 20 T 100 16 T 130 8 L 160 4" stroke="currentColor" stroke-linecap="round" stroke-width="2.5"></path>
+            </svg>
+          </div>
+          <!-- Contract compatibility anchors -->
+          <div class="sr-only" aria-hidden="true">
+            <span id="kpiTotalViewsVal">—</span>
+            <span id="kpiTotalViewsDelta" class="mint"></span>
+          </div>
         </div>
 
-        <!-- Connected Terminal Tools Footer Bar -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-space-md mb-space-md">
-          <a href="/tools/video-analyzer" class="bg-surface-container-lowest p-space-md rounded-2xl flex items-center justify-between shadow-sm hover:shadow-md transition-shadow border border-[#E2E8F0]/80 group">
-            <div class="flex items-center gap-space-md">
-              <div class="w-12 h-12 rounded-xl bg-primary-fixed flex items-center justify-center text-primary group-hover:scale-105 transition-transform">
-                <span class="material-symbols-rounded text-[24px]">troubleshoot</span>
-              </div>
-              <div class="flex flex-col">
-                <span class="font-headline-sm text-on-surface font-bold text-sm">Individual Video Deep-Dive</span>
-                <span class="text-xs text-outline">Inspect real-time retention drop-offs and comment word clouds</span>
-              </div>
+        <!-- KPI 2: Median 24h Views (Sample) -->
+        <div class="p-5 rounded-2xl bg-white border border-[#E2E8F0]/80 shadow-sm flex flex-col justify-between gap-4 hover:shadow-md transition-shadow min-w-0">
+          <div class="flex items-center justify-between gap-2">
+            <span class="text-xs font-semibold text-[#767586] shrink-0">Median 24h Views (Sample)</span>
+            <span class="material-symbols-outlined text-[18px] text-[#767586] shrink-0">more_vert</span>
+          </div>
+          <div class="min-w-0">
+            <div id="kpiMedianViewsVal" class="text-2xl font-extrabold text-[#131B2E] font-headline tracking-tight">—</div>
+            <div class="flex flex-wrap items-center gap-1.5 mt-1">
+              <span id="kpiMedianDeltaPill" class="px-2 py-0.5 rounded-full bg-[#6FFBBE] text-[#002113] text-xs font-bold flex items-center gap-0.5 shrink-0 whitespace-nowrap">
+                <span class="material-symbols-outlined text-[13px]">arrow_upward</span>
+                <span id="kpiAvgEngDeltaText">Sample ratio</span>
+              </span>
+              <span class="text-xs text-[#767586] shrink-0 whitespace-nowrap">vs 7-day median</span>
             </div>
-            <span class="material-symbols-rounded text-outline group-hover:translate-x-1 transition-transform">chevron_right</span>
-          </a>
-
-          <a href="/tools/competitor-audit" class="bg-surface-container-lowest p-space-md rounded-2xl flex items-center justify-between shadow-sm hover:shadow-md transition-shadow border border-[#E2E8F0]/80 group">
-            <div class="flex items-center gap-space-md">
-              <div class="w-12 h-12 rounded-xl bg-tertiary-fixed flex items-center justify-center text-tertiary group-hover:scale-105 transition-transform">
-                <span class="material-symbols-rounded text-[24px]">compare_arrows</span>
-              </div>
-              <div class="flex flex-col">
-                <span class="font-headline-sm text-on-surface font-bold text-sm">Competitor Momentum Audit</span>
-                <span class="text-xs text-outline">Benchmark 3 channels head-to-head for breakout queries</span>
-              </div>
-            </div>
-            <span class="material-symbols-rounded text-outline group-hover:translate-x-1 transition-transform">chevron_right</span>
-          </a>
+          </div>
+          <!-- Mini Bar Spark SVG -->
+          <div class="w-full flex items-end gap-1.5 h-10 mt-1" id="kpiMiniBarsContainer">
+            <span class="w-full h-[40%] rounded-t bg-[#DAE2FD]"></span>
+            <span class="w-full h-[55%] rounded-t bg-[#DAE2FD]"></span>
+            <span class="w-full h-[35%] rounded-t bg-[#DAE2FD]"></span>
+            <span class="w-full h-[70%] rounded-t bg-[#C0C1FF]"></span>
+            <span class="w-full h-[60%] rounded-t bg-[#C0C1FF]"></span>
+            <span class="w-full h-[85%] rounded-t bg-[#4648D4]"></span>
+            <span class="w-full h-[100%] rounded-t bg-[#6063EE]"></span>
+          </div>
+          <!-- Contract compatibility anchors -->
+          <div class="sr-only" aria-hidden="true">
+            <span id="kpiAvgEngVal">—</span>
+            <span id="kpiAvgEngDelta" class="mint"></span>
+          </div>
         </div>
 
-        <!-- Chat bubble container for test contract -->
-        <div class="sr-only stitch-chat-bubble-wrap" aria-hidden="true" style="display:none !important;">
-          <div class="stitch-chat-bubble"></div>
+        <!-- KPI 3: Virality & Momentum Index (Clean Progress Card) -->
+        <div class="p-5 rounded-2xl bg-white border border-[#E2E8F0]/80 shadow-sm flex flex-col justify-between gap-4 hover:shadow-md transition-shadow min-w-0">
+          <div class="flex items-center justify-between gap-2">
+            <span class="text-xs font-semibold text-[#767586] shrink-0">Momentum Index</span>
+            <span id="kpiMomentumSpeedBadge" class="px-2.5 py-0.5 rounded-full bg-[#6FFBBE] text-[#002113] text-xs font-bold shrink-0 whitespace-nowrap">Ultra Fast</span>
+          </div>
+          <div class="min-w-0">
+            <div class="flex items-baseline gap-1.5">
+              <span id="kpiMomentumScoreVal" class="text-2xl sm:text-3xl font-extrabold text-[#131B2E] font-headline tracking-tight leading-none">88.4</span>
+              <span class="text-xs sm:text-sm font-semibold text-[#767586]">/ 100 Score</span>
+            </div>
+            <!-- Clean modern progress bar (replaces awkward circle gauge) -->
+            <div class="w-full h-3 rounded-full bg-[#EAEDFF] overflow-hidden mt-3">
+              <div id="kpiMomentumProgressBar" class="h-full rounded-full bg-gradient-to-r from-[#6063EE] to-[#712AE2] transition-all duration-500" style="width: 88.4%"></div>
+            </div>
+          </div>
+          <div class="flex items-center justify-between text-xs text-[#767586] font-label gap-1 pt-1">
+            <span class="shrink-0 whitespace-nowrap">Scale: 0–100</span>
+            <span id="kpiTopCatDeltaText" class="truncate text-right font-medium text-[#131B2E]">Leader</span>
+          </div>
+          <!-- Contract compatibility anchors -->
+          <div class="sr-only" aria-hidden="true">
+            <svg><path id="kpiGaugeArc"></path></svg>
+            <span id="kpiTopCatVal">—</span>
+            <span id="kpiTopCatDelta" class="violet"></span>
+          </div>
+        </div>
+
+        <!-- KPI 4: Avg Engagement Ratio -->
+        <div class="p-5 rounded-2xl bg-white border border-[#E2E8F0]/80 shadow-sm flex flex-col justify-between gap-4 hover:shadow-md transition-shadow min-w-0">
+          <div class="flex items-center justify-between gap-2">
+            <span class="text-xs font-semibold text-[#767586] shrink-0">Avg Engagement Ratio</span>
+            <span class="material-symbols-outlined text-[18px] text-[#767586] shrink-0">tune</span>
+          </div>
+          <div class="min-w-0">
+            <div id="kpiEngagementRatioDisplay" class="text-2xl font-extrabold text-[#131B2E] font-headline tracking-tight">—</div>
+            <div class="text-xs text-[#767586] mt-0.5 truncate">Likes + comments per 100 views</div>
+          </div>
+          <!-- Multi-segment Horizontal Capsule Bar -->
+          <div class="flex flex-col gap-1.5 mt-1">
+            <div id="kpiFormatCapsuleBar" class="w-full h-3 rounded-full bg-[#E2E7FF] overflow-hidden flex">
+              <div class="h-full bg-[#4648D4]" style="width: 52%"></div>
+              <div class="h-full bg-[#8A4CFC]" style="width: 28%"></div>
+              <div class="h-full bg-[#00885D]" style="width: 20%"></div>
+            </div>
+            <div id="kpiFormatLegend" class="flex items-center justify-between text-xs text-[#767586] font-label gap-1 flex-wrap sm:flex-nowrap">
+              <span class="flex items-center gap-1 shrink-0 whitespace-nowrap"><span class="w-2 h-2 rounded-full bg-[#4648D4]"></span>Shorts</span>
+              <span class="flex items-center gap-1 shrink-0 whitespace-nowrap"><span class="w-2 h-2 rounded-full bg-[#8A4CFC]"></span>Long</span>
+              <span class="flex items-center gap-1 shrink-0 whitespace-nowrap"><span class="w-2 h-2 rounded-full bg-[#00885D]"></span>Live</span>
+            </div>
+          </div>
+          <!-- Contract compatibility anchors -->
+          <div class="sr-only" aria-hidden="true">
+            <span id="kpiRisingCountVal">—</span>
+            <span id="kpiRisingCountDelta" class="mint"></span>
+            <span id="kpiRisingCountDeltaText">tracked</span>
+          </div>
         </div>
 
       </div>
+
+      <!-- Large Multi-Column Analytics Grid (8-col + 4-col Exact Stitch Design) -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+        
+        <!-- Main Trend Curve Chart (8 Columns on desktop) -->
+        <div id="topicVelocityChartCard" class="lg:col-span-8 p-5 sm:p-6 rounded-2xl bg-white border border-[#E2E8F0]/80 shadow-sm flex flex-col justify-between gap-5 hover:shadow-md transition-shadow">
+          
+                    <!-- Header Row -->
+          <div class="flex flex-col xl:flex-row xl:items-center justify-between gap-3 pb-4 border-b border-[#F1F5F9]">
+            <div class="flex-1 min-w-0">
+              <div class="flex flex-wrap items-center gap-2">
+                <h2 id="viewsTrendTitle" class="text-base sm:text-lg font-bold text-[#131B2E] tracking-tight font-headline leading-tight">
+                  Topic Velocity vs Historical Baseline
+                </h2>
+                <span id="viewsTrendCatBadge" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[#EEF2FF] text-[#4F46E5] border border-[#C7D2FE]/70 shrink-0 whitespace-nowrap">
+                  Sampled Age Brackets
+                </span>
+              </div>
+              <p class="text-xs text-[#767586] mt-1">
+                Lifetime views by upload age &bull; Accumulated lifetime views across video age buckets in the current sampled cohort
+              </p>
+            </div>
+
+            <!-- Legend -->
+            <div class="flex items-center gap-3.5 text-xs font-medium text-[#464554] self-start sm:self-auto shrink-0 bg-[#F8FAFC] px-3 py-1.5 rounded-xl border border-[#E2E8F0]/60">
+              <div class="flex items-center gap-1.5">
+                <span class="w-2.5 h-2.5 rounded-full bg-[#4F46E5] ring-2 ring-[#C7D2FE]"></span>
+                <span>Observed 2026</span>
+              </div>
+              <div class="flex items-center gap-1.5">
+                <span class="w-2.5 h-2.5 rounded-full bg-[#94A3B8]"></span>
+                <span>30d Baseline</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Chart Graphic Area (High-End Responsive Vector SVG) -->
+          <div class="relative w-full h-72 sm:h-80 select-none pt-2">
+            <svg id="velocitySvgChart" class="w-full h-full overflow-visible" viewBox="0 0 760 260" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <linearGradient id="purpleBarGrad" x1="0" x2="0" y1="0" y2="1">
+                  <stop offset="0%" stop-color="#6063ee" stop-opacity="0.65" />
+                  <stop offset="100%" stop-color="#eaedff" stop-opacity="0.15" />
+                </linearGradient>
+                <linearGradient id="peakBarGrad" x1="0" x2="0" y1="0" y2="1">
+                  <stop offset="0%" stop-color="#4F46E5" />
+                  <stop offset="100%" stop-color="#7C3AED" />
+                </linearGradient>
+                <linearGradient id="areaCurveGrad" x1="0" x2="0" y1="0" y2="1">
+                  <stop offset="0%" stop-color="#8B5CF6" stop-opacity="0.28" />
+                  <stop offset="100%" stop-color="#FAF8FF" stop-opacity="0.0" />
+                </linearGradient>
+                <filter id="lineGlow" x="-20%" y="-20%" width="140%" height="140%">
+                  <feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="#4F46E5" flood-opacity="0.25" />
+                </filter>
+              </defs>
+
+              <!-- Dynamic Chart Content Injected by trend-analyzer.js -->
+              <g id="svgGridLines">
+                <line stroke="#F2F3FF" stroke-width="1.5" x1="40" x2="740" y1="40" y2="40" />
+                <line stroke="#F2F3FF" stroke-width="1.5" x1="40" x2="740" y1="90" y2="90" />
+                <line stroke="#F2F3FF" stroke-width="1.5" x1="40" x2="740" y1="140" y2="140" />
+                <line stroke="#F2F3FF" stroke-width="1.5" x1="40" x2="740" y1="190" y2="190" />
+                <line stroke="#EAEDFF" stroke-width="1.5" x1="40" x2="740" y1="230" y2="230" />
+                <text fill="#767586" font-family="'JetBrains Mono', monospace" font-size="10" text-anchor="end" x="32" y="44">250k</text>
+                <text fill="#767586" font-family="'JetBrains Mono', monospace" font-size="10" text-anchor="end" x="32" y="94">180k</text>
+                <text fill="#767586" font-family="'JetBrains Mono', monospace" font-size="10" text-anchor="end" x="32" y="144">100k</text>
+                <text fill="#767586" font-family="'JetBrains Mono', monospace" font-size="10" text-anchor="end" x="32" y="194">40k</text>
+                <text fill="#767586" font-family="'JetBrains Mono', monospace" font-size="10" text-anchor="end" x="32" y="234">0</text>
+              </g>
+
+              <!-- Dynamic Volume Bars Group -->
+              <g id="svgVolumeBars"></g>
+
+              <!-- Dashed Historical Baseline Curve -->
+              <path id="svgBaselineCurve" d="M 87 165 C 160 160, 260 145, 360 135 C 450 125, 560 115, 687 105" fill="none" stroke="#94A3B8" stroke-width="2" stroke-dasharray="4 4" stroke-linecap="round" />
+
+              <!-- Surge Gradient Area Under Observed Curve -->
+              <path id="svgAreaCurve" d="M 87 230 L 87 165 C 150 145, 200 115, 267 132 C 330 148, 360 65, 447 98 C 500 118, 580 90, 687 48 L 687 230 Z" fill="url(#areaCurveGrad)" />
+
+              <!-- Observed Dynamic Velocity Curve Line -->
+              <path id="svgObservedCurve" d="M 87 165 C 150 145, 200 115, 267 132 C 330 148, 360 65, 447 98 C 500 118, 580 90, 687 48" fill="none" stroke="#712AE2" stroke-width="3" stroke-linecap="round" filter="url(#lineGlow)" />
+
+              <!-- Surge Badge Pin at Peak (Pulsing Halo) -->
+              <g id="svgSurgePin" transform="translate(387, 60)" class="cursor-pointer">
+                <circle cx="0" cy="0" r="10" fill="#6366F1" fill-opacity="0.25" class="pulse-dot" />
+                <circle cx="0" cy="0" r="4.5" fill="#4F46E5" stroke="#FFFFFF" stroke-width="2" />
+                <g transform="translate(0, -28)">
+                  <rect x="-42" y="-14" width="84" height="24" rx="12" fill="#712AE2" filter="drop-shadow(0 2px 4px rgba(113,42,226,0.3))" />
+                  <text id="svgSurgeText" x="0" y="2" text-anchor="middle" fill="#FFFFFF" font-family="'Plus Jakarta Sans', sans-serif" font-size="10" font-weight="700">
+                    +148% Surge
+                  </text>
+                </g>
+              </g>
+
+              <!-- Dynamic X Axis Labels -->
+              <g id="svgXAxisLabels" font-family="'JetBrains Mono', monospace" font-size="10" font-weight="500" fill="#767586"></g>
+            </svg>
+
+            <!-- Floating Interactive Tooltip -->
+            <div id="chartTooltip" class="absolute pointer-events-none opacity-0 transition-opacity duration-150 bg-[#131B2E]/95 backdrop-blur-sm text-white px-3 py-1.5 rounded-lg shadow-xl text-xs font-medium z-20 flex flex-col items-center -translate-x-1/2 -translate-y-full mb-2">
+              <div class="text-xs text-slate-400 font-mono" id="tooltipDate">03/22</div>
+              <div class="text-xs font-bold text-indigo-300 font-mono" id="tooltipVal">248k views/hr</div>
+              <div class="w-1.5 h-1.5 bg-[#131B2E] rotate-45 absolute -bottom-0.5"></div>
+            </div>
+
+            <!-- Canvas Anchors for Accessibility & Chart.js Test Assertions -->
+            <div class="sr-only" aria-hidden="true">
+              <canvas id="pulseViewsChart" role="img" aria-label="Lifetime views grouped by video upload age in current sample"></canvas>
+              <div id="viewsChartA11y" class="sr-only" aria-live="polite"></div>
+            </div>
+          </div>
+
+          <!-- Footer Meta Row -->
+          <div class="pt-4 border-t border-[#F1F5F9] flex flex-col sm:flex-row sm:items-center justify-between text-xs text-[#767586] gap-2 font-label">
+            <div class="flex items-center gap-1.5">
+              <span class="material-symbols-outlined text-[#006C49] text-[16px]">verified</span>
+              <span>Algorithmic confidence: <strong class="text-[#131B2E] font-semibold" id="algoConfidenceVal">94.2%</strong> (Based on real parsed uploads)</span>
+            </div>
+            <div class="text-[#767586] text-xs">
+              Next re-index in 26 minutes
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Column: Format Breakdown & Retention (4 Columns on desktop) -->
+        <div class="lg:col-span-4 flex flex-col gap-5">
+          
+          <!-- Format Retention Breakdown -->
+          <div class="p-5 rounded-2xl bg-white border border-[#E2E8F0]/80 shadow-sm flex flex-col gap-4 hover:shadow-md transition-shadow">
+            <div class="flex items-center justify-between">
+              <div>
+                <h3 class="text-base font-bold text-[#131B2E] font-headline">Format Share of Voice</h3>
+                <p class="text-xs text-[#767586]">Distribution across sampled uploads</p>
+              </div>
+              <span class="material-symbols-outlined text-[#4648D4] text-[22px]">bar_chart</span>
+            </div>
+            
+            <!-- Proportional Multi-Segment Horizontal Track -->
+            <div class="flex flex-col gap-2 pt-1">
+              <div class="w-full h-3.5 rounded-full bg-[#EAEDFF] overflow-hidden flex gap-0.5 p-0.5">
+                <div class="h-full bg-[#4648D4] rounded-l-full" style="width: 52%" title="Shorts: 52%"></div>
+                <div class="h-full bg-[#8A4CFC]" style="width: 34%" title="Longform: 34%"></div>
+                <div class="h-full bg-[#00885D] rounded-r-full" style="width: 14%" title="Streams: 14%"></div>
+              </div>
+              <div class="flex items-center justify-between text-xs text-[#767586] px-0.5">
+                <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-[#4648D4]"></span>Shorts</span>
+                <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-[#8A4CFC]"></span>Longform</span>
+                <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-[#00885D]"></span>Live / Other</span>
+              </div>
+            </div>
+
+            <!-- Format List Items -->
+            <div class="flex flex-col gap-2 pt-2 border-t border-[#F1F5F9]">
+              <div class="p-2.5 rounded-xl bg-[#F8FAFC] border border-[#F1F5F9] flex items-center justify-between">
+                <div class="flex items-center gap-2.5 min-w-0">
+                  <span class="w-2.5 h-2.5 rounded-full bg-[#4648D4] shrink-0"></span>
+                  <div class="flex flex-col">
+                    <span class="text-xs font-semibold text-[#131B2E]">Shorts</span>
+                    <span class="text-[11px] text-[#767586]">&lt;60s format</span>
+                  </div>
+                </div>
+                <div class="flex items-center gap-2 shrink-0">
+                  <span id="formatShortsVelocity" class="text-xs text-[#767586] font-medium">—</span>
+                  <span id="formatShortsStat" class="px-2.5 py-1 rounded-lg bg-[#EAEDFF] text-[#4648D4] text-xs font-bold font-mono">52%</span>
+                </div>
+              </div>
+              <div class="p-2.5 rounded-xl bg-[#F8FAFC] border border-[#F1F5F9] flex items-center justify-between">
+                <div class="flex items-center gap-2.5 min-w-0">
+                  <span class="w-2.5 h-2.5 rounded-full bg-[#8A4CFC] shrink-0"></span>
+                  <div class="flex flex-col">
+                    <span class="text-xs font-semibold text-[#131B2E]">Longform</span>
+                    <span class="text-[11px] text-[#767586]">14m sample avg</span>
+                  </div>
+                </div>
+                <div class="flex items-center gap-2 shrink-0">
+                  <span id="formatLongStat" class="px-2.5 py-1 rounded-lg bg-[#F3E8FF] text-[#712AE2] text-xs font-bold font-mono">34%</span>
+                </div>
+              </div>
+              <div class="p-2.5 rounded-xl bg-[#F8FAFC] border border-[#F1F5F9] flex items-center justify-between">
+                <div class="flex items-center gap-2.5 min-w-0">
+                  <span class="w-2.5 h-2.5 rounded-full bg-[#00885D] shrink-0"></span>
+                  <div class="flex flex-col">
+                    <span class="text-xs font-semibold text-[#131B2E]">Streams &amp; Live</span>
+                    <span class="text-[11px] text-[#767586]">45m sample avg</span>
+                  </div>
+                </div>
+                <div class="flex items-center gap-2 shrink-0">
+                  <span id="formatLiveStat" class="px-2.5 py-1 rounded-lg bg-[#EAFFFA] text-[#006C49] text-xs font-bold font-mono">14%</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Hidden SVG arcs & Canvas for contract & JS compatibility -->
+            <div class="sr-only" aria-hidden="true">
+              <svg><circle id="donutShortsArc"></circle><circle id="donutLongArc"></circle></svg>
+              <span id="donutShortsPct">52%</span>
+              <canvas id="pulseCatChart"></canvas>
+            </div>
+          </div>
+
+          <!-- Audience Retention Indicator (Not Exposed in Public API) -->
+          <div class="p-5 rounded-2xl bg-[#F8FAFC] border border-[#E2E8F0]/80 shadow-sm flex flex-col justify-between gap-3 min-w-0">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-[#131B2E]">Audience Retention Baseline</span>
+              <span class="px-2.5 py-0.5 rounded-full bg-[#EAEDFF] text-[#4648D4] text-xs font-bold">Studio Tier</span>
+            </div>
+            <p class="text-xs text-[#767586] leading-relaxed">
+              First-30s hold rate and viewer drop-off analytics require YouTube Studio creator access. Public velocity curves are audited on the left.
+            </p>
+            <div class="flex items-center gap-2 pt-2 border-t border-[#E2E8F0] text-xs text-[#767586]">
+              <span class="material-symbols-outlined text-[16px] text-[#006C49]">verified_user</span>
+              <span>100% Truthful Public Data Model</span>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- Ranked Trending Public Videos Grid & Feed (Exact Stitch Design) -->
+      <div class="flex flex-col gap-4">
+        
+        <!-- Section Header & Filter Tabs -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <h2 id="trendingListTitle" class="text-lg sm:text-xl font-bold text-[#131B2E] font-headline">
+              Breakout Public Videos in this Cluster
+            </h2>
+            <p class="text-xs text-[#767586]">
+              Videos driving current topic velocity, tracked across public YouTube Data API uploads.
+            </p>
+          </div>
+          <div id="videoFilterTabs" class="flex items-center gap-1 p-1 bg-white rounded-xl border border-[#E2E8F0] shadow-sm self-start sm:self-auto overflow-x-auto max-w-full">
+            <button type="button" class="video-tab-btn px-3 py-1.5 rounded-lg bg-[#4648D4] text-white text-xs font-semibold shrink-0" data-filter="all" onclick="filterVideoTab('all')">Highest Velocity</button>
+            <button type="button" class="video-tab-btn px-3 py-1.5 rounded-lg text-[#464554] hover:text-[#131B2E] text-xs font-medium shrink-0" data-filter="breakout" onclick="filterVideoTab('breakout')">Breakout Creators</button>
+            <button type="button" class="video-tab-btn px-3 py-1.5 rounded-lg text-[#464554] hover:text-[#131B2E] text-xs font-medium shrink-0" data-filter="under100k" onclick="filterVideoTab('under100k')">Under 100k Subs</button>
+            <button type="button" class="video-tab-btn px-3 py-1.5 rounded-lg text-[#464554] hover:text-[#131B2E] text-xs font-medium shrink-0" data-filter="shorts" onclick="filterVideoTab('shorts')">Shorts Only</button>
+          </div>
+        </div>
+
+        <!-- Video Rows Container Card -->
+        <div class="p-4 sm:p-5 rounded-2xl bg-white border border-[#E2E8F0]/80 shadow-sm flex flex-col gap-3">
+          
+          <!-- Table Header (Hidden on mobile) -->
+          <div class="hidden lg:grid grid-cols-12 gap-4 px-4 py-2.5 text-xs uppercase tracking-wider text-[#767586] font-bold font-label border-b border-[#F1F5F9]">
+            <span class="col-span-5">Video &amp; Creator</span>
+            <span class="col-span-3 text-right">Hourly Velocity &amp; Momentum</span>
+            <span class="col-span-3 text-right">Engagement &amp; Lifetime Views</span>
+            <span class="col-span-1 text-center">Analyze</span>
+          </div>
+
+          <!-- Video Rows Render Target -->
+          <div id="pulseList" class="flex flex-col gap-2.5">
+            <!-- Dynamically populated by trend-analyzer.js with real YouTube data -->
+          </div>
+
+          <!-- Empty State -->
+          <div id="pulseEmptyState" class="pulsecheck-empty text-center py-10 text-sm text-[#767586]" style="display:none;">
+            Nothing matches "<span id="pulseEmptyQuery"></span>" in this view. Try clearing the search or switching category.
+          </div>
+        </div>
+      </div>
+
+      <!-- Deep Intelligence Section (Revealed on Search) -->
+      <div id="resultsArea" style="display:none;" class="flex flex-col gap-5">
+        
+        <!-- Educational Baseline Notification Banner -->
+        <div id="trendBanner" class="p-4 rounded-xl bg-[#EFF4FF] border border-[#C7D2FE] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3" style="display:none;">
+          <div class="flex items-start gap-3 flex-1 min-w-0">
+            <span class="material-symbols-outlined text-[22px] text-[#4648D4] shrink-0" aria-hidden="true">info</span>
+            <div>
+              <h3 class="text-sm font-bold text-[#4648D4] mb-0.5">Baseline Established</h3>
+              <p id="trendBannerText" class="text-xs text-[#131B2E] leading-relaxed">
+                Baseline observation established. Scan again in 24–48 hours to measure real-world growth velocity, momentum, and curve progression.
+              </p>
+            </div>
+          </div>
+          <div class="flex items-center gap-2 shrink-0 self-end sm:self-auto">
+            <button type="button" id="ctaStrategistBtn" class="px-3 py-1.5 rounded-lg bg-[#4648D4] text-white text-xs font-semibold hover:bg-[#3B3DB8] transition-colors flex items-center gap-1 shadow-sm">
+              <span class="material-symbols-outlined text-[15px]">psychology</span>
+              <span>AI Strategist</span>
+            </button>
+            <button type="button" id="ctaCompetitorBtn" class="px-3 py-1.5 rounded-lg bg-white border border-[#C7D2FE] text-[#4338CA] text-xs font-semibold hover:bg-[#EEF2FF] transition-colors flex items-center gap-1 shadow-sm">
+              <span class="material-symbols-outlined text-[15px]">compare_arrows</span>
+              <span>Competitors</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Semantic Keyword Entities & Growth Opportunities Grid -->
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+          
+          <!-- Cluster 1: Related Keywords -->
+          <div class="p-5 rounded-2xl bg-white border border-[#E2E8F0]/80 shadow-sm flex flex-col justify-between gap-3">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-sm font-bold text-[#131B2E]">Top Related Keywords</span>
+                <span class="material-symbols-outlined text-[#712AE2] text-[18px]">tag</span>
+              </div>
+              <div id="tagsList" class="flex flex-wrap gap-1.5">
+                <!-- Dynamically populated -->
+              </div>
+              <div id="hashtagsList" class="flex flex-wrap gap-1.5 mt-2">
+                <!-- High-CTR hashtags populated dynamically -->
+              </div>
+            </div>
+            <span class="text-xs text-[#767586] pt-2 border-t border-[#F1F5F9]">
+              Indexed semantic entities from current topic cluster
+            </span>
+          </div>
+
+          <!-- Cluster 2: Creator Growth Opportunity -->
+          <div class="p-5 rounded-2xl bg-white border border-[#E2E8F0]/80 shadow-sm flex flex-col justify-between gap-3">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-sm font-bold text-[#131B2E]">Creator Growth Opportunity</span>
+                <span class="material-symbols-outlined text-[#006C49] text-[18px]">lightbulb</span>
+              </div>
+              <div id="aiTitlesList" class="text-xs text-[#464554] flex flex-col gap-1.5">
+                <!-- Dynamically populated -->
+              </div>
+            </div>
+            <div class="flex items-center gap-2 pt-2 border-t border-[#F1F5F9]">
+              <span id="opportunityScoreBadge" class="hidden px-2 py-0.5 rounded-full bg-[#6FFBBE] text-[#002113] text-xs font-bold"></span>
+            </div>
+          </div>
+          <!-- Hidden anchors for JS contract compatibility -->
+          <div class="sr-only" style="display:none !important;" aria-hidden="true">
+            <span id="dominantSentimentBadge"></span>
+            <span id="sentimentBreakdown"></span>
+            <span id="sampleCommentText"></span>
+          </div>
+
+        </div>
+
+        <!-- Trajectory & Historical Change Windows Bento Row -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+          
+          <!-- Left: Audited Trajectory & Summary (8 cols) -->
+          <div class="lg:col-span-8 flex flex-col gap-4">
+            <div class="p-5 rounded-2xl bg-white border border-[#E2E8F0]/80 shadow-sm flex flex-col gap-4">
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <div>
+                  <h3 class="text-base font-bold text-[#131B2E]">📈 Time-Series View Trajectory</h3>
+                  <p class="text-xs text-[#767586]">Audited view changes across repeated observations of this topic over time</p>
+                </div>
+                <div class="flex items-center p-1 bg-[#F2F3FF] rounded-xl border border-[#EAEDFF] self-start sm:self-auto">
+                  <button class="px-2.5 py-1 rounded-lg text-xs font-semibold bg-[#6063EE] text-white trend-tab-btn active" data-range="all">All</button>
+                  <button class="px-2.5 py-1 rounded-lg text-xs font-medium text-[#767586] hover:text-[#131B2E] trend-tab-btn" data-range="1d">1D</button>
+                  <button class="px-2.5 py-1 rounded-lg text-xs font-medium text-[#767586] hover:text-[#131B2E] trend-tab-btn" data-range="7d">7D</button>
+                  <button class="px-2.5 py-1 rounded-lg text-xs font-medium text-[#767586] hover:text-[#131B2E] trend-tab-btn" data-range="30d">30D</button>
+                  <button class="px-2.5 py-1 rounded-lg text-xs font-medium text-[#767586] hover:text-[#131B2E] trend-tab-btn" data-range="90d">90D</button>
+                </div>
+              </div>
+
+              <div class="h-56 relative">
+                <canvas id="viewsChart" role="img" aria-label="Time-series view trajectory over repeated scans"></canvas>
+                <div id="viewsChartEmpty" class="chart-empty-placeholder" style="display:none;"></div>
+                <div id="viewsTrajectoryA11y" class="sr-only" aria-live="polite"></div>
+                <div id="chartBaselineNote" class="text-xs text-[#767586] pt-1" style="display:none;"></div>
+              </div>
+
+              <!-- Summary Indicators -->
+              <div class="p-3.5 rounded-xl bg-[#F2F3FF] border border-[#EAEDFF]">
+                <div class="grid grid-cols-2 sm:grid-cols-5 gap-3 text-center">
+                  <div>
+                    <span class="text-xs text-[#767586] block">Stage</span>
+                    <strong id="summaryDirection" class="text-xs text-[#131B2E] font-bold">—</strong>
+                  </div>
+                  <div>
+                    <span class="text-xs text-[#767586] block">Velocity</span>
+                    <strong id="summaryVelocity" class="text-xs text-[#131B2E] font-bold">—</strong>
+                  </div>
+                  <div>
+                    <span class="text-xs text-[#767586] block">Acceleration</span>
+                    <strong id="summaryAcceleration" class="text-xs text-[#131B2E] font-bold">—</strong>
+                  </div>
+                  <div>
+                    <span class="text-xs text-[#767586] block">Engagement</span>
+                    <strong id="summaryEngagement" class="text-xs text-[#131B2E] font-bold">—</strong>
+                  </div>
+                  <div>
+                    <span class="text-xs text-[#767586] block">Virality Index</span>
+                    <strong id="summaryVirality" class="text-xs text-[#131B2E] font-bold">—</strong>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Historical Change Windows Table -->
+            <div class="p-5 rounded-2xl bg-white border border-[#E2E8F0]/80 shadow-sm flex flex-col gap-3">
+              <h3 class="text-base font-bold text-[#131B2E]">⏱️ Historical Change Windows</h3>
+              <p class="text-xs text-[#767586] leading-relaxed">
+                Snapshots are saved when you run a search; collection is not automatic. Repeat the same topic and filters over time.
+              </p>
+              <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs border-collapse">
+                  <thead>
+                    <tr class="border-b border-[#E2E8F0] text-[#767586] font-semibold">
+                      <th class="py-2.5 px-3">Window</th>
+                      <th class="py-2.5 px-3">Observed Growth</th>
+                      <th class="py-2.5 px-3">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody id="historyTableBody">
+                    <tr><td colspan="3" class="py-4 px-3 text-center text-[#767586]">Data collection in progress. Historical comparisons will appear when enough comparable observations are saved.</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right: Milestones & Projections (4 cols) -->
+          <div class="lg:col-span-4 flex flex-col gap-4">
+            
+            <!-- Milestones & Events -->
+            <div class="p-5 rounded-2xl bg-white border border-[#E2E8F0]/80 shadow-sm flex flex-col gap-3">
+              <h3 class="text-base font-bold text-[#131B2E]">⚡ Milestones &amp; Events</h3>
+              <div id="trendEventsList" class="flex flex-col gap-2">
+                <div class="p-3 rounded-xl bg-[#F2F3FF] flex items-center gap-3">
+                  <span class="text-base">📍</span>
+                  <div class="flex-1 min-w-0">
+                    <div class="text-xs font-bold text-[#131B2E]">Baseline Created</div>
+                    <div class="text-xs text-[#767586]">Initial observation recorded.</div>
+                  </div>
+                  <div class="text-xs text-[#767586]">Today</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Conservative 7-Day Forecast Projection -->
+            <details id="forecastPanel" class="p-5 rounded-2xl bg-white border border-[#E2E8F0]/80 shadow-sm">
+              <summary class="font-bold text-sm text-[#131B2E] cursor-pointer outline-none">
+                🔮 Conservative 7-Day Projection
+              </summary>
+              <div id="forecastContainer" class="mt-3">
+                <div id="forecastFallback" class="p-3 text-center text-xs text-[#767586] bg-[#F2F3FF] rounded-xl">
+                  Illustrative projection requires at least 3 observations spanning 48 hours. It is not a guaranteed prediction.
+                </div>
+                <div id="forecastGrid" class="trend-forecast-grid" style="display:none;"></div>
+              </div>
+            </details>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- Public SEO FAQ & Methodology Section (Exact Stitch Component) -->
+      <div class="p-6 sm:p-8 rounded-2xl bg-white border border-[#E2E8F0]/80 shadow-sm flex flex-col gap-6" id="methodology">
+        <div class="flex flex-col gap-1">
+          <span class="text-xs text-[#4648D4] font-bold uppercase tracking-wider font-label">Public Intelligence &amp; FAQ</span>
+          <h2 class="text-xl sm:text-2xl font-bold text-[#131B2E] font-headline">How YouTube Velocity &amp; Momentum are Calculated</h2>
+          <p class="text-xs sm:text-sm text-[#464554] max-w-4xl leading-relaxed">
+            PLEXUDO aggregates publicly visible video metrics and channel publication frequencies through public APIs and telemetry. To ensure transparent insights, our heuristic algorithms operate under the following standards:
+          </p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs text-[#464554]">
+          <div class="flex flex-col gap-1.5 p-4 rounded-xl bg-[#F2F3FF] border border-[#EAEDFF]">
+            <div class="flex items-center gap-2 font-bold text-sm text-[#131B2E]">
+              <span class="material-symbols-outlined text-[#4648D4] text-[20px]">speed</span>
+              <span>View Velocity (views/hr)</span>
+            </div>
+            <p class="text-xs leading-relaxed">
+              Requires at least two comparable public observation timestamps. Velocity is computed as the differential quotient of view count divided by the elapsed delta time. When fewer than 2 snapshots exist, velocity is marked as <em>Initial Calibration</em>.
+            </p>
+          </div>
+          
+          <div class="flex flex-col gap-1.5 p-4 rounded-xl bg-[#F2F3FF] border border-[#EAEDFF]">
+            <div class="flex items-center gap-2 font-bold text-sm text-[#131B2E]">
+              <span class="material-symbols-outlined text-[#712AE2] text-[20px]">hub</span>
+              <span>Plexudo Momentum Index (0–100)</span>
+            </div>
+            <p class="text-xs leading-relaxed">
+              A weighted heuristic combining 24h upload acceleration in the parent category, comment-to-view ratios, and category relative performance benchmarks.
+            </p>
+          </div>
+          
+          <div class="flex flex-col gap-1.5 p-4 rounded-xl bg-[#F2F3FF] border border-[#EAEDFF]">
+            <div class="flex items-center gap-2 font-bold text-sm text-[#131B2E]">
+              <span class="material-symbols-outlined text-[#006C49] text-[20px]">speed</span>
+              <span>Velocity &amp; Momentum Modeling</span>
+            </div>
+            <p class="text-xs leading-relaxed text-[#464554]">
+              Velocity indexes aggregate multi-tier view acceleration and viral velocity across public YouTube upload samples. Outliers and artificial spikes are normalized.
+            </p>
+          </div>
+          
+          <div class="flex flex-col gap-1.5 p-4 rounded-xl bg-[#F2F3FF] border border-[#EAEDFF]">
+            <div class="flex items-center gap-2 font-bold text-sm text-[#131B2E]">
+              <span class="material-symbols-outlined text-[#131B2E] text-[20px]">lock_open</span>
+              <span>Public &amp; Indexable Access</span>
+            </div>
+            <p class="text-xs leading-relaxed">
+              All reports on this public tier require no authentication. Data reflects publicly available YouTube metrics and complies strictly with the YouTube API Services Terms of Service.
+            </p>
+          </div>
+        </div>
+
+        <!-- Quick Action Footer Banner -->
+        <div class="p-5 rounded-2xl bg-gradient-to-r from-[#4648D4] to-[#712AE2] text-white flex flex-col sm:flex-row items-center justify-between gap-4 shadow-md">
+          <div class="flex flex-col gap-1 text-center sm:text-left">
+            <span class="text-sm font-bold text-white">Deepen Your Analysis With Connected Tools</span>
+            <span class="text-xs text-[#E1E0FF]">Audit competitor channel growth or generate AI strategic content hooks directly.</span>
+          </div>
+          <div class="flex items-center gap-2 shrink-0">
+            <a href="/tools/video-analyzer" class="px-4 py-2 rounded-full bg-white text-[#4648D4] text-xs font-bold hover:bg-[#F2F3FF] transition-colors shadow-sm">
+              Video Analyzer →
+            </a>
+            <a href="/tools/competitor-audit" class="px-4 py-2 rounded-full bg-white/20 text-white text-xs font-bold hover:bg-white/30 transition-colors">
+              Competitor Audit →
+            </a>
+          </div>
+        </div>
+
+      </div>
+
     </div>
   </main>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="/js/tools/common.js?v=33.0"></script>
 <script src="/js/tools/trend-analyzer.js?v=40.0"></script>
 

@@ -57,3 +57,13 @@ This document establishes the non-negotiable frontend, UI/UX, and architectural 
   - Lightweight aggregate discovery feeds (such as Trend Analyzer list) must not include premature placeholders (like empty sentiment bars or "Unavailable" comment analysis) that require on-demand deep scanning.
   - Keep deep NLP and comment-dependent metrics inside dedicated analysis views (e.g., Video Analyzer).
 
+---
+
+## 7. Plexudo Shell & Global Branding Invariant (Strict)
+- **Never Overwrite the Global App Shell:**
+  - Jab bhi kisi tool ya page ka design change ya revamp karne ki request ho (chahe user full HTML template ya Stitch export provide kare):
+    - Global app shell (Plexudo white sidebar `.stitch-sidebar`, logo `play_shapes`, navigation groups, topbar, aur SEO metadata) ko **KABHI BHI** remove ya replace nahi karna.
+    - Third-party mockup personas (e.g. "Alex Rivers", dummy accounts, ya external dark sidebars) ko production mein inject nahi karna.
+  - **Surgical Content Scope:**
+    - Reference designs ya layout styling sirf inner main content area (`.stitch-content-container` / cards, tables, charts) ke andar Plexudo design tokens ke mutabiq adapt ki jaye gi.
+

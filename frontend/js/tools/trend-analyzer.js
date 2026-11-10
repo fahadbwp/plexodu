@@ -194,30 +194,7 @@ function escapeAttr(str) {
 }
 
 // ── DOM Initialization ───────────────────────────────────────────────────────
-function initMobileMenu() {
-  const toggleBtn = document.getElementById("mobileMenuToggle");
-  const closeBtn = document.getElementById("sidebarCloseBtn");
-  const sidebar = document.getElementById("stitchSidebar");
-  const backdrop = document.getElementById("sidebarBackdrop");
-  if (!sidebar) return;
-
-  const openDrawer = () => {
-    sidebar.classList.remove("-translate-x-full");
-    if (backdrop) backdrop.classList.remove("hidden");
-  };
-
-  const closeDrawer = () => {
-    sidebar.classList.add("-translate-x-full");
-    if (backdrop) backdrop.classList.add("hidden");
-  };
-
-  if (toggleBtn) toggleBtn.addEventListener("click", openDrawer);
-  if (closeBtn) closeBtn.addEventListener("click", closeDrawer);
-  if (backdrop) backdrop.addEventListener("click", closeDrawer);
-}
-
 document.addEventListener("DOMContentLoaded", () => {
-  initMobileMenu();
   initCategories();
   initTimeframePills();
   initRegionSelect();
@@ -323,52 +300,6 @@ function initRegionSelect() {
       activeRegion = e.target.value;
       try { localStorage.setItem("plexudo_region", activeRegion); } catch (_) {}
       fetchTrendingFeed();
-    });
-  }
-
-  // Support for Stitch region pills
-  const regionBtns = document.querySelectorAll("#region-selector button, .pulsecheck-region-btn");
-  if (regionBtns.length > 0) {
-    regionBtns.forEach((btn) => {
-      btn.addEventListener("click", () => {
-        regionBtns.forEach((b) => {
-          b.className = "px-space-md py-1.5 rounded-full bg-surface-container-low text-on-surface-variant hover:bg-surface-container font-semibold text-xs transition-all pulsecheck-region-btn";
-        });
-        btn.className = "px-space-md py-1.5 rounded-full bg-primary-container text-white font-semibold text-xs shadow-sm transition-all pulsecheck-region-btn active";
-        activeRegion = btn.getAttribute("data-region") || "Pakistan";
-        try { localStorage.setItem("plexudo_region", activeRegion); } catch (_) {}
-        fetchTrendingFeed();
-      });
-    });
-  }
-
-  // Support for Stitch category scroller chips
-  const catChips = document.querySelectorAll("#pulseCatScroller button, .pulsecheck-cat-chip");
-  if (catChips.length > 0) {
-    catChips.forEach((chip) => {
-      chip.addEventListener("click", () => {
-        catChips.forEach((c) => {
-          c.className = "px-3 py-1 rounded-lg bg-surface-container-low text-outline hover:text-on-surface hover:bg-surface-container text-xs font-semibold whitespace-nowrap pulsecheck-cat-chip";
-        });
-        chip.className = "px-3 py-1 rounded-lg bg-primary-container text-white text-xs font-semibold whitespace-nowrap shadow-sm pulsecheck-cat-chip active";
-        activeCategory = chip.getAttribute("data-category") || "All";
-        fetchTrendingFeed();
-      });
-    });
-  }
-
-  // Support for Stitch timeframe pills
-  const timeBtns = document.querySelectorAll(".timeframe-pill");
-  if (timeBtns.length > 0) {
-    timeBtns.forEach((pill) => {
-      pill.addEventListener("click", () => {
-        timeBtns.forEach((p) => {
-          p.className = "px-3 py-1 rounded-lg text-xs text-outline hover:text-on-surface timeframe-pill font-semibold";
-        });
-        pill.className = "px-3 py-1 rounded-lg bg-surface-container-lowest text-xs text-primary font-bold shadow-sm timeframe-pill active";
-        activeTimeframe = pill.getAttribute("data-timeframe") || "24h";
-        fetchTrendingFeed();
-      });
     });
   }
 }
@@ -612,6 +543,8 @@ function renderKpis(kpis, isValid = true) {
     if (kpiMedianViewsVal) kpiMedianViewsVal.textContent = "—";
     if (kpiMomentumScoreVal) kpiMomentumScoreVal.textContent = "0.0";
     if (kpiMomentumSpeedBadge) kpiMomentumSpeedBadge.textContent = "Calibrating";
+    const kpiMomentumProgressBar = document.getElementById("kpiMomentumProgressBar");
+    if (kpiMomentumProgressBar) kpiMomentumProgressBar.style.width = "0%";
     if (kpiEngagementRatioDisplay) kpiEngagementRatioDisplay.textContent = "—";
     return;
   }
@@ -684,21 +617,11 @@ function renderKpis(kpis, isValid = true) {
   if (kpiMomentumSpeedBadge) {
     kpiMomentumSpeedBadge.textContent = score >= 75 ? "Ultra Fast" : (score >= 50 ? "Rapid" : (score >= 30 ? "Moderate" : "Calibrating"));
   }
-  
-  // Stitch Card 2: Momentum Progress Bar & Score
   const kpiMomentumProgressBar = document.getElementById("kpiMomentumProgressBar");
   if (kpiMomentumProgressBar) {
     kpiMomentumProgressBar.style.width = `${Math.min(100, Math.max(5, score))}%`;
   }
-  const viralityScoreVal = document.getElementById("viralityScoreVal");
-  if (viralityScoreVal) {
-    viralityScoreVal.textContent = `${Math.round(score)}%`;
-  }
-  const kpiTopTopicChannel = document.getElementById("kpiTopTopicChannel");
-  if (kpiTopTopicChannel && currentVideos.length > 0) {
-    kpiTopTopicChannel.textContent = currentVideos[0].channel || "—";
-  }
-if (kpiGaugeArc && typeof kpiGaugeArc.setAttribute === 'function') {
+  if (kpiGaugeArc && typeof kpiGaugeArc.setAttribute === 'function') {
     // Semi-circle from 180 deg to 0 deg
     const rad = Math.PI * (1 - (score / 100));
     const arcX = 80 - 60 * Math.cos(rad);
@@ -967,9 +890,7 @@ function renderCategoryChart(catBreakdown) {
 function renderTrendingList(videos, query) {
   const titleEl = document.getElementById("trendingListTitle");
   if (titleEl) {
-    titleEl.textContent = query
-      ? `Search results for "${query}"`
-      : "Breakout Public Videos in this Cluster";
+    titleEl.textContent = `Trending now (${videos.length})`;
   }
 
   const listEl = document.getElementById("pulseList");
@@ -977,11 +898,6 @@ function renderTrendingList(videos, query) {
   const emptyQueryEl = document.getElementById("pulseEmptyQuery");
 
   if (!listEl) return;
-
-  const countBadge = document.getElementById("trendingCountBadge");
-  if (countBadge) {
-    countBadge.textContent = `${videos.length} Detected`;
-  }
 
   if (videos.length === 0) {
     listEl.innerHTML = "";
@@ -995,9 +911,10 @@ function renderTrendingList(videos, query) {
   if (emptyEl) emptyEl.style.display = "none";
 
   listEl.innerHTML = videos
-    .map((v, idx) => {
+    .map((v) => {
       const momentum = Number(v.momentumScore);
       const hasMomentum = v.momentumScore != null && Number.isFinite(momentum) && momentum >= 0 && momentum <= 100;
+      const hue = v.hue || "#4F46E5";
       const vidId = v.id || v.video_id || "";
       const thumbUrl = v.thumbnail || (vidId ? `https://i.ytimg.com/vi/${vidId}/hqdefault.jpg` : "");
       let dur = "—";
@@ -1011,49 +928,80 @@ function renderTrendingList(videos, query) {
         dur = h > 0 ? `${h}:${String(m).padStart(2, '0')}:${String(sec).padStart(2, '0')}` : `${m}:${String(sec).padStart(2, '0')}`;
       }
       const engagementText = v.engagement != null && Number.isFinite(Number(v.engagement)) ? Number(v.engagement).toFixed(1) + "%" : "Unavailable";
-      const momentumText = hasMomentum ? momentum.toFixed(1) : "—";
+      const momentumText = hasMomentum ? momentum + " / 100 idx" : "Pending";
       const velocityHourly = formatCompact(Math.round((v.views || 1000) / Math.max(1, v.hoursAgo || 6)));
-      const rankNum = String(idx + 1).padStart(2, "0");
-      const catName = escapeHtml(v.category || "Trending");
-
+      const ageText = v.hoursAgo != null && Number.isFinite(Number(v.hoursAgo))
+        ? (Number(v.hoursAgo) >= 48 ? `${Math.floor(Number(v.hoursAgo) / 24)}d ago` : `${v.hoursAgo}h ago`)
+        : "—";
       return `
-      <tr class="hover:bg-surface-container-low/60 transition-colors border-b border-[#F1F5F9] pulsecheck-row">
-        <td class="py-3 px-4 font-label-md text-primary font-bold whitespace-nowrap">${rankNum}</td>
-        <td class="py-3 px-4 min-w-[260px] max-w-md">
-          <div class="flex items-center gap-space-sm">
-            <div class="w-10 h-10 rounded-xl bg-surface-container flex items-center justify-center flex-shrink-0 text-primary overflow-hidden shadow-2xs">
-              ${thumbUrl ? `<img src="${escapeAttr(thumbUrl)}" alt="${escapeAttr(v.title)}" class="w-full h-full object-cover" loading="lazy" />` : `
-                <span class="material-symbols-rounded text-[20px]">play_circle</span>
-              `}
-            </div>
-            <div class="flex flex-col min-w-0">
-              <span class="font-headline-sm text-on-surface truncate font-semibold text-xs leading-snug hover:text-primary transition-colors cursor-pointer" title="${escapeAttr(v.title)}">
-                ${escapeHtml(v.title)}
+      <div class="p-3.5 sm:p-4 rounded-xl bg-[#F8FAFC] hover:bg-[#F1F5F9] border border-[#E2E8F0] transition-all flex flex-col lg:grid lg:grid-cols-12 gap-3.5 sm:gap-4 items-start lg:items-center pulsecheck-row">
+        <!-- Col 1: Video details & Thumbnail (5 cols) -->
+        <div class="col-span-5 flex items-start gap-3.5 w-full min-w-0">
+          <div class="relative w-28 h-16 sm:w-32 sm:h-20 rounded-xl overflow-hidden shrink-0 shadow-sm bg-[#EAEDFF] flex items-center justify-center">
+            ${thumbUrl ? `<img src="${escapeAttr(thumbUrl)}" alt="${escapeAttr(v.title)}" class="w-full h-full object-cover" loading="lazy" />` : `
+              <div class="w-full h-full flex items-center justify-center bg-[#6063EE]/15">
+                <span class="material-symbols-rounded text-[#4648D4] text-[24px]">play_circle</span>
+              </div>
+            `}
+            <span class="absolute bottom-1 right-1 px-1.5 py-0.5 rounded bg-[#131B2E]/90 text-white font-mono text-[10px] font-bold">
+              ${dur}
+            </span>
+          </div>
+          <div class="flex flex-col min-w-0 flex-1 justify-center">
+            <div class="flex items-center gap-1.5 mb-1 flex-wrap">
+              <span class="px-2 py-0.5 rounded-full bg-[#EDE9FE] text-[#5B21B6] text-[11px] font-bold tracking-wide truncate">
+                ${escapeHtml(v.category || "Trending")}
               </span>
-              <span class="text-[11px] text-outline truncate">${escapeHtml(v.channel)} • ${dur}</span>
+              <span class="text-xs text-[#64748B] font-medium">${ageText}</span>
+            </div>
+            <h3 class="text-sm sm:text-base font-bold text-[#0F172A] truncate leading-tight hover:text-[#4648D4] transition-colors" title="${escapeAttr(v.title)}">
+              ${escapeHtml(v.title)}
+            </h3>
+            <div class="flex items-center gap-2 mt-1.5 text-xs text-[#64748B]">
+              <span class="font-semibold text-[#334155] truncate">${escapeHtml(v.channel)}</span>
+              <span class="px-2 py-0.5 rounded bg-white border border-[#CBD5E1] text-[10px] font-extrabold text-[#475569] shadow-2xs">${v.rank ? `#${v.rank}` : "Top"}</span>
             </div>
           </div>
-        </td>
-        <td class="py-3 px-4 whitespace-nowrap">
-          <span class="px-2.5 py-0.5 rounded-full bg-secondary-fixed text-secondary text-xs font-semibold">${catName}</span>
-        </td>
-        <td class="py-3 px-4 text-tertiary font-label-md font-bold whitespace-nowrap">+${velocityHourly}/hr</td>
-        <td class="py-3 px-4 whitespace-nowrap">
-          <span class="font-label-md text-primary font-bold">${momentumText}</span>
-          <span class="text-[10px] text-outline">/100</span>
-        </td>
-        <td class="py-3 px-4 font-semibold whitespace-nowrap">${engagementText}</td>
-        <td class="py-3 px-4 font-code-md text-xs font-semibold whitespace-nowrap">${Number(v.views || 0).toLocaleString()}</td>
-        <td class="py-3 px-4 text-center whitespace-nowrap">
-          <a href="/tools/video-analyzer?url=https://www.youtube.com/watch?v=${vidId}" class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-surface-container-low text-primary hover:bg-primary hover:text-white transition-colors shadow-2xs" title="Deep Analyze video">
-            <span class="material-symbols-rounded text-[18px]">analytics</span>
+        </div>
+
+        <!-- Col 2: Hourly Velocity & Momentum (3 cols) -->
+        <div class="col-span-3 flex flex-wrap lg:flex-col items-center lg:items-end justify-between w-full lg:w-auto gap-1">
+          <span class="lg:hidden text-xs text-[#64748B] font-semibold">Velocity:</span>
+          <div class="text-base sm:text-lg font-extrabold text-[#4648D4] tracking-tight">
+            +${velocityHourly} <span class="text-xs text-[#64748B] font-semibold">views/hr</span>
+          </div>
+          <span class="mt-1 px-2.5 py-0.5 rounded-full text-xs font-bold flex items-center gap-1 bg-[#F0FDF4] text-[#16A34A] border border-[#DCFCE7] pulsecheck-growth ${hasMomentum ? "score" : "pending"}">
+            <span class="material-symbols-rounded text-[14px]">rocket_launch</span>
+            ${momentumText}
+          </span>
+        </div>
+
+        <!-- Col 3: Engagement & Lifetime Views (3 cols) -->
+        <div class="col-span-3 flex flex-wrap lg:flex-col items-center lg:items-end justify-between w-full lg:w-auto gap-1 pulsecheck-row-stat">
+          <span class="lg:hidden text-xs text-[#64748B] font-semibold">Engagement:</span>
+          <div class="text-base sm:text-lg font-extrabold text-[#0F172A]">
+            ${engagementText} <span class="text-xs text-[#64748B] font-semibold">rate</span>
+          </div>
+          <span class="mt-1 text-xs text-[#475569] font-semibold flex items-center gap-1.5">
+            <span>${formatCompact(v.views)} views</span>
+            <span class="text-[#94A3B8]">•</span>
+            <span>${formatCompact(v.comments)} cmts</span>
+          </span>
+        </div>
+
+        <!-- Col 4: Deep Analyze CTA (1 col) -->
+        <div class="col-span-1 flex items-center justify-end lg:justify-center w-full lg:w-auto">
+          <a href="/tools/video-analyzer?url=https://www.youtube.com/watch?v=${vidId}" class="w-full lg:w-10 h-10 rounded-xl bg-[#6063EE] text-white hover:bg-[#4648D4] flex items-center justify-center transition-all shadow-sm text-xs font-semibold gap-2 lg:gap-0" title="Deep Analyze this video">
+            <span class="material-symbols-rounded text-[20px]">analytics</span>
+            <span class="lg:hidden font-bold">Deep Analyze</span>
           </a>
-        </td>
-      </tr>
-      `;
+        </div>
+      </div>
+    `;
     })
     .join("");
 }
+
 
 // ── Video Filtering Tabs (All / Breakout / Under 100k / Shorts) ──────────────
 function updateVideoTabStates() {
