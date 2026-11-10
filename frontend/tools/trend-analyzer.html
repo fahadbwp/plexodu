@@ -448,7 +448,7 @@ tailwind.config = {
         </div>
 
         <!-- Horizontal Category Scroller -->
-        <div class="pt-2 border-t border-[#F1F5F9]">
+        <div class="pt-2 border-t border-[#F1F5F9] min-w-0 max-w-full overflow-hidden">
           <div class="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar pulsecheck-cat-bar" id="pulseCatScroller">
             <!-- Dynamically populated by trend-analyzer.js -->
           </div>
@@ -943,7 +943,7 @@ tailwind.config = {
             </div>
           </div>
           <!-- Hidden anchors for JS contract compatibility -->
-          <div class="sr-only" aria-hidden="true">
+          <div class="sr-only" style="display:none !important;" aria-hidden="true">
             <span id="dominantSentimentBadge"></span>
             <span id="sentimentBreakdown"></span>
             <span id="sampleCommentText"></span>
